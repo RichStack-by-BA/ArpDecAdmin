@@ -13,13 +13,13 @@ import { useRouter } from 'src/routes/hooks';
 
 import { Iconify } from 'src/components/iconify';
 
-// Add these imports
 import { useDispatch, useSelector } from 'react-redux';
 import { loginUser } from 'src/store/slices/userSlice';
+import { AppDispatch } from 'src/store'; // Add this import
 
 export function SignInView() {
   const router = useRouter();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>(); // Type your dispatch
   const loading = useSelector((state: any) => state.user.loading);
   const error = useSelector((state: any) => state.user.error);
 

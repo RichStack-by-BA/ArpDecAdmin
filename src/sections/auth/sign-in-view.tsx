@@ -13,17 +13,27 @@ import { useRouter } from 'src/routes/hooks';
 
 import { Iconify } from 'src/components/iconify';
 
-// ----------------------------------------------------------------------
+// Add these imports
+import { useDispatch, useSelector } from 'react-redux';
+import { loginUser } from 'src/store/slices/userSlice';
 
 export function SignInView() {
   const router = useRouter();
+  const dispatch = useDispatch();
+  const loading = useSelector((state: any) => state.user.loading);
+  const error = useSelector((state: any) => state.user.error);
 
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState('hello@gmail.com');
+  const [password, setPassword] = useState('@demo1234');
 
-  const handleSignIn = useCallback(() => {
-    
-    router.push('/');
-  }, [router]);
+  const handleSignIn = useCallback(async () => {
+    const resultAction = await dispatch(loginUser({ email, password }));
+    if (loginUser.fulfilled.match(resultAction)) {
+      router.push('/');
+    }
+    // Optionally handle error here
+  }, [dispatch, email, password, router]);
 
   const renderForm = (
     <Box
@@ -37,7 +47,8 @@ export function SignInView() {
         fullWidth
         name="email"
         label="Email address"
-        defaultValue="hello@gmail.com"
+        value={email}
+        onChange={e => setEmail(e.target.value)}
         sx={{ mb: 3 }}
         slotProps={{
           inputLabel: { shrink: true },
@@ -52,7 +63,8 @@ export function SignInView() {
         fullWidth
         name="password"
         label="Password"
-        defaultValue="@demo1234"
+        value={password}
+        onChange={e => setPassword(e.target.value)}
         type={showPassword ? 'text' : 'password'}
         slotProps={{
           inputLabel: { shrink: true },
@@ -72,13 +84,19 @@ export function SignInView() {
       <Button
         fullWidth
         size="large"
-        type="submit"
+        type="button"
         color="inherit"
         variant="contained"
         onClick={handleSignIn}
+        disabled={loading}
       >
         Sign in
       </Button>
+      {error && (
+        <Typography color="error" sx={{ mt: 2 }}>
+          {error}
+        </Typography>
+      )}
     </Box>
   );
 

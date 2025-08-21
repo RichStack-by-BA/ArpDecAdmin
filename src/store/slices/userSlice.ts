@@ -1,4 +1,4 @@
-import type { PayloadAction } from '@reduxjs/toolkit';
+
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 // Extend state to handle loading and error
@@ -7,6 +7,7 @@ type UserState = {
   isLoggedIn: boolean;
   loading: boolean;
   error: string | null;
+  token: string | null; 
 };
 
 const initialState: UserState = {
@@ -14,6 +15,7 @@ const initialState: UserState = {
   isLoggedIn: false,
   loading: false,
   error: null,
+  token: null,
 };
 
 // Async thunk for login API
@@ -24,7 +26,7 @@ export const loginUser = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const response = await fetch('/api/v1/auth/login', {
+      const response = await fetch('http://13.60.253.221/api/v1/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -63,6 +65,7 @@ const userSlice = createSlice({
         state.isLoggedIn = true;
         state.loading = false;
         state.error = null;
+        state.token = action.payload.token || null;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;

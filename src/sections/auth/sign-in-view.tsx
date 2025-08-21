@@ -1,4 +1,8 @@
+import type { AppDispatch } from 'src/store'; // Add this import
+
 import { useState, useCallback } from 'react';
+// Add these imports
+import { useDispatch, useSelector } from 'react-redux';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
@@ -11,11 +15,9 @@ import InputAdornment from '@mui/material/InputAdornment';
 
 import { useRouter } from 'src/routes/hooks';
 
-import { Iconify } from 'src/components/iconify';
-
-import { useDispatch, useSelector } from 'react-redux';
 import { loginUser } from 'src/store/slices/userSlice';
-import { AppDispatch } from 'src/store'; // Add this import
+
+import { Iconify } from 'src/components/iconify';
 
 export function SignInView() {
   const router = useRouter();
@@ -24,8 +26,8 @@ export function SignInView() {
   const error = useSelector((state: any) => state.user.error);
 
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState('hello@gmail.com');
-  const [password, setPassword] = useState('@demo1234');
+  const [email, setEmail] = useState('bhupendradewangan0007@gmail.com');
+  const [password, setPassword] = useState('12345678');
 
   const handleSignIn = useCallback(async () => {
     const resultAction = await dispatch(loginUser({ email, password }));

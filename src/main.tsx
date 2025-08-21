@@ -7,15 +7,21 @@ import App from './app';
 import { store } from './store';
 import { routesSection } from './routes/sections';
 import { ErrorBoundary } from './routes/components';
+import ProtectedRoute from './components/ProtectedRoute';
+
+// Add import for ProtectedRoute
+// import ProtectedRoute from './components/ProtectedRoute';
 
 // ----------------------------------------------------------------------
 
 const router = createBrowserRouter([
   {
     Component: () => (
-      <App>
-        <Outlet />
-      </App>
+      <ProtectedRoute>
+        <App>
+          <Outlet />
+        </App>
+      </ProtectedRoute>
     ),
     errorElement: <ErrorBoundary />,
     children: routesSection,

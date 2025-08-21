@@ -1,10 +1,10 @@
 import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import { Outlet, RouterProvider, createBrowserRouter } from 'react-router-dom'; // <- fix: use from 'react-router-dom'
 import { Provider } from 'react-redux';
+import { createRoot } from 'react-dom/client';
+import { Outlet, RouterProvider, createBrowserRouter } from 'react-router-dom';
 
-import { store } from './store';
 import App from './app';
+import { store } from './store';
 import { routesSection } from './routes/sections';
 import { ErrorBoundary } from './routes/components';
 

@@ -21,6 +21,7 @@ export function SignInView() {
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSignIn = useCallback(() => {
+    
     router.push('/');
   }, [router]);
 

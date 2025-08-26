@@ -26,7 +26,7 @@ export const loginUser = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const response = await fetch('http://13.60.253.221/api/v1/auth/login', {
+      const response = await fetch('https://13.60.253.221/api/v1/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -36,6 +36,7 @@ export const loginUser = createAsyncThunk(
         throw new Error(errorData.message || 'Login failed');
       }
       const data = await response.json();
+      console.log('LOGIN RESPONSE:', data); // <-- Add this line
       return data; // Adjust based on your API response
     } catch (error: any) {
       return rejectWithValue(error.message);

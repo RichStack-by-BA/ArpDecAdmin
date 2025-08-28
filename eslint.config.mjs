@@ -110,7 +110,7 @@ const sortImportsRules = () => {
         type: 'line-length',
         environment: 'node',
         maxLineLength: undefined,
-        newlinesBetween: 'always',
+        newlinesBetween: 'ignore',
         internalPattern: ['^src/.+'],
         groups: [
           'style',

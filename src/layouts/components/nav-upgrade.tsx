@@ -11,7 +11,7 @@ export function NavUpgrade({ sx, ...other }: StackProps) {
     <Box
       sx={[
         {
-          mb: 4,
+          mb: 2,
           display: 'flex',
           textAlign: 'center',
           alignItems: 'center',

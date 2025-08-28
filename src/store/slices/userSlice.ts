@@ -1,5 +1,6 @@
 
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { setToken } from 'src/utils/encrypt-decrypt';
 
 // Extend state to handle loading and error
 type UserState = {
@@ -66,7 +67,12 @@ const userSlice = createSlice({
         state.isLoggedIn = true;
         state.loading = false;
         state.error = null;
-        state.token = action.payload.token || null;
+        state.token = action.payload.data || null;
+        if (action.payload.data.token) {
+          // const encrytedToken=encryptData(action.payload.data.token);
+          setToken(action.payload.data.token)
+          // localStorage.setItem('token', action.payload.data.token); // Save token to local storage
+        }
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;

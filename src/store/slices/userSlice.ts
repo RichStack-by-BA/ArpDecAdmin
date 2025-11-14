@@ -1,6 +1,7 @@
 
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { setToken } from 'src/utils/encrypt-decrypt';
+import { getToken, setToken } from 'src/utils/encrypt-decrypt';
+import { API_URL } from 'src/constant';
 
 // Extend state to handle loading and error
 type UserState = {
@@ -8,7 +9,8 @@ type UserState = {
   isLoggedIn: boolean;
   loading: boolean;
   error: string | null;
-  token: string | null; 
+  token: string | null;
+  userDetails: any | null;
 };
 
 const initialState: UserState = {
@@ -17,6 +19,7 @@ const initialState: UserState = {
   loading: false,
   error: null,
   token: null,
+  userDetails: null,
 };
 
 // Async thunk for login API
@@ -27,7 +30,7 @@ export const loginUser = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const response = await fetch('https://13.60.253.221/api/v1/auth/login', {
+      const response = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -37,8 +40,34 @@ export const loginUser = createAsyncThunk(
         throw new Error(errorData.message || 'Login failed');
       }
       const data = await response.json();
-      console.log('LOGIN RESPONSE:', data); // <-- Add this line
       return data; // Adjust based on your API response
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const fetchUserDetails = createAsyncThunk(
+  'user/fetchUserDetails',
+  async (_, { rejectWithValue }) => {
+    try {
+      const token = getToken();
+      if (!token) {
+        return null
+      }
+      const response = await fetch(`${API_URL}/api/v1/auth/me`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to fetch user details');
+      }
+      const data = await response.json();
+      return data;
     } catch (error: any) {
       return rejectWithValue(error.message);
     }
@@ -77,7 +106,19 @@ const userSlice = createSlice({
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
-      });
+      })
+      .addCase(fetchUserDetails.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchUserDetails.fulfilled, (state, action) => {
+        state.loading = false;
+        state.userDetails = action.payload;
+      })
+      .addCase(fetchUserDetails.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
   },
 });
 

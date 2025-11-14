@@ -1,20 +1,25 @@
-import { useState, useCallback } from 'react';
+import type { RootState, AppDispatch } from 'src/store';
 
+import { useDispatch, useSelector } from 'react-redux';
+import { useState, useEffect, useCallback } from 'react';
 import Box from '@mui/material/Box';
+
 import Grid from '@mui/material/Grid';
+import Alert from '@mui/material/Alert';
+
 import Pagination from '@mui/material/Pagination';
 import Typography from '@mui/material/Typography';
-
-import { _products } from 'src/_mock';
+import CircularProgress from '@mui/material/CircularProgress';
 import { DashboardContent } from 'src/layouts/dashboard';
+
+import { fetchProducts } from 'src/store/slices/productSlice';
 
 import { ProductItem } from '../product-item';
 import { ProductSort } from '../product-sort';
+
 import { CartIcon } from '../product-cart-widget';
 import { ProductFilters } from '../product-filters';
-
 import type { FiltersProps } from '../product-filters';
-
 // ----------------------------------------------------------------------
 
 const GENDER_OPTIONS = [
@@ -57,12 +62,25 @@ const defaultFilters = {
   category: CATEGORY_OPTIONS[0].value,
 };
 
+const sortOptions = [
+  { value: 'featured', label: 'Featured' },
+  { value: 'newest', label: 'Newest' },
+  { value: 'priceDesc', label: 'Price: High-Low' },
+  { value: 'priceAsc', label: 'Price: Low-High' },
+];
+
+const minimumItemForPagination = 8
+
 export function ProductsView() {
+  const dispatch = useDispatch<AppDispatch>();
+  const { products, loading, error } = useSelector((state: RootState) => state.product);
   const [sortBy, setSortBy] = useState('featured');
-
   const [openFilter, setOpenFilter] = useState(false);
-
   const [filters, setFilters] = useState<FiltersProps>(defaultFilters);
+
+  useEffect(() => {
+    dispatch(fetchProducts());
+  }, [dispatch]);
 
   const handleOpenFilter = useCallback(() => {
     setOpenFilter(true);
@@ -84,6 +102,24 @@ export function ProductsView() {
     (key) => filters[key as keyof FiltersProps] !== defaultFilters[key as keyof FiltersProps]
   );
 
+  if (loading) {
+    return (
+      <DashboardContent>
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px' }}>
+          <CircularProgress />
+        </Box>
+      </DashboardContent>
+    );
+  }
+
+  if (error) {
+    return (
+      <DashboardContent>
+        <Alert severity="error">{error}</Alert>
+      </DashboardContent>
+    );
+  }
+
   return (
     <DashboardContent>
       <CartIcon totalItems={8} />
@@ -91,6 +127,7 @@ export function ProductsView() {
       <Typography variant="h4" sx={{ mb: 5 }}>
         Products
       </Typography>
+
       <Box
         sx={{
           mb: 5,
@@ -128,25 +165,29 @@ export function ProductsView() {
           <ProductSort
             sortBy={sortBy}
             onSort={handleSort}
-            options={[
-              { value: 'featured', label: 'Featured' },
-              { value: 'newest', label: 'Newest' },
-              { value: 'priceDesc', label: 'Price: High-Low' },
-              { value: 'priceAsc', label: 'Price: Low-High' },
-            ]}
+            options={sortOptions}
           />
         </Box>
       </Box>
 
-      <Grid container spacing={3}>
-        {_products.map((product) => (
-          <Grid key={product.id} size={{ xs: 12, sm: 6, md: 3 }}>
-            <ProductItem product={product} />
+      {products.length > 0 ? (
+        <>
+          <Grid container spacing={3}>
+            {products.map((product) => (
+              <Grid key={product.id} size={{ xs: 12, sm: 6, md: 3 }}>
+                <ProductItem product={product} />
+              </Grid>
+            ))}
           </Grid>
-        ))}
-      </Grid>
-
-      <Pagination count={10} color="primary" sx={{ mt: 8, mx: 'auto' }} />
+{products.length > minimumItemForPagination && (
+          <Pagination count={10} color="primary" sx={{ mt: 8, mx: 'auto' }} />
+)}
+        </>
+      ) : (
+        <Typography variant="body1" sx={{ textAlign: 'center', mt: 5 }}>
+          No products found
+        </Typography>
+      )}
     </DashboardContent>
   );
 }

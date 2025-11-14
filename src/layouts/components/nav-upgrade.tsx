@@ -11,7 +11,7 @@ export function NavUpgrade({ sx, ...other }: StackProps) {
     <Box
       sx={[
         {
-          mb: 2,
+          mb: 0,
           display: 'flex',
           textAlign: 'center',
           alignItems: 'center',
@@ -37,19 +37,19 @@ export function NavUpgrade({ sx, ...other }: StackProps) {
         More features?
       </Typography>
 
-      <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
+      <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0 }}>
         {`From only `}
-        <Box component="strong" sx={{ color: 'text.primary' }}>
+        {/* <Box component="strong" sx={{ color: 'text.primary' }}>
           $69
-        </Box>
+        </Box> */}
       </Typography>
 
-      <Box
+      {/* <Box
         component="img"
         alt="Minimal dashboard"
         src="/assets/illustrations/illustration-dashboard.webp"
-        sx={{ width: 200, my: 2 }}
-      />
+        sx={{ width: 200, my: 0 }}
+      /> */}
 
       <Button
         href="https://material-ui.com/store/items/minimal-dashboard/"
@@ -57,7 +57,7 @@ export function NavUpgrade({ sx, ...other }: StackProps) {
         variant="contained"
         color="inherit"
       >
-        Upgrade to Pro
+        AdminPanel
       </Button>
     </Box>
   );

@@ -2,13 +2,17 @@ import 'src/global.css';
 
 import { useEffect } from 'react';
 
+import { useDispatch } from 'react-redux';
+
 import Fab from '@mui/material/Fab';
 
 import { usePathname } from 'src/routes/hooks';
 
 import { ThemeProvider } from 'src/theme/theme-provider';
-
 import { Iconify } from 'src/components/iconify';
+import { getToken } from './utils/encrypt-decrypt';
+import { fetchUserDetails } from './store/slices/userSlice';
+import type { AppDispatch } from './store';
 
 // ----------------------------------------------------------------------
 
@@ -18,7 +22,14 @@ type AppProps = {
 
 export default function App({ children }: AppProps) {
   useScrollToTop();
+  const dispatch = useDispatch<AppDispatch>(); // Type your dispatch
 
+  useEffect(() => {
+    const token = getToken();
+    if (token) {
+      dispatch(fetchUserDetails());
+    }
+  }, [dispatch]);
   const githubButton = () => (
     <Fab
       size="medium"

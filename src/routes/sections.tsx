@@ -19,6 +19,7 @@ export const SignInPage = lazy(() => import('src/pages/sign-in'));
 export const ProductsPage = lazy(() => import('src/pages/products'));
 export const OrdersPage = lazy(() => import('src/pages/order'));
 export const CategoryPage = lazy(() => import('src/pages/category'));
+export const ProfilePage = lazy(() => import('src/pages/profile'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 
 const renderFallback = () => (
@@ -56,7 +57,7 @@ export const routesSection: RouteObject[] = [
       { path: 'products', element: <ProductsPage /> },
       { path: 'orders', element: <OrdersPage /> },
       { path: 'category', element: <CategoryPage/> },
-
+      { path: 'profile', element: <ProfilePage /> },
       { path: 'blog', element: <BlogPage /> },
     ],
   },

@@ -11,7 +11,10 @@ import { usePathname } from 'src/routes/hooks';
 import { ThemeProvider } from 'src/theme/theme-provider';
 import { Iconify } from 'src/components/iconify';
 import { getToken } from './utils/encrypt-decrypt';
+import { fetchOrders } from './store/slices/orderSlice';
 import { fetchUserDetails } from './store/slices/userSlice';
+import { fetchProducts } from './store/slices/productSlice';
+import { fetchCategories } from './store/slices/categorySlice';
 import type { AppDispatch } from './store';
 
 // ----------------------------------------------------------------------
@@ -28,6 +31,9 @@ export default function App({ children }: AppProps) {
     const token = getToken();
     if (token) {
       dispatch(fetchUserDetails());
+      dispatch(fetchProducts());
+      dispatch(fetchOrders());
+      dispatch(fetchCategories());
     }
   }, [dispatch]);
   const githubButton = () => (

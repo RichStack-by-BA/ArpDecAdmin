@@ -1,3 +1,7 @@
+import type { RootState } from 'src/store';
+
+import { useSelector } from 'react-redux';
+
 import { Label } from 'src/components/label';
 import { SvgColor } from 'src/components/svg-color';
 
@@ -12,60 +16,74 @@ export type NavItem = {
   info?: React.ReactNode;
 };
 
-export const navData = [
+export const useNavData = (): NavItem[] => {
+  const { products } = useSelector((state: RootState) => state.product);
+  const { orders } = useSelector((state: RootState) => state.order);
+  const { categories } = useSelector((state: RootState) => state.category);
+
+  const productCount = products?.length || 0;
+  const orderCount = orders?.length || 0;
+  const categoryCount = categories?.length || 0;
+
+  return [
+    {
+      title: 'Dashboard',
+      path: '/',
+      icon: icon('ic-analytics'),
+    },
+    {
+      title: 'Products',
+      path: '/products',
+      icon: icon('ic-cart'),
+      info: productCount > 0 ? (
+        <Label color="error" variant="inverted">
+          +{productCount}
+        </Label>
+      ) : undefined,
+    },
+    {
+      title: 'Orders',
+      path: '/orders',
+      icon: icon('ic-cart'),
+      info: orderCount > 0 ? (
+        <Label color="info" variant="inverted">
+          {orderCount}
+        </Label>
+      ) : undefined,
+    },
+    {
+      title: 'Categories',
+      path: '/category',
+      icon: icon('ic-cart'),
+      info: categoryCount > 0 ? (
+        <Label color="error" variant="inverted">
+          +{categoryCount}
+        </Label>
+      ) : undefined,
+    },
+  ];
+};
+
+// Static nav data for initial render (fallback)
+export const navData: NavItem[] = [
   {
     title: 'Dashboard',
     path: '/',
     icon: icon('ic-analytics'),
   },
-  // {
-  //   title: 'Users',
-  //   path: '/user',
-  //   icon: icon('ic-user'),
-  // },
   {
     title: 'Products',
     path: '/products',
     icon: icon('ic-cart'),
-    info: (
-      <Label color="error" variant="inverted">
-        +3
-      </Label>
-    ),
   },
   {
     title: 'Orders',
     path: '/orders',
     icon: icon('ic-cart'),
-    info: (
-      <Label color="info" variant="inverted">
-        All
-      </Label>
-    ),
   },
   {
     title: 'Categories',
     path: '/category',
     icon: icon('ic-cart'),
-    info: (
-      <Label color="error" variant="inverted">
-        +3
-      </Label>
-    ),
   },
-  // {
-  //   title: 'Blog',
-  //   path: '/blog',
-  //   icon: icon('ic-blog'),
-  // },
-  // {
-  //   title: 'Sign in',
-  //   path: '/sign-in',
-  //   icon: icon('ic-lock'),
-  // },
-  // {
-  //   title: 'Not found',
-  //   path: '/404',
-  //   icon: icon('ic-disabled'),
-  // },
 ];

@@ -44,7 +44,13 @@ const getToken = (): string | null => {
   const storedValue = localStorage.getItem(RAW_TOKEN_KEY);
   if (!storedValue) return null;
   const decrypted = decryptData(storedValue);
+  console.log("decrypted token:", decrypted);
   return typeof decrypted === "string" ? decrypted : null;
 };
 
-export { getToken, setToken, encryptData, decryptData };
+// 🗑️ Remove token from localStorage
+const removeToken = (): void => {
+  localStorage.removeItem(RAW_TOKEN_KEY);
+};
+
+export { getToken, setToken, removeToken, encryptData, decryptData };

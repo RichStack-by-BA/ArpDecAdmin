@@ -1,20 +1,24 @@
+import type { RootState } from 'src/store';
 import type { IconButtonProps } from '@mui/material/IconButton';
 
 import { useState, useCallback } from 'react';
 
+import { useDispatch, useSelector } from 'react-redux';
+
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
-import Popover from '@mui/material/Popover';
+import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
+import Popover from '@mui/material/Popover';
 import MenuList from '@mui/material/MenuList';
-import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
 import MenuItem, { menuItemClasses } from '@mui/material/MenuItem';
 
 import { useRouter, usePathname } from 'src/routes/hooks';
 
-import { _myAccount } from 'src/_mock';
+import { removeToken } from 'src/utils/encrypt-decrypt';
+import { logout } from 'src/store/slices/userSlice';
 
 // ----------------------------------------------------------------------
 
@@ -29,8 +33,13 @@ export type AccountPopoverProps = IconButtonProps & {
 
 export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps) {
   const router = useRouter();
-
   const pathname = usePathname();
+  const dispatch = useDispatch();
+  const { userDetails } = useSelector((state: RootState) => state.user);
+
+  const user = userDetails?.data || {};
+  const displayName = user.name || 'User';
+  const email = user.email || 'user@example.com';
 
   const [openPopover, setOpenPopover] = useState<HTMLButtonElement | null>(null);
 
@@ -50,6 +59,13 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
     [handleClosePopover, router]
   );
 
+  const handleLogout = useCallback(() => {
+    dispatch(logout());
+    removeToken();
+    handleClosePopover();
+    router.push('/sign-in');
+  }, [dispatch, handleClosePopover, router]);
+
   return (
     <>
       <IconButton
@@ -64,8 +80,8 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
         }}
         {...other}
       >
-        <Avatar src={_myAccount.photoURL} alt={_myAccount.displayName} sx={{ width: 1, height: 1 }}>
-          {_myAccount.displayName.charAt(0).toUpperCase()}
+        <Avatar src={user.photoURL} alt={displayName} sx={{ width: 1, height: 1 }}>
+          {displayName.charAt(0).toUpperCase()}
         </Avatar>
       </IconButton>
 
@@ -83,11 +99,11 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
       >
         <Box sx={{ p: 2, pb: 1.5 }}>
           <Typography variant="subtitle2" noWrap>
-            {_myAccount?.displayName}
+            {displayName}
           </Typography>
 
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {_myAccount?.email}
+            {email}
           </Typography>
         </Box>
 
@@ -129,7 +145,7 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
         <Divider sx={{ borderStyle: 'dashed' }} />
 
         <Box sx={{ p: 1 }}>
-          <Button fullWidth color="error" size="medium" variant="text">
+          <Button fullWidth color="error" size="medium" variant="text" onClick={handleLogout}>
             Logout
           </Button>
         </Box>

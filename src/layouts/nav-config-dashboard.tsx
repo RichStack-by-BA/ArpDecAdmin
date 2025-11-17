@@ -34,6 +34,16 @@ export const navData = [
     ),
   },
   {
+    title: 'Orders',
+    path: '/orders',
+    icon: icon('ic-cart'),
+    info: (
+      <Label color="info" variant="inverted">
+        All
+      </Label>
+    ),
+  },
+  {
     title: 'Categories',
     path: '/category',
     icon: icon('ic-cart'),

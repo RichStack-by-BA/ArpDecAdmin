@@ -37,8 +37,8 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
   const dispatch = useDispatch();
   const { userDetails } = useSelector((state: RootState) => state.user);
 
-  const user = userDetails?.data || {};
-  const displayName = user.name || 'User';
+  const user = userDetails?.user || {};
+  const displayName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'User';
   const email = user.email || 'user@example.com';
 
   const [openPopover, setOpenPopover] = useState<HTMLButtonElement | null>(null);

@@ -5,9 +5,19 @@ export interface Product {
   id: string;
   name: string;
   price: number;
+  discountPrice: number;
   coverUrl: string;
+  images: string[];
   colors: string[];
-  status: string;
+  status: boolean;
+  isActive: boolean;
+  stock: number;
+  categoryId: string;
+  categories: Array<{
+    _id: string;
+    name: string;
+    slug: string;
+  }>;
   priceSale: number | null;
 }
 
@@ -31,6 +41,18 @@ export const fetchProducts = createAsyncThunk(
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || 'Failed to fetch products');
+    }
+  }
+);
+
+export const addProduct = createAsyncThunk(
+  'product/addProduct',
+  async (productData: any, { rejectWithValue }) => {
+    try {
+      const response = await api.post('/product/add', productData);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to add product');
     }
   }
 );
@@ -59,14 +81,33 @@ const productSlice = createSlice({
               id: item._id,
               name: item.name,
               price: item.price,
+              discountPrice: item.discountPrice || 0,
               coverUrl: item.thumbnail || item.images?.[0] || '',
+              images: item.images || [],
               colors: item.colors || [],
-              status: item.discountPrice && item.discountPrice > 0 ? 'sale' : 'new',
+              status: item.isActive,
+              isActive: item.isActive,
+              stock: item.stock || 0,
+              categoryId: item.categories?.[0]?._id || '',
+              categories: item.categories || [],
               priceSale: item.discountPrice && item.discountPrice > 0 ? item.discountPrice : null,
             }))
           : [];
       })
       .addCase(fetchProducts.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(addProduct.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(addProduct.fulfilled, (state, action) => {
+        state.loading = false;
+        // Optionally add the new product to the list
+        // state.products.unshift(newProductFromResponse);
+      })
+      .addCase(addProduct.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

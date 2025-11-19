@@ -15,7 +15,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 
 import { useRouter } from 'src/routes/hooks';
 
-import { loginUser } from 'src/store/slices/userSlice';
+import { loginUser, fetchUserDetails } from 'src/store/slices/userSlice';
 
 import { Iconify } from 'src/components/iconify';
 
@@ -32,6 +32,8 @@ export function SignInView() {
   const handleSignIn = useCallback(async () => {
     const resultAction = await dispatch(loginUser({ email, password }));
     if (loginUser.fulfilled.match(resultAction)) {
+      // Fetch user details immediately after successful login
+      await dispatch(fetchUserDetails());
       router.push('/');
     }
     // Optionally handle error here

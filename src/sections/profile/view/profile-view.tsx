@@ -27,7 +27,7 @@ export function ProfileView() {
     );
   }
 
-  const user = userDetails?.data || {};
+  const user = userDetails?.user || {};
 
   return (
     <DashboardContent>
@@ -48,7 +48,7 @@ export function ProfileView() {
           >
             <Avatar
               src={user.photoURL}
-              alt={user.name || 'User'}
+              alt={`${user.firstName || ''} ${user.lastName || ''}`.trim() || 'User'}
               sx={{
                 width: 80,
                 height: 80,
@@ -56,11 +56,11 @@ export function ProfileView() {
                 bgcolor: 'primary.main',
               }}
             >
-              {user.name?.charAt(0)?.toUpperCase() || 'U'}
+              {user.firstName?.charAt(0)?.toUpperCase() || 'U'}
             </Avatar>
             <Box sx={{ flex: 1 }}>
               <Typography variant="h5" sx={{ mb: 0.5 }}>
-                {user.name || 'User Name'}
+                {`${user.firstName || ''} ${user.lastName || ''}`.trim() || 'User Name'}
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 {user.email || 'user@example.com'}
@@ -79,9 +79,16 @@ export function ProfileView() {
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
               <Box>
                 <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>
-                  Full Name
+                  First Name
                 </Typography>
-                <Typography variant="body1">{user.name || 'N/A'}</Typography>
+                <Typography variant="body1">{user.firstName || 'N/A'}</Typography>
+              </Box>
+
+              <Box>
+                <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>
+                  Last Name
+                </Typography>
+                <Typography variant="body1">{user.lastName || 'N/A'}</Typography>
               </Box>
 
               <Box>
@@ -137,14 +144,56 @@ export function ProfileView() {
                     px: 1.5,
                     py: 0.5,
                     borderRadius: 1,
-                    bgcolor: user.isActive ? 'success.main' : 'error.main',
+                    bgcolor: user.status === 'active' ? 'success.main' : 'error.main',
                     color: 'white',
                     fontWeight: 500,
                     fontSize: 12,
                     textTransform: 'uppercase',
                   }}
                 >
-                  {user.isActive ? 'Active' : 'Inactive'}
+                  {user.status || 'N/A'}
+                </Box>
+              </Box>
+
+              <Box>
+                <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>
+                  Email Verified
+                </Typography>
+                <Box
+                  sx={{
+                    display: 'inline-block',
+                    px: 1.5,
+                    py: 0.5,
+                    borderRadius: 1,
+                    bgcolor: user.isEmailVerified ? 'success.main' : 'warning.main',
+                    color: 'white',
+                    fontWeight: 500,
+                    fontSize: 12,
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  {user.isEmailVerified ? 'Verified' : 'Not Verified'}
+                </Box>
+              </Box>
+
+              <Box>
+                <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>
+                  Phone Verified
+                </Typography>
+                <Box
+                  sx={{
+                    display: 'inline-block',
+                    px: 1.5,
+                    py: 0.5,
+                    borderRadius: 1,
+                    bgcolor: user.isPhoneVerified ? 'success.main' : 'warning.main',
+                    color: 'white',
+                    fontWeight: 500,
+                    fontSize: 12,
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  {user.isPhoneVerified ? 'Verified' : 'Not Verified'}
                 </Box>
               </Box>
 

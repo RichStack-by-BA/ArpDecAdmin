@@ -55,7 +55,7 @@ export const fetchUserDetails = createAsyncThunk(
       if (!token) {
         return null
       }
-      const response = await fetch(`${API_URL}/api/v1/auth/me`, {
+      const response = await fetch(`${API_URL}/auth/me`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,

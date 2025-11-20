@@ -1,7 +1,6 @@
-
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { getToken, setToken } from 'src/utils/encrypt-decrypt';
-import { API_URL } from 'src/constant';
+import { api } from 'src/api';
 
 // Extend state to handle loading and error
 type UserState = {
@@ -30,19 +29,12 @@ export const loginUser = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const response = await fetch(`${API_URL}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Login failed');
-      }
-      const data = await response.json();
-      return data; // Adjust based on your API response
+      const response = await api.post('/auth/login', { email, password });
+      return response.data;
     } catch (error: any) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(
+        error.response?.data?.message || error.message || 'Login failed'
+      );
     }
   }
 );
@@ -53,23 +45,14 @@ export const fetchUserDetails = createAsyncThunk(
     try {
       const token = getToken();
       if (!token) {
-        return null
+        return null;
       }
-      const response = await fetch(`${API_URL}/auth/me`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to fetch user details');
-      }
-      const data = await response.json();
-      return data;
+      const response = await api.get('/auth/me');
+      return response.data;
     } catch (error: any) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(
+        error.response?.data?.message || error.message || 'Failed to fetch user details'
+      );
     }
   }
 );

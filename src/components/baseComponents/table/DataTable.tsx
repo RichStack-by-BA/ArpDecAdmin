@@ -29,7 +29,7 @@ export interface DataTableProps<T = any> {
   searchBar?: React.ReactNode;
   actionButton?: React.ReactNode;
   onRowClick?: (row: T) => void;
-  getRowKey: (row: T) => string | number;
+  getRowKey?: (row: T) => string | number;
   emptyMessage?: string;
   pagination?: boolean;
   page?: number;
@@ -50,7 +50,7 @@ export function DataTable<T = any>({
   searchBar,
   actionButton,
   onRowClick,
-  getRowKey,
+  getRowKey = (row: T) => (row as any).id || Math.random().toString(),
   emptyMessage = 'No data available',
   pagination = false,
   page = 0,

@@ -3,6 +3,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import userReducer from './slices/userSlice'; // example slice
 import authReducer from './slices/authSlice';
 import orderReducer from './slices/orderSlice';
+import uploadReducer from './slices/uploadSlice';
 import productReducer from './slices/productSlice';
 import categoryReducer from './slices/categorySlice';
 
@@ -13,6 +14,7 @@ export const store = configureStore({
     product: productReducer,
     order: orderReducer,
     category: categoryReducer,
+    upload: uploadReducer,
     // add more slices here
   },
 });

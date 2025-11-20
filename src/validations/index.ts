@@ -1,8 +1,10 @@
 export { categorySchema } from './categoryValidation';
 // Central export for all validation schemas
 export { addProductSchema } from './productValidation';
+export { policySchema } from './policyValidation';
 
 export type { CategoryFormData } from './categoryValidation';
+export type { PolicyFormData } from './policyValidation';
 export type { AddProductFormData } from './productValidation';
 
 // Add more validation schemas here as you create them

@@ -4,6 +4,7 @@ import userReducer from './slices/userSlice'; // example slice
 import authReducer from './slices/authSlice';
 import orderReducer from './slices/orderSlice';
 import uploadReducer from './slices/uploadSlice';
+import policyReducer from './slices/policySlice';
 import productReducer from './slices/productSlice';
 import categoryReducer from './slices/categorySlice';
 
@@ -15,6 +16,7 @@ export const store = configureStore({
     order: orderReducer,
     category: categoryReducer,
     upload: uploadReducer,
+    policy: policyReducer,
     // add more slices here
   },
 });

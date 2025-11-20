@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { useDispatch, useSelector } from 'react-redux';
 
+import { VIEW_ICONS } from 'src/constant';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { fetchCategories } from 'src/store/slices/categorySlice';
 import { Iconify } from 'src/components/iconify';
@@ -223,7 +224,7 @@ export function CategoryView() {
                 onClick={() => setView('table')}
                 sx={{ minWidth: 'auto', px: 2 }}
               >
-                <Iconify icon="solar:list-bold" />
+                <Iconify icon={VIEW_ICONS.TABLE} />
               </BaseButton>
               <BaseButton
                 variant={view === 'grid' ? 'contained' : 'outlined'}
@@ -231,7 +232,7 @@ export function CategoryView() {
                 onClick={() => setView('grid')}
                 sx={{ minWidth: 'auto', px: 2 }}
               >
-                <Iconify icon="solar:widget-bold" />
+                <Iconify icon={VIEW_ICONS.GRID} />
               </BaseButton>
             </BaseBox>
           </BaseBox>

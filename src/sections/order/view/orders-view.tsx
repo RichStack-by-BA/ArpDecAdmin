@@ -3,10 +3,11 @@ import type { Order } from 'src/store/slices/orderSlice';
 import type { Column } from 'src/components/baseComponents/table';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+
+import { VIEW_ICONS } from 'src/constant';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Grid from '@mui/material/Grid';
-import Alert from '@mui/material/Alert';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -19,14 +20,21 @@ import Typography from '@mui/material/Typography';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import InputAdornment from '@mui/material/InputAdornment';
-import CircularProgress from '@mui/material/CircularProgress';
 
 import { DashboardContent } from 'src/layouts/dashboard';
 import { fetchOrders } from 'src/store/slices/orderSlice';
 import { Iconify } from 'src/components/iconify';
-import { DataTable } from 'src/components/baseComponents/table';
-import { BaseTextField } from 'src/components/baseComponents/BaseTextField';
+import {
+  BaseBox,
+  BaseCard,
+  BaseAlert,
+  DataTable,
+  BaseButton,
+  BaseTextField,
+  BaseTypography,
+  BaseIconButton,
+  BaseCircularProgress,
+} from 'src/components/baseComponents';
 
 type OrderRow = {
   id: string;
@@ -150,72 +158,28 @@ export function OrdersView() {
     },
     {
       id: 'action',
-      label: 'Action',
-      align: 'left',
+      label: 'Actions',
+      align: 'center',
       format: (value, row) => (
-        <Typography 
-          variant="body2" 
-          color="primary" 
-          sx={{ cursor: 'pointer', fontWeight: 500 }}
-          onClick={() => handleOpenDetails(row.originalOrder)}
-        >
-          Details
-        </Typography>
+        <BaseBox sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
+          <BaseIconButton
+            size="small"
+            color="primary"
+            onClick={() => handleOpenDetails(row.originalOrder)}
+          >
+            <Iconify icon="solar:eye-bold" />
+          </BaseIconButton>
+        </BaseBox>
       ),
     },
   ];
 
-  const searchBar = (
-    <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
-      <BaseTextField
-        placeholder="Search by product, order ID, customer, amount, status..."
-        size="small"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <Iconify icon="eva:search-fill" width={20} />
-            </InputAdornment>
-          ),
-        }}
-        sx={{ flexGrow: 1, minWidth: 300 }}
-      />
-      <Box sx={{ display: 'flex', gap: 1 }}>
-        <Box
-          onClick={() => setView('table')}
-          sx={{
-            p: 1,
-            cursor: 'pointer',
-            borderRadius: 1,
-            bgcolor: view === 'table' ? 'action.selected' : 'transparent',
-            '&:hover': { bgcolor: 'action.hover' },
-          }}
-        >
-          <Iconify icon="ic:round-filter-list" width={24} />
-        </Box>
-        <Box
-          onClick={() => setView('grid')}
-          sx={{
-            p: 1,
-            cursor: 'pointer',
-            borderRadius: 1,
-            bgcolor: view === 'grid' ? 'action.selected' : 'transparent',
-            '&:hover': { bgcolor: 'action.hover' },
-          }}
-        >
-          <Iconify icon="solar:home-angle-bold-duotone" width={24} />
-        </Box>
-      </Box>
-    </Box>
-  );
-
   if (loading) {
     return (
       <DashboardContent>
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px' }}>
-          <CircularProgress />
-        </Box>
+        <BaseBox sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px' }}>
+          <BaseCircularProgress />
+        </BaseBox>
       </DashboardContent>
     );
   }
@@ -223,19 +187,18 @@ export function OrdersView() {
   if (error) {
     return (
       <DashboardContent>
-        <Alert severity="error">{error}</Alert>
+        <BaseAlert severity="error">{error}</BaseAlert>
       </DashboardContent>
     );
   }
 
   return (
     <DashboardContent>
-      <Typography variant="h4" sx={{ mb: 2 }}>
-        Orders List
-      </Typography>
-      <Typography variant="body2" sx={{ mb: 3, color: 'text.secondary' }}>
-        Here you can find all of your Orders
-      </Typography>
+      <BaseBox sx={{ display: 'flex', alignItems: 'center', mb: 5 }}>
+        <BaseTypography variant="h4" sx={{ flexGrow: 1 }}>
+          Orders
+        </BaseTypography>
+      </BaseBox>
 
       {/* Statistics Cards */}
       <Grid container spacing={3} sx={{ mb: 3 }}>
@@ -356,86 +319,118 @@ export function OrdersView() {
         </Grid>
       </Grid>
 
-      <DataTable
-        columns={columns}
-        rows={filteredRows}
-        getRowKey={(row) => row.id}
-        searchBar={searchBar}
-        emptyMessage="No orders found"
-        view={view}
-        gridItemSize={{ xs: 12, sm: 6, md: 4 }}
-        renderGridItem={(row) => (
-          <Box
-            sx={{
-              p: 2.5,
-              border: '1px solid',
-              borderColor: 'divider',
-              borderRadius: 2,
-              height: '100%',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 1.5,
-            }}
-          >
-            <Typography 
-              variant="subtitle2" 
-              sx={{ 
-                mb: 0,
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
+      <BaseCard>
+        <BaseBox sx={{ p: 3, pb: 0 }}>
+          <BaseBox sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+            <BaseTextField
+              fullWidth
+              placeholder="Search orders..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <BaseBox sx={{ mr: 1, display: 'flex', alignItems: 'center' }}>
+                    <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+                  </BaseBox>
+                ),
               }}
-              title={row.productName}
-            >
-              {row.productName}
-            </Typography>
-            <Typography 
-              variant="body2" 
-              color="text.secondary" 
-              sx={{ 
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-              }}
-              title={`#${row.orderId}`}
-            >
-              #{row.orderId}
-            </Typography>
-            <Typography 
-              variant="body2" 
-              color="text.secondary" 
-              sx={{ 
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-              }}
-              title={row.customerEmail}
-            >
-              {row.customerEmail}
-            </Typography>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 'auto' }}>
-              <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                ₹{row.amount}
-              </Typography>
-              <Box
-                sx={{
-                  display: 'inline-block',
-                  px: 1.5,
-                  py: 0.5,
-                  borderRadius: 1,
-                  bgcolor: getStatusColor(row.status),
-                  color: 'white',
-                  fontWeight: 500,
-                  fontSize: 12,
-                  textTransform: 'uppercase',
-                }}
+            />
+
+            <BaseBox sx={{ display: 'flex', gap: 1 }}>
+              <BaseButton
+                variant={view === 'table' ? 'contained' : 'outlined'}
+                color="inherit"
+                onClick={() => setView('table')}
+                sx={{ minWidth: 'auto', px: 2 }}
               >
-                {row.status}
-              </Box>
-            </Box>
-          </Box>
+                <Iconify icon={VIEW_ICONS.TABLE} />
+              </BaseButton>
+              <BaseButton
+                variant={view === 'grid' ? 'contained' : 'outlined'}
+                color="inherit"
+                onClick={() => setView('grid')}
+                sx={{ minWidth: 'auto', px: 2 }}
+              >
+                <Iconify icon={VIEW_ICONS.GRID} />
+              </BaseButton>
+            </BaseBox>
+          </BaseBox>
+        </BaseBox>
+
+        {view === 'table' ? (
+          <DataTable columns={columns} rows={filteredRows} />
+        ) : (
+          <BaseBox sx={{ p: 3 }}>
+            <BaseBox
+              sx={{
+                display: 'grid',
+                gap: 3,
+                gridTemplateColumns: {
+                  xs: 'repeat(1, 1fr)',
+                  sm: 'repeat(2, 1fr)',
+                  md: 'repeat(3, 1fr)',
+                },
+              }}
+            >
+              {filteredRows.map((row) => (
+                <BaseCard key={row.id} sx={{ overflow: 'hidden', '&:hover': { boxShadow: 3 }, transition: 'box-shadow 0.3s', cursor: 'pointer' }} onClick={() => handleOpenDetails(row.originalOrder)}>
+                  <BaseBox sx={{ p: 2 }}>
+                    <BaseTypography variant="h6" sx={{ mb: 1 }}>
+                      #{row.orderId}
+                    </BaseTypography>
+                    <BaseTypography 
+                      variant="body2" 
+                      color="text.secondary" 
+                      sx={{ 
+                        mb: 1,
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}
+                      title={row.productName}
+                    >
+                      {row.productName}
+                    </BaseTypography>
+                    <BaseTypography 
+                      variant="body2" 
+                      color="text.secondary" 
+                      sx={{ 
+                        mb: 2,
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}
+                      title={row.customerEmail}
+                    >
+                      {row.customerEmail}
+                    </BaseTypography>
+                    <BaseBox sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
+                      <BaseTypography variant="h6" color="primary">
+                        ₹{row.amount}
+                      </BaseTypography>
+                      <BaseBox
+                        sx={{
+                          px: 1.5,
+                          py: 0.5,
+                          borderRadius: 0.75,
+                          display: 'inline-flex',
+                          bgcolor: getStatusColor(row.status),
+                          color: 'white',
+                          fontWeight: 600,
+                          fontSize: '0.75rem',
+                          textTransform: 'uppercase',
+                        }}
+                      >
+                        {row.status}
+                      </BaseBox>
+                    </BaseBox>
+                  </BaseBox>
+                </BaseCard>
+              ))}
+            </BaseBox>
+          </BaseBox>
         )}
-      />
+      </BaseCard>
 
       {/* Order Details Dialog */}
       <Dialog 

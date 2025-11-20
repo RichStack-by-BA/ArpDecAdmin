@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { useRouter } from 'src/routes/hooks';
 
+import { VIEW_ICONS } from 'src/constant';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { fetchProducts } from 'src/store/slices/productSlice';
 import { Iconify } from 'src/components/iconify';
@@ -138,63 +139,6 @@ export function ProductsView() {
     },
   ];
 
-  const searchBar = (
-    <BaseBox sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
-      <BaseTextField
-        placeholder="Search by name, category, price, stock, status..."
-        size="small"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        slotProps={{
-          input: {
-            startAdornment: (
-              <Iconify icon="eva:search-fill" width={20} sx={{ mr: 1 }} />
-            ),
-          },
-        }}
-        sx={{ flexGrow: 1, minWidth: 300 }}
-      />
-      <BaseBox sx={{ display: 'flex', gap: 1 }}>
-        <BaseBox
-          onClick={() => setView('table')}
-          sx={{
-            p: 1,
-            cursor: 'pointer',
-            borderRadius: 1,
-            bgcolor: view === 'table' ? 'primary.main' : 'transparent',
-            color: view === 'table' ? 'white' : 'text.primary',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            '&:hover': {
-              bgcolor: view === 'table' ? 'primary.dark' : 'action.hover',
-            },
-          }}
-        >
-          <Iconify icon="ic:round-filter-list" width={24} />
-        </BaseBox>
-        <BaseBox
-          onClick={() => setView('grid')}
-          sx={{
-            p: 1,
-            cursor: 'pointer',
-            borderRadius: 1,
-            bgcolor: view === 'grid' ? 'primary.main' : 'transparent',
-            color: view === 'grid' ? 'white' : 'text.primary',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            '&:hover': {
-              bgcolor: view === 'grid' ? 'primary.dark' : 'action.hover',
-            },
-          }}
-        >
-          <Iconify icon="solar:home-angle-bold-duotone" width={24} />
-        </BaseBox>
-      </BaseBox>
-    </BaseBox>
-  );
-
   if (loading) {
     return (
       <DashboardContent>
@@ -215,15 +159,13 @@ export function ProductsView() {
 
   return (
     <DashboardContent>
-      <BaseBox sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-        <BaseBox>
-          <BaseTypography variant="h4">Products List</BaseTypography>
-          <BaseTypography variant="body2" sx={{ mt: 1, color: 'text.secondary' }}>
-            Here you can find all of your Products
-          </BaseTypography>
-        </BaseBox>
+      <BaseBox sx={{ display: 'flex', alignItems: 'center', mb: 5 }}>
+        <BaseTypography variant="h4" sx={{ flexGrow: 1 }}>
+          Products
+        </BaseTypography>
         <BaseButton
           variant="contained"
+          color="inherit"
           startIcon={<Iconify icon="mingcute:add-line" />}
           onClick={() => router.push('/products/add')}
         >
@@ -231,85 +173,118 @@ export function ProductsView() {
         </BaseButton>
       </BaseBox>
 
-      <DataTable
-        columns={columns}
-        rows={filteredRows}
-        getRowKey={(row) => row.id}
-        searchBar={searchBar}
-        emptyMessage="No products found"
-        view={view}
-        gridItemSize={{ xs: 12, sm: 6, md: 3 }}
-        renderGridItem={(row) => (
-          <BaseCard
-            sx={{
-              p: 2,
-              height: '100%',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 1.5,
-            }}
-          >
-            <BaseBox
-              component="img"
-              src={row.image as string}
-              alt={row.name}
-              sx={{
-                width: '100%',
-                height: 200,
-                borderRadius: 1.5,
-                objectFit: 'cover',
-                mb: 1,
+      <BaseCard>
+        <BaseBox sx={{ p: 3, pb: 0 }}>
+          <BaseBox sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+            <BaseTextField
+              fullWidth
+              placeholder="Search products..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <BaseBox sx={{ mr: 1, display: 'flex', alignItems: 'center' }}>
+                    <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+                  </BaseBox>
+                ),
               }}
             />
-            <BaseTypography
-              variant="subtitle2"
-              sx={{
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-              }}
-              title={row.name}
-            >
-              {row.name}
-            </BaseTypography>
-            <BaseTypography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-              }}
-              title={row.category}
-            >
-              {row.category}
-            </BaseTypography>
-            <BaseBox sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 'auto' }}>
-              <BaseTypography variant="h6" color="primary">
-                ₹{row.price}
-              </BaseTypography>
-              <BaseBox
-                sx={{
-                  display: 'inline-block',
-                  px: 1.5,
-                  py: 0.5,
-                  borderRadius: 1,
-                  bgcolor: row.status === 'Active' ? '#22c55e' : '#ef4444',
-                  color: 'white',
-                  fontWeight: 500,
-                  fontSize: 12,
-                  textTransform: 'uppercase',
-                }}
+
+            <BaseBox sx={{ display: 'flex', gap: 1 }}>
+              <BaseButton
+                variant={view === 'table' ? 'contained' : 'outlined'}
+                color="inherit"
+                onClick={() => setView('table')}
+                sx={{ minWidth: 'auto', px: 2 }}
               >
-                {row.status}
-              </BaseBox>
+                <Iconify icon={VIEW_ICONS.TABLE} />
+              </BaseButton>
+              <BaseButton
+                variant={view === 'grid' ? 'contained' : 'outlined'}
+                color="inherit"
+                onClick={() => setView('grid')}
+                sx={{ minWidth: 'auto', px: 2 }}
+              >
+                <Iconify icon={VIEW_ICONS.GRID} />
+              </BaseButton>
             </BaseBox>
-            <BaseTypography variant="caption" color="text.secondary">
-              Stock: {row.stock}
-            </BaseTypography>
-          </BaseCard>
+          </BaseBox>
+        </BaseBox>
+
+        {view === 'table' ? (
+          <DataTable columns={columns} rows={filteredRows} />
+        ) : (
+          <BaseBox sx={{ p: 3 }}>
+            <BaseBox
+              sx={{
+                display: 'grid',
+                gap: 3,
+                gridTemplateColumns: {
+                  xs: 'repeat(1, 1fr)',
+                  sm: 'repeat(2, 1fr)',
+                  md: 'repeat(3, 1fr)',
+                  lg: 'repeat(4, 1fr)',
+                },
+              }}
+            >
+              {filteredRows.map((row) => (
+                <BaseCard key={row.id} sx={{ overflow: 'hidden', '&:hover': { boxShadow: 3 }, transition: 'box-shadow 0.3s' }}>
+                  <BaseBox
+                    sx={{
+                      position: 'relative',
+                      width: '100%',
+                      height: 200,
+                      bgcolor: 'background.neutral',
+                      overflow: 'hidden',
+                    }}
+                  >
+                    <BaseBox
+                      component="img"
+                      src={row.image as string}
+                      alt={row.name}
+                      sx={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                      }}
+                      onError={(e: any) => {
+                        e.target.style.display = 'none';
+                      }}
+                    />
+                  </BaseBox>
+                  <BaseBox sx={{ p: 2 }}>
+                    <BaseTypography variant="h6" sx={{ mb: 1 }}>
+                      {row.name}
+                    </BaseTypography>
+                    <BaseTypography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                      {row.category}
+                    </BaseTypography>
+                    <BaseBox sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
+                      <BaseTypography variant="h6" color="primary">
+                        ₹{row.price}
+                      </BaseTypography>
+                      <BaseBox
+                        sx={{
+                          px: 1.5,
+                          py: 0.5,
+                          borderRadius: 0.75,
+                          display: 'inline-flex',
+                          bgcolor: row.status === 'Active' ? 'success.lighter' : 'error.lighter',
+                          color: row.status === 'Active' ? 'success.dark' : 'error.dark',
+                          fontWeight: 600,
+                          fontSize: '0.75rem',
+                        }}
+                      >
+                        {row.status}
+                      </BaseBox>
+                    </BaseBox>
+                  </BaseBox>
+                </BaseCard>
+              ))}
+            </BaseBox>
+          </BaseBox>
         )}
-      />
+      </BaseCard>
     </DashboardContent>
   );
 }

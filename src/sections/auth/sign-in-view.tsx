@@ -59,7 +59,12 @@ export function SignInView() {
         }}
       />
 
-      <Link variant="body2" color="inherit" sx={{ mb: 1.5 }}>
+      <Link 
+        variant="body2" 
+        color="inherit" 
+        sx={{ mb: 1.5, cursor: 'pointer' }}
+        onClick={() => router.push('/forgot-password')}
+      >
         Forgot password?
       </Link>
 
@@ -101,6 +106,15 @@ export function SignInView() {
           {error}
         </Typography>
       )}
+      <Box sx={{ mt: 2, textAlign: 'center' }}>
+        <Link
+          variant="subtitle2"
+          sx={{ cursor: 'pointer' }}
+          onClick={() => router.push('/need-help')}
+        >
+          Need Help?
+        </Link>
+      </Box>
     </Box>
   );
 

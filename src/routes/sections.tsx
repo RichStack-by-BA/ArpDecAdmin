@@ -16,6 +16,9 @@ export const DashboardPage = lazy(() => import('src/pages/dashboard'));
 export const BlogPage = lazy(() => import('src/pages/blog'));
 export const UserPage = lazy(() => import('src/pages/user'));
 export const SignInPage = lazy(() => import('src/pages/sign-in'));
+export const ForgotPasswordPage = lazy(() => import('src/pages/forgot-password'));
+export const ResetPasswordPage = lazy(() => import('src/pages/reset-password'));
+export const NeedHelpPage = lazy(() => import('src/pages/need-help'));
 export const ProductsPage = lazy(() => import('src/pages/products'));
 export const AddProductPage = lazy(() => import('src/pages/product-add'));
 export const OrdersPage = lazy(() => import('src/pages/order'));
@@ -81,6 +84,30 @@ export const routesSection: RouteObject[] = [
     element: (
       <AuthLayout>
         <SignInPage />
+      </AuthLayout>
+    ),
+  },
+  {
+    path: 'forgot-password',
+    element: (
+      <AuthLayout>
+        <ForgotPasswordPage />
+      </AuthLayout>
+    ),
+  },
+  {
+    path: 'reset-password',
+    element: (
+      <AuthLayout>
+        <ResetPasswordPage />
+      </AuthLayout>
+    ),
+  },
+  {
+    path: 'need-help',
+    element: (
+      <AuthLayout>
+        <NeedHelpPage />
       </AuthLayout>
     ),
   },

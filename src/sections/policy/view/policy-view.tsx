@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { useDispatch, useSelector } from 'react-redux';
 
-import { VIEW_ICONS } from 'src/constant';
+import { PAGE_LIMIT, VIEW_ICONS } from 'src/constant';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { fetchPolicies } from 'src/store/slices/policySlice';
 import { Iconify } from 'src/components/iconify';
@@ -20,6 +20,7 @@ import {
   BaseDialog,
   BaseTextField,
   BaseTypography,
+  BasePagination,
   BaseIconButton,
   BaseCircularProgress,
 } from 'src/components/baseComponents';
@@ -38,16 +39,21 @@ type PolicyRow = {
 export function PolicyView() {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
-  const { policies, loading, error } = useSelector((state: RootState) => state.policy);
+  const { policies, loading, error, totalCount } = useSelector((state: RootState) => state.policy);
 
   const [search, setSearch] = useState('');
   const [view, setView] = useState<'table' | 'grid'>('table');
   const [selectedPolicy, setSelectedPolicy] = useState<Policy | null>(null);
   const [openModal, setOpenModal] = useState(false);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
-    dispatch(fetchPolicies());
-  }, [dispatch]);
+    dispatch(fetchPolicies({ page, limit: PAGE_LIMIT }));
+  }, [dispatch, page]);
+
+  const handlePageChange = (_event: React.ChangeEvent<unknown>, value: number) => {
+    setPage(value);
+  };
 
   const handleViewPolicy = (policy: Policy) => {
     setSelectedPolicy(policy);
@@ -316,6 +322,19 @@ export function PolicyView() {
                 </BaseCard>
               ))}
             </BaseBox>
+          </BaseBox>
+        )}
+
+        {/* Pagination */}
+        {totalCount > PAGE_LIMIT && (
+          <BaseBox sx={{ display: 'flex', justifyContent: 'center', p: 3, pt: 2 }}>
+            <BasePagination
+              count={Math.ceil(totalCount / PAGE_LIMIT)}
+              page={page}
+              onChange={handlePageChange}
+              color="primary"
+              shape="rounded"
+            />
           </BaseBox>
         )}
       </BaseCard>

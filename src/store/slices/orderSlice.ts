@@ -36,20 +36,25 @@ interface OrderState {
   orders: Order[];
   loading: boolean;
   error: string | null;
+  totalCount: number;
+  currentPage: number;
 }
 
 const initialState: OrderState = {
   orders: [],
   loading: false,
   error: null,
+  totalCount: 0,
+  currentPage: 1,
 };
 
 export const fetchOrders = createAsyncThunk(
   'order/fetchOrders',
-  async (_, { rejectWithValue }) => {
+  async (params: { page?: number; limit?: number } = {}, { rejectWithValue }) => {
     try {
-      const response = await api.get('/order/all');
-      return response.data;
+      const { page = 1, limit = 8 } = params;
+      const response = await api.get(`/order/all?page=${page}&limit=${limit}`);
+      return { ...response.data, page };
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || 'Failed to fetch orders');
     }
@@ -89,6 +94,8 @@ const orderSlice = createSlice({
               updatedAt: item.updatedAt,
             }))
           : [];
+        state.totalCount = action.payload.data?.count || 0;
+        state.currentPage = action.payload.page || 1;
       })
       .addCase(fetchOrders.rejected, (state, action) => {
         state.loading = false;

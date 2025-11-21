@@ -1,7 +1,7 @@
-import type { RootState, AppDispatch } from 'src/store';
 import type { PolicyFormData } from 'src/validations';
+import type { RootState, AppDispatch } from 'src/store';
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm, Controller } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
@@ -10,9 +10,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { policySchema } from 'src/validations';
 import { DashboardContent } from 'src/layouts/dashboard';
 import {
-  clearMessages,
   createPolicy,
   updatePolicy,
+  clearMessages,
   fetchPolicyById,
 } from 'src/store/slices/policySlice';
 import { Iconify } from 'src/components/iconify';

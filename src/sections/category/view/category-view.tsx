@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { useDispatch, useSelector } from 'react-redux';
 
-import { VIEW_ICONS } from 'src/constant';
+import { PAGE_LIMIT, VIEW_ICONS } from 'src/constant';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { fetchCategories } from 'src/store/slices/categorySlice';
 import { Iconify } from 'src/components/iconify';
@@ -20,6 +20,7 @@ import {
   BaseDialog,
   BaseTextField,
   BaseTypography,
+  BasePagination,
   BaseIconButton,
   BaseCircularProgress,
 } from 'src/components/baseComponents';
@@ -39,16 +40,21 @@ type CategoryRow = {
 export function CategoryView() {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
-  const { categories, loading, error } = useSelector((state: RootState) => state.category);
+  const { categories, loading, error, totalCount, currentPage } = useSelector((state: RootState) => state.category);
 
   const [search, setSearch] = useState('');
   const [view, setView] = useState<'table' | 'grid'>('table');
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [openModal, setOpenModal] = useState(false);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
-    dispatch(fetchCategories());
-  }, [dispatch]);
+    dispatch(fetchCategories({ page, limit: PAGE_LIMIT }));
+  }, [dispatch, page]);
+
+  const handlePageChange = (_event: React.ChangeEvent<unknown>, value: number) => {
+    setPage(value);
+  };
 
   const handleViewCategory = (category: Category) => {
     setSelectedCategory(category);
@@ -325,6 +331,19 @@ export function CategoryView() {
                 </BaseCard>
               ))}
             </BaseBox>
+          </BaseBox>
+        )}
+
+        {/* Pagination */}
+        {totalCount > PAGE_LIMIT && (
+          <BaseBox sx={{ display: 'flex', justifyContent: 'center', p: 3, pt: 2 }}>
+            <BasePagination
+              count={Math.ceil(totalCount / PAGE_LIMIT)}
+              page={page}
+              onChange={handlePageChange}
+              color="primary"
+              shape="rounded"
+            />
           </BaseBox>
         )}
       </BaseCard>

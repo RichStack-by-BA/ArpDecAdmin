@@ -14,6 +14,7 @@ export { BaseTextField } from './BaseTextField';
 export { BaseIconButton } from './BaseIconButton';
 export { BaseInputLabel } from './BaseInputLabel';
 export { BaseTypography } from './BaseTypography';
+export { BasePagination } from './BasePagination';
 export { BaseFormControl } from './BaseFormControl';
 export { BaseRichTextEditor } from './BaseRichTextEditor';
 export { BaseCircularProgress } from './BaseCircularProgress';

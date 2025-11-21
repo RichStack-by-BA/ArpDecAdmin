@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { useRouter } from 'src/routes/hooks';
 
-import { VIEW_ICONS } from 'src/constant';
+import { PAGE_LIMIT, VIEW_ICONS } from 'src/constant';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { fetchProducts } from 'src/store/slices/productSlice';
 import { Iconify } from 'src/components/iconify';
@@ -20,6 +20,7 @@ import {
   BaseButton,
   BaseTextField,
   BaseTypography,
+  BasePagination,
   BaseCircularProgress,
 } from 'src/components/baseComponents';
 // ----------------------------------------------------------------------
@@ -38,14 +39,19 @@ type ProductRow = {
 export function ProductsView() {
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
-  const { products, loading, error } = useSelector((state: RootState) => state.product);
+  const { products, loading, error, totalCount } = useSelector((state: RootState) => state.product);
 
   const [search, setSearch] = useState('');
   const [view, setView] = useState<'table' | 'grid'>('grid');
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
-    dispatch(fetchProducts());
-  }, [dispatch]);
+    dispatch(fetchProducts({ page, limit: PAGE_LIMIT }));
+  }, [dispatch, page]);
+
+  const handlePageChange = (_event: React.ChangeEvent<unknown>, value: number) => {
+    setPage(value);
+  };
 
   // Transform products into rows for the table
   const tableRows: ProductRow[] = products.map((product) => ({
@@ -282,6 +288,19 @@ export function ProductsView() {
                 </BaseCard>
               ))}
             </BaseBox>
+          </BaseBox>
+        )}
+
+        {/* Pagination */}
+        {totalCount > PAGE_LIMIT && (
+          <BaseBox sx={{ display: 'flex', justifyContent: 'center', p: 3, pt: 2 }}>
+            <BasePagination
+              count={Math.ceil(totalCount / PAGE_LIMIT)}
+              page={page}
+              onChange={handlePageChange}
+              color="primary"
+              shape="rounded"
+            />
           </BaseBox>
         )}
       </BaseCard>

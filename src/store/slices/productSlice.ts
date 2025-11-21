@@ -25,20 +25,25 @@ interface ProductState {
   products: Product[];
   loading: boolean;
   error: string | null;
+  totalCount: number;
+  currentPage: number;
 }
 
 const initialState: ProductState = {
   products: [],
   loading: false,
   error: null,
+  totalCount: 0,
+  currentPage: 1,
 };
 
 export const fetchProducts = createAsyncThunk(
   'product/fetchProducts',
-  async (_, { rejectWithValue }) => {
+  async (params: { page?: number; limit?: number } = {}, { rejectWithValue }) => {
     try {
-      const response = await api.get('/product/all');
-      return response.data;
+      const { page = 1, limit = 8 } = params;
+      const response = await api.get(`/product/all?page=${page}&limit=${limit}`);
+      return { ...response.data, page };
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || 'Failed to fetch products');
     }
@@ -93,6 +98,8 @@ const productSlice = createSlice({
               priceSale: item.discountPrice && item.discountPrice > 0 ? item.discountPrice : null,
             }))
           : [];
+        state.totalCount = action.payload.data?.count || 0;
+        state.currentPage = action.payload.page || 1;
       })
       .addCase(fetchProducts.rejected, (state, action) => {
         state.loading = false;

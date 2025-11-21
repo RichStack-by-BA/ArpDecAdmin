@@ -17,6 +17,8 @@ interface PolicyState {
   loading: boolean;
   error: string | null;
   successMessage: string | null;
+  totalCount: number;
+  currentPage: number;
 }
 
 const initialState: PolicyState = {
@@ -25,14 +27,17 @@ const initialState: PolicyState = {
   loading: false,
   error: null,
   successMessage: null,
+  totalCount: 0,
+  currentPage: 1,
 };
 
 export const fetchPolicies = createAsyncThunk(
   'policy/fetchPolicies',
-  async (_, { rejectWithValue }) => {
+  async (params: { page?: number; limit?: number } = {}, { rejectWithValue }) => {
     try {
-      const response = await api.get('/policy/all');
-      return response.data;
+      const { page = 1, limit = 8 } = params;
+      const response = await api.get(`/policy/all?page=${page}&limit=${limit}`);
+      return { ...response.data, page };
     } catch (error: any) {
       return rejectWithValue(
         error.response?.data?.message || 'Failed to fetch policies'
@@ -139,6 +144,8 @@ const policySlice = createSlice({
               updatedAt: item.updatedAt,
             }))
           : [];
+        state.totalCount = action.payload.data?.count || 0;
+        state.currentPage = action.payload.page || 1;
       })
       .addCase(fetchPolicies.rejected, (state, action) => {
         state.loading = false;

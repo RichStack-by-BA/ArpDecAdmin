@@ -19,7 +19,7 @@ import Typography from '@mui/material/Typography';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import { VIEW_ICONS } from 'src/constant';
+import { PAGE_LIMIT, VIEW_ICONS } from 'src/constant';
 
 import { DashboardContent } from 'src/layouts/dashboard';
 import { fetchOrders } from 'src/store/slices/orderSlice';
@@ -32,6 +32,7 @@ import {
   BaseButton,
   BaseTextField,
   BaseTypography,
+  BasePagination,
   BaseIconButton,
   BaseCircularProgress,
 } from 'src/components/baseComponents';
@@ -49,16 +50,21 @@ type OrderRow = {
 
 export function OrdersView() {
   const dispatch = useDispatch<AppDispatch>();
-  const { orders, loading, error } = useSelector((state: RootState) => state.order);
+  const { orders, loading, error, totalCount } = useSelector((state: RootState) => state.order);
 
   const [search, setSearch] = React.useState('');
   const [view, setView] = React.useState<'table' | 'grid'>('table');
   const [selectedOrder, setSelectedOrder] = React.useState<Order | null>(null);
   const [openDialog, setOpenDialog] = React.useState(false);
+  const [page, setPage] = React.useState(1);
 
   useEffect(() => {
-    dispatch(fetchOrders());
-  }, [dispatch]);
+    dispatch(fetchOrders({ page, limit: PAGE_LIMIT }));
+  }, [dispatch, page]);
+
+  const handlePageChange = (_event: React.ChangeEvent<unknown>, value: number) => {
+    setPage(value);
+  };
 
   const handleOpenDetails = (order: Order) => {
     setSelectedOrder(order);
@@ -428,6 +434,19 @@ export function OrdersView() {
                 </BaseCard>
               ))}
             </BaseBox>
+          </BaseBox>
+        )}
+
+        {/* Pagination */}
+        {totalCount > PAGE_LIMIT && (
+          <BaseBox sx={{ display: 'flex', justifyContent: 'center', p: 3, pt: 2 }}>
+            <BasePagination
+              count={Math.ceil(totalCount / PAGE_LIMIT)}
+              page={page}
+              onChange={handlePageChange}
+              color="primary"
+              shape="rounded"
+            />
           </BaseBox>
         )}
       </BaseCard>

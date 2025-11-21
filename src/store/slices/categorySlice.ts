@@ -18,6 +18,8 @@ interface CategoryState {
   loading: boolean;
   error: string | null;
   successMessage: string | null;
+  totalCount: number;
+  currentPage: number;
 }
 
 const initialState: CategoryState = {
@@ -26,14 +28,17 @@ const initialState: CategoryState = {
   loading: false,
   error: null,
   successMessage: null,
+  totalCount: 0,
+  currentPage: 1,
 };
 
 export const fetchCategories = createAsyncThunk(
   'category/fetchCategories',
-  async (_, { rejectWithValue }) => {
+  async (params: { page?: number; limit?: number } = {}, { rejectWithValue }) => {
     try {
-      const response = await api.get('/category/all');
-      return response.data;
+      const { page = 1, limit = 8 } = params;
+      const response = await api.get(`/category/all?page=${page}&limit=${limit}`);
+      return { ...response.data, page };
     } catch (error: any) {
       return rejectWithValue(
         error.response?.data?.message || 'Failed to fetch categories'
@@ -148,6 +153,8 @@ const categorySlice = createSlice({
               parentId: item.parentId || null,
             }))
           : [];
+        state.totalCount = action.payload.data?.count || 0;
+        state.currentPage = action.payload.page || 1;
       })
       .addCase(fetchCategories.rejected, (state, action) => {
         state.loading = false;

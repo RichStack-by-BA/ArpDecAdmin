@@ -48,7 +48,7 @@ export function AddProductView() {
 
   // Fetch categories on component mount
   useEffect(() => {
-    dispatch(fetchCategories());
+    dispatch(fetchCategories({}));
   }, [dispatch]);
 
   const {

@@ -1,5 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 
+import taxReducer from './slices/taxSlice';
 import userReducer from './slices/userSlice'; // example slice
 import authReducer from './slices/authSlice';
 import orderReducer from './slices/orderSlice';
@@ -17,6 +18,7 @@ export const store = configureStore({
     category: categoryReducer,
     upload: uploadReducer,
     policy: policyReducer,
+    tax: taxReducer,
     // add more slices here
   },
 });

@@ -22,6 +22,8 @@ export const OrdersPage = lazy(() => import('src/pages/order'));
 export const CategoryPage = lazy(() => import('src/pages/category'));
 export const PolicyPage = lazy(() => import('src/pages/policy'));
 export const AddPolicyPage = lazy(() => import('src/pages/policy-add'));
+export const TaxPage = lazy(() => import('src/pages/tax'));
+export const AddTaxPage = lazy(() => import('src/pages/tax-add'));
 export const ProfilePage = lazy(() => import('src/pages/profile'));
 export const AddCategoryPage = lazy(() => import('src/pages/category-add'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
@@ -64,6 +66,9 @@ export const routesSection: RouteObject[] = [
       { path: 'category', element: <CategoryPage /> },
       { path: 'category/add', element: <AddCategoryPage /> },
       { path: 'category/edit/:id', element: <AddCategoryPage /> },
+      { path: 'tax', element: <TaxPage /> },
+      { path: 'tax/add', element: <AddTaxPage /> },
+      { path: 'tax/edit/:id', element: <AddTaxPage /> },
       { path: 'policy', element: <PolicyPage /> },
       { path: 'policy/add', element: <AddPolicyPage /> },
       { path: 'policy/edit/:id', element: <AddPolicyPage /> },

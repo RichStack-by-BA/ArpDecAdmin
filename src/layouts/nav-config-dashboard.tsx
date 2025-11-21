@@ -21,11 +21,13 @@ export const useNavData = (): NavItem[] => {
   const { orders } = useSelector((state: RootState) => state.order);
   const { categories } = useSelector((state: RootState) => state.category);
   const { policies } = useSelector((state: RootState) => state.policy);
+  const { taxes } = useSelector((state: RootState) => state.tax);
 
   const productCount = products?.length || 0;
   const orderCount = orders?.length || 0;
   const categoryCount = categories?.length || 0;
   const policyCount = policies?.length || 0;
+  const taxCount = taxes?.length || 0;
 
   return [
     {
@@ -70,6 +72,16 @@ export const useNavData = (): NavItem[] => {
       info: policyCount > 0 ? (
         <Label color="info" variant="inverted">
           {policyCount}
+        </Label>
+      ) : undefined,
+    },
+    {
+      title: 'Tax Management',
+      path: '/tax',
+      icon: icon('ic-cart'),
+      info: taxCount > 0 ? (
+        <Label color="warning" variant="inverted">
+          {taxCount}
         </Label>
       ) : undefined,
     },

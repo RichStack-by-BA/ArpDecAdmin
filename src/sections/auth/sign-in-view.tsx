@@ -26,7 +26,7 @@ export function SignInView() {
   const error = useSelector((state: any) => state.user.error);
 
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState('bhupendradewangan0007@gmail.com');
+  const [email, setEmail] = useState('98saanchal@gmail.com');
   const [password, setPassword] = useState('12345678');
 
   const handleSignIn = useCallback(async () => {

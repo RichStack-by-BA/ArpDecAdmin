@@ -22,12 +22,14 @@ export const useNavData = (): NavItem[] => {
   const { categories } = useSelector((state: RootState) => state.category);
   const { policies } = useSelector((state: RootState) => state.policy);
   const { taxes } = useSelector((state: RootState) => state.tax);
+  const { users } = useSelector((state: RootState) => state.users);
 
   const productCount = products?.length || 0;
   const orderCount = orders?.length || 0;
   const categoryCount = categories?.length || 0;
   const policyCount = policies?.length || 0;
   const taxCount = taxes?.length || 0;
+  const adminCount = users?.length || 0;
 
   return [
     {
@@ -85,6 +87,21 @@ export const useNavData = (): NavItem[] => {
         </Label>
       ) : undefined,
     },
+    {
+      title: 'Admins',
+      path: '/admin',
+      icon: icon('ic-user'),
+      info: adminCount > 0 ? (
+        <Label color="success" variant="inverted">
+          {adminCount}
+        </Label>
+      ) : undefined,
+    },
+    {
+      title: 'Customers',
+      path: '/customer',
+      icon: icon('ic-user'),
+    },
   ];
 };
 
@@ -114,5 +131,20 @@ export const navData: NavItem[] = [
     title: 'Policies',
     path: '/policy',
     icon: icon('ic-cart'),
+  },
+  {
+    title: 'Tax Management',
+    path: '/tax',
+    icon: icon('ic-cart'),
+  },
+  {
+    title: 'Admins',
+    path: '/admin',
+    icon: icon('ic-user'),
+  },
+  {
+    title: 'Customers',
+    path: '/customer',
+    icon: icon('ic-user'),
   },
 ];

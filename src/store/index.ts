@@ -3,6 +3,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import taxReducer from './slices/taxSlice';
 import userReducer from './slices/userSlice'; // example slice
 import authReducer from './slices/authSlice';
+import usersReducer from './slices/usersSlice';
 import orderReducer from './slices/orderSlice';
 import uploadReducer from './slices/uploadSlice';
 import policyReducer from './slices/policySlice';
@@ -13,6 +14,7 @@ export const store = configureStore({
   reducer: {
     user: userReducer,
     auth: authReducer,
+    users: usersReducer,
     product: productReducer,
     order: orderReducer,
     category: categoryReducer,

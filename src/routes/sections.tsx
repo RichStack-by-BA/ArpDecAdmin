@@ -15,6 +15,9 @@ import { DashboardLayout } from 'src/layouts/dashboard';
 export const DashboardPage = lazy(() => import('src/pages/dashboard'));
 export const BlogPage = lazy(() => import('src/pages/blog'));
 export const UserPage = lazy(() => import('src/pages/user'));
+export const AdminPage = lazy(() => import('src/pages/admin'));
+export const AddAdminPage = lazy(() => import('src/pages/admin-add'));
+export const CustomerPage = lazy(() => import('src/pages/customer'));
 export const SignInPage = lazy(() => import('src/pages/sign-in'));
 export const ForgotPasswordPage = lazy(() => import('src/pages/forgot-password'));
 export const ResetPasswordPage = lazy(() => import('src/pages/reset-password'));
@@ -63,6 +66,10 @@ export const routesSection: RouteObject[] = [
     children: [
       { index: true, element: <DashboardPage /> },
       { path: 'user', element: <UserPage /> },
+      { path: 'admin', element: <AdminPage /> },
+      { path: 'admin/add', element: <AddAdminPage /> },
+      { path: 'admin/edit/:id', element: <AddAdminPage /> },
+      { path: 'customer', element: <CustomerPage /> },
       { path: 'products', element: <ProductsPage /> },
       { path: 'products/add', element: <AddProductPage /> },
       { path: 'orders', element: <OrdersPage /> },

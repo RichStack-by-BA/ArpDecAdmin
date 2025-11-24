@@ -8,6 +8,8 @@ import Typography from '@mui/material/Typography';
 
 import { useRouter } from 'src/routes/hooks';
 
+import { api } from 'src/api';
+
 import { Iconify } from 'src/components/iconify';
 
 export function ForgotPasswordView() {
@@ -15,11 +17,22 @@ export function ForgotPasswordView() {
 
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleSubmit = useCallback(() => {
-    // TODO: Add API integration here
-    console.log('Reset password email sent to:', email);
-    setSubmitted(true);
+  const handleSubmit = useCallback(async () => {
+    setLoading(true);
+    setError('');
+    
+    try {
+      await api.post('/auth/forget-password', { email });
+      setSubmitted(true);
+    } catch (err: any) {
+      console.error('Failed to send reset password email:', err);
+      setError(err.response?.data?.message || 'Failed to send reset link. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   }, [email]);
 
   const renderForm = (
@@ -39,6 +52,8 @@ export function ForgotPasswordView() {
         slotProps={{
           inputLabel: { shrink: true },
         }}
+        error={!!error}
+        helperText={error}
       />
 
       <Button
@@ -48,9 +63,9 @@ export function ForgotPasswordView() {
         color="inherit"
         variant="contained"
         onClick={handleSubmit}
-        disabled={!email}
+        disabled={!email || loading}
       >
-        Send Reset Link
+        {loading ? 'Sending...' : 'Send Reset Link'}
       </Button>
 
       <Box sx={{ mt: 2, textAlign: 'center' }}>

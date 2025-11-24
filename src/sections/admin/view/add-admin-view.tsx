@@ -32,7 +32,8 @@ import {
 // ----------------------------------------------------------------------
 
 interface AdminFormData {
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   phone?: string;
   password?: string;
@@ -40,13 +41,14 @@ interface AdminFormData {
 }
 
 const adminSchema = yup.object().shape({
-  name: yup.string().required('Name is required').min(2, 'Name must be at least 2 characters'),
+  firstName: yup.string().required('First name is required').min(2, 'First name must be at least 2 characters'),
+  lastName: yup.string().required('Last name is required').min(2, 'Last name must be at least 2 characters'),
   email: yup.string().required('Email is required').email('Email must be valid'),
   phone: yup.string().optional(),
   password: yup.string().when('$isEditMode', {
     is: false,
-    then: (schema) => schema.required('Password is required').min(6, 'Password must be at least 6 characters'),
-    otherwise: (schema) => schema.optional(),
+    then: (schema) => schema.required('Password is required').min(8, 'Password must be at least 8 characters'),
+    otherwise: (schema) => schema.optional().min(8, 'Password must be at least 8 characters'),
   }),
   role: yup.string().required('Role is required'),
 });
@@ -72,7 +74,8 @@ export function AddAdminView() {
     mode: 'onChange',
     context: { isEditMode },
     defaultValues: {
-      name: '',
+      firstName: '',
+      lastName: '',
       email: '',
       phone: '',
       password: '',
@@ -91,7 +94,8 @@ export function AddAdminView() {
   useEffect(() => {
     if (isEditMode && currentAdmin) {
       reset({
-        name: currentAdmin.name,
+        firstName: currentAdmin.firstName || '',
+        lastName: currentAdmin.lastName || '',
         email: currentAdmin.email,
         phone: currentAdmin.phone || '',
         role: currentAdmin.role,
@@ -112,13 +116,18 @@ export function AddAdminView() {
   const onSubmit = async (data: AdminFormData) => {
     try {
       const userData: any = {
-        name: data.name,
+        firstName: data.firstName,
+        lastName: data.lastName,
         email: data.email,
         phone: data.phone || '',
         role: data.role,
+        status: 'active',
       };
 
       if (isEditMode && id) {
+        if (data.password) {
+          userData.password = data.password;
+        }
         await dispatch(updateUser({ ...userData, id })).unwrap();
       } else {
         userData.password = data.password;
@@ -173,18 +182,38 @@ export function AddAdminView() {
                 </BaseTypography>
 
                 <BaseGrid container spacing={3}>
-                  {/* Name */}
-                  <BaseGrid size={{ xs: 12 }}>
+                  {/* First Name */}
+                  <BaseGrid size={{ xs: 12, md: 6 }}>
                     <Controller
-                      name="name"
+                      name="firstName"
                       control={control}
                       render={({ field }) => (
                         <BaseTextField
                           {...field}
                           fullWidth
-                          label="Name"
-                          error={!!errors.name}
-                          helperText={errors.name?.message}
+                          label="First Name"
+                          error={!!errors.firstName}
+                          helperText={errors.firstName?.message}
+                          slotProps={{
+                            inputLabel: { shrink: true },
+                          }}
+                        />
+                      )}
+                    />
+                  </BaseGrid>
+
+                  {/* Last Name */}
+                  <BaseGrid size={{ xs: 12, md: 6 }}>
+                    <Controller
+                      name="lastName"
+                      control={control}
+                      render={({ field }) => (
+                        <BaseTextField
+                          {...field}
+                          fullWidth
+                          label="Last Name"
+                          error={!!errors.lastName}
+                          helperText={errors.lastName?.message}
                           slotProps={{
                             inputLabel: { shrink: true },
                           }}
@@ -234,28 +263,26 @@ export function AddAdminView() {
                     />
                   </BaseGrid>
 
-                  {/* Password (only for create) */}
-                  {!isEditMode && (
-                    <BaseGrid size={{ xs: 12 }}>
-                      <Controller
-                        name="password"
-                        control={control}
-                        render={({ field }) => (
-                          <BaseTextField
-                            {...field}
-                            fullWidth
-                            label="Password"
-                            type="password"
-                            error={!!errors.password}
-                            helperText={errors.password?.message}
-                            slotProps={{
-                              inputLabel: { shrink: true },
-                            }}
-                          />
-                        )}
-                      />
-                    </BaseGrid>
-                  )}
+                  {/* Password */}
+                  <BaseGrid size={{ xs: 12 }}>
+                    <Controller
+                      name="password"
+                      control={control}
+                      render={({ field }) => (
+                        <BaseTextField
+                          {...field}
+                          fullWidth
+                          label={isEditMode ? "Password (Optional - leave blank to keep current)" : "Password"}
+                          type="password"
+                          error={!!errors.password}
+                          helperText={errors.password?.message}
+                          slotProps={{
+                            inputLabel: { shrink: true },
+                          }}
+                        />
+                      )}
+                    />
+                  </BaseGrid>
 
                   {/* Role */}
                   <BaseGrid size={{ xs: 12 }}>

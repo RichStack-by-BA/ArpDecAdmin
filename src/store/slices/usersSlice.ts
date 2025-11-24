@@ -4,10 +4,12 @@ import { api } from 'src/api';
 export interface User {
   id: string;
   name: string;
+  firstName?: string;
+  lastName?: string;
   email: string;
   phone?: string;
   role: string;
-  status: boolean;
+  status: boolean | string;
   createdAt: string;
   updatedAt: string;
 }
@@ -37,8 +39,9 @@ export const fetchUsers = createAsyncThunk(
   async (params: { page?: number; limit?: number; role?: string } = {}, { rejectWithValue }) => {
     try {
       const { page = 1, limit = 8, role } = params;
-      const roleParam = role ? `&role=${role}` : '';
-      const response = await api.get(`/user/all?page=${page}&limit=${limit}${roleParam}`);
+      const response = await api.get(`/user/all?page=${page}&limit=${limit}`, {
+        data: role ? { role } : {},
+      });
       return { ...response.data, page };
     } catch (error: any) {
       return rejectWithValue(
@@ -51,14 +54,25 @@ export const fetchUsers = createAsyncThunk(
 export const createUser = createAsyncThunk(
   'users/createUser',
   async (userData: {
-    name: string;
+    firstName: string;
+    lastName: string;
     email: string;
     phone?: string;
     password: string;
     role: string;
+    status?: string;
   }, { rejectWithValue }) => {
     try {
-      const response = await api.post('/user/add', userData);
+      const payload = {
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        email: userData.email,
+        phone: userData.phone || '',
+        password: userData.password,
+        role: userData.role,
+        status: userData.status || 'active',
+      };
+      const response = await api.post('/user/add', payload);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(
@@ -72,15 +86,28 @@ export const updateUser = createAsyncThunk(
   'users/updateUser',
   async (userData: {
     id: string;
-    name: string;
+    firstName: string;
+    lastName: string;
     email: string;
     phone?: string;
+    password?: string;
     role: string;
-    status?: boolean;
+    status?: string;
   }, { rejectWithValue }) => {
     try {
       const { id, ...data } = userData;
-      const response = await api.patch(`/user/edit/${id}`, data);
+      const payload: any = {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        phone: data.phone || '',
+        role: data.role,
+        status: data.status || 'active',
+      };
+      if (data.password) {
+        payload.password = data.password;
+      }
+      const response = await api.patch(`/user/edit/${id}`, payload);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(
@@ -133,11 +160,13 @@ const usersSlice = createSlice({
         state.users = Array.isArray(items)
           ? items.map((item: any) => ({
               id: item._id,
-              name: item.name,
+              name: `${item.firstName || ''} ${item.lastName || ''}`.trim() || item.name || '',
+              firstName: item.firstName || '',
+              lastName: item.lastName || '',
               email: item.email,
               phone: item.phone || '',
               role: item.role || 'admin',
-              status: item.status !== false,
+              status: item.status === 'active' || item.status === true,
               createdAt: item.createdAt || '',
               updatedAt: item.updatedAt || '',
             }))
@@ -163,11 +192,13 @@ const usersSlice = createSlice({
         if (newUser) {
           state.users.unshift({
             id: newUser._id,
-            name: newUser.name,
+            name: `${newUser.firstName || ''} ${newUser.lastName || ''}`.trim() || newUser.name || '',
+            firstName: newUser.firstName || '',
+            lastName: newUser.lastName || '',
             email: newUser.email,
             phone: newUser.phone || '',
             role: newUser.role || 'admin',
-            status: newUser.status !== false,
+            status: newUser.status === 'active' || newUser.status === true,
             createdAt: newUser.createdAt || '',
             updatedAt: newUser.updatedAt || '',
           });
@@ -193,11 +224,13 @@ const usersSlice = createSlice({
           if (index !== -1) {
             state.users[index] = {
               id: updatedUser._id,
-              name: updatedUser.name,
+              name: `${updatedUser.firstName || ''} ${updatedUser.lastName || ''}`.trim() || updatedUser.name || '',
+              firstName: updatedUser.firstName || '',
+              lastName: updatedUser.lastName || '',
               email: updatedUser.email,
               phone: updatedUser.phone || '',
               role: updatedUser.role || 'admin',
-              status: updatedUser.status !== false,
+              status: updatedUser.status === 'active' || updatedUser.status === true,
               createdAt: updatedUser.createdAt || '',
               updatedAt: updatedUser.updatedAt || '',
             };
@@ -220,11 +253,13 @@ const usersSlice = createSlice({
         if (user) {
           state.currentUser = {
             id: user._id,
-            name: user.name,
+            name: `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.name || '',
+            firstName: user.firstName || '',
+            lastName: user.lastName || '',
             email: user.email,
             phone: user.phone || '',
             role: user.role || 'admin',
-            status: user.status !== false,
+            status: user.status === 'active' || user.status === true,
             createdAt: user.createdAt || '',
             updatedAt: user.updatedAt || '',
           };

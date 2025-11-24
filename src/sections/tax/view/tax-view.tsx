@@ -90,6 +90,8 @@ export function TaxView() {
   });
 
   const getTypeColor = (type: string) => {
+    if (!type) return { bgcolor: 'primary.lighter', color: 'primary.dark' };
+    
     switch (type.toLowerCase()) {
       case 'igst':
         return { bgcolor: 'info.lighter', color: 'info.dark' };

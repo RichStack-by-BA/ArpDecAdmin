@@ -4,8 +4,10 @@ import { api } from 'src/api';
 export interface Tax {
   id: string;
   name: string;
-  rate: number;
-  type: 'igst' | 'sgst' | 'cgst';
+  igst: number;
+  cgst: number;
+  sgst: number;
+  isActive: boolean;
   status: boolean;
   createdAt: string;
   updatedAt: string;
@@ -64,9 +66,10 @@ export const createTax = createAsyncThunk(
   'tax/createTax',
   async (taxData: {
     name: string;
-    rate: number;
-    type: 'igst' | 'sgst' | 'cgst';
-    status?: boolean;
+    igst: number;
+    cgst: number;
+    sgst: number;
+    isActive?: boolean;
   }, { rejectWithValue }) => {
     try {
       const response = await api.post('/tax/add', taxData);
@@ -84,17 +87,19 @@ export const updateTax = createAsyncThunk(
   async (taxData: {
     id: string;
     name: string;
-    rate: number;
-    type: 'igst' | 'sgst' | 'cgst';
-    status?: boolean;
+    igst: number;
+    cgst: number;
+    sgst: number;
+    isActive?: boolean;
   }, { rejectWithValue }) => {
     try {
       const { id, ...data } = taxData;
       const payload = {
         name: data.name,
-        rate: data.rate,
-        type: data.type,
-        status: data.status ?? true,
+        igst: data.igst,
+        cgst: data.cgst,
+        sgst: data.sgst,
+        isActive: data.isActive ?? true,
         id,
       };
       const response = await api.patch(`/tax/edit/${id}`, payload);
@@ -137,14 +142,16 @@ const taxSlice = createSlice({
           ? items.map((item: any) => ({
               id: item._id,
               name: item.name,
-              rate: item.rate,
-              type: item.type,
-              status: item.status || false,
+              igst: item.igst || 0,
+              cgst: item.cgst || 0,
+              sgst: item.sgst || 0,
+              isActive: item.isActive ?? true,
+              status: item.status || item.isActive || false,
               createdAt: item.createdAt,
               updatedAt: item.updatedAt,
             }))
           : [];
-        state.totalCount = action.payload.data?.count || 0;
+        state.totalCount = action.payload.total || action.payload.data?.totalCount || action.payload.data?.count || 0;
         state.currentPage = action.payload.page || 1;
       })
       .addCase(fetchTaxes.rejected, (state, action) => {
@@ -163,9 +170,11 @@ const taxSlice = createSlice({
           state.currentTax = {
             id: item._id,
             name: item.name,
-            rate: item.rate,
-            type: item.type,
-            status: item.status || false,
+            igst: item.igst || 0,
+            cgst: item.cgst || 0,
+            sgst: item.sgst || 0,
+            isActive: item.isActive ?? true,
+            status: item.status || item.isActive || false,
             createdAt: item.createdAt,
             updatedAt: item.updatedAt,
           };
@@ -189,9 +198,11 @@ const taxSlice = createSlice({
           state.taxes.push({
             id: item._id,
             name: item.name,
-            rate: item.rate,
-            type: item.type,
-            status: item.status || false,
+            igst: item.igst || 0,
+            cgst: item.cgst || 0,
+            sgst: item.sgst || 0,
+            isActive: item.isActive ?? true,
+            status: item.status || item.isActive || false,
             createdAt: item.createdAt,
             updatedAt: item.updatedAt,
           });
@@ -217,9 +228,11 @@ const taxSlice = createSlice({
             state.taxes[index] = {
               id: item._id,
               name: item.name,
-              rate: item.rate,
-              type: item.type,
-              status: item.status || false,
+              igst: item.igst || 0,
+              cgst: item.cgst || 0,
+              sgst: item.sgst || 0,
+              isActive: item.isActive ?? true,
+              status: item.status || item.isActive || false,
               createdAt: item.createdAt,
               updatedAt: item.updatedAt,
             };

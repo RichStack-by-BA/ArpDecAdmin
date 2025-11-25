@@ -62,9 +62,10 @@ export function AddTaxView() {
     mode: 'onChange',
     defaultValues: {
       name: '',
-      rate: 0,
-      type: 'igst',
-      status: true,
+      igst: 0,
+      cgst: 0,
+      sgst: 0,
+      isActive: true,
     },
   });
 
@@ -80,9 +81,10 @@ export function AddTaxView() {
     if (isEditMode && currentTax) {
       reset({
         name: currentTax.name,
-        rate: currentTax.rate,
-        type: currentTax.type,
-        status: currentTax.status,
+        igst: (currentTax as any).igst || 0,
+        cgst: (currentTax as any).cgst || 0,
+        sgst: (currentTax as any).sgst || 0,
+        isActive: currentTax.status,
       });
     }
   }, [currentTax, isEditMode, reset]);
@@ -101,9 +103,10 @@ export function AddTaxView() {
     try {
       const taxData = {
         name: data.name,
-        rate: Number(data.rate),
-        type: data.type as 'igst' | 'sgst' | 'cgst',
-        status: data.status ?? true,
+        igst: Number(data.igst),
+        cgst: Number(data.cgst),
+        sgst: Number(data.sgst),
+        isActive: data.isActive ?? true,
       };
 
       if (isEditMode && id) {
@@ -168,7 +171,7 @@ export function AddTaxView() {
                     <BaseTextField
                       {...field}
                       label="Tax Name"
-                      placeholder="e.g., IGST 18%"
+                      placeholder="e.g., GST 18%"
                       fullWidth
                       required
                       error={!!errors.name}
@@ -177,44 +180,14 @@ export function AddTaxView() {
                   )}
                 />
 
-                {/* Tax Type */}
+                {/* IGST Rate */}
                 <Controller
-                  name="type"
-                  control={control}
-                  render={({ field }) => (
-                    <BaseFormControl fullWidth required error={!!errors.type}>
-                      <BaseInputLabel id="tax-type-label">Tax Type</BaseInputLabel>
-                      <BaseSelect
-                        {...field}
-                        labelId="tax-type-label"
-                        label="Tax Type"
-                      >
-                        {TAX_TYPES.map((option) => (
-                          <BaseMenuItem key={option.value} value={option.value}>
-                            {option.label}
-                          </BaseMenuItem>
-                        ))}
-                      </BaseSelect>
-                      {errors.type && (
-                        <BaseTypography
-                          variant="caption"
-                          sx={{ color: 'error.main', mt: 0.5 }}
-                        >
-                          {errors.type.message}
-                        </BaseTypography>
-                      )}
-                    </BaseFormControl>
-                  )}
-                />
-
-                {/* Tax Rate */}
-                <Controller
-                  name="rate"
+                  name="igst"
                   control={control}
                   render={({ field }) => (
                     <BaseTextField
                       {...field}
-                      label="Tax Rate (%)"
+                      label="IGST Rate (%)"
                       placeholder="e.g., 18"
                       type="number"
                       fullWidth
@@ -224,8 +197,54 @@ export function AddTaxView() {
                         max: 100,
                         step: 0.01,
                       }}
-                      error={!!errors.rate}
-                      helperText={errors.rate?.message || 'Enter the tax rate as a percentage (0-100)'}
+                      error={!!errors.igst}
+                      helperText={errors.igst?.message || 'Integrated Goods and Services Tax (Inter-state)'}
+                    />
+                  )}
+                />
+
+                {/* CGST Rate */}
+                <Controller
+                  name="cgst"
+                  control={control}
+                  render={({ field }) => (
+                    <BaseTextField
+                      {...field}
+                      label="CGST Rate (%)"
+                      placeholder="e.g., 9"
+                      type="number"
+                      fullWidth
+                      required
+                      inputProps={{
+                        min: 0,
+                        max: 100,
+                        step: 0.01,
+                      }}
+                      error={!!errors.cgst}
+                      helperText={errors.cgst?.message || 'Central Goods and Services Tax (Intra-state)'}
+                    />
+                  )}
+                />
+
+                {/* SGST Rate */}
+                <Controller
+                  name="sgst"
+                  control={control}
+                  render={({ field }) => (
+                    <BaseTextField
+                      {...field}
+                      label="SGST Rate (%)"
+                      placeholder="e.g., 9"
+                      type="number"
+                      fullWidth
+                      required
+                      inputProps={{
+                        min: 0,
+                        max: 100,
+                        step: 0.01,
+                      }}
+                      error={!!errors.sgst}
+                      helperText={errors.sgst?.message || 'State Goods and Services Tax (Intra-state)'}
                     />
                   )}
                 />
@@ -278,7 +297,7 @@ export function AddTaxView() {
               </BaseTypography>
 
               <Controller
-                name="status"
+                name="isActive"
                 control={control}
                 render={({ field: { value, onChange } }) => (
                   <BaseFormControlLabel
@@ -334,31 +353,6 @@ export function AddTaxView() {
                 >
                   Cancel
                 </BaseButton>
-              </BaseBox>
-            </BaseCard>
-
-            {/* Tax Rates Guide */}
-            <BaseCard sx={{ p: 3, mt: 3 }}>
-              <BaseTypography variant="h6" sx={{ mb: 2 }}>
-                Common Tax Rates
-              </BaseTypography>
-              
-              <BaseBox display="flex" flexDirection="column" gap={1}>
-                <BaseTypography variant="body2" color="text.secondary">
-                  • 0% - Essential goods
-                </BaseTypography>
-                <BaseTypography variant="body2" color="text.secondary">
-                  • 5% - Household necessities
-                </BaseTypography>
-                <BaseTypography variant="body2" color="text.secondary">
-                  • 12% - Processed foods
-                </BaseTypography>
-                <BaseTypography variant="body2" color="text.secondary">
-                  • 18% - Most goods & services
-                </BaseTypography>
-                <BaseTypography variant="body2" color="text.secondary">
-                  • 28% - Luxury items
-                </BaseTypography>
               </BaseBox>
             </BaseCard>
           </BaseGrid>

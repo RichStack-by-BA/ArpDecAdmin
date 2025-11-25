@@ -30,8 +30,9 @@ import {
 type TaxRow = {
   id: string;
   name: string;
-  rate: number;
-  type: string;
+  igst: number;
+  cgst: number;
+  sgst: number;
   status: string;
   originalTax: Tax;
 };
@@ -69,9 +70,10 @@ export function TaxView() {
   const tableRows: TaxRow[] = taxes.map((tax) => ({
     id: tax.id,
     name: tax.name,
-    rate: tax.rate,
-    type: tax.type,
-    status: tax.status ? 'Active' : 'Inactive',
+    igst: tax.igst,
+    cgst: tax.cgst,
+    sgst: tax.sgst,
+    status: tax.isActive ? 'Active' : 'Inactive',
     originalTax: tax,
   }));
 
@@ -82,27 +84,13 @@ export function TaxView() {
     const searchLower = search.toLowerCase().trim();
 
     const matchName = row.name?.toLowerCase().includes(searchLower);
-    const matchType = row.type?.toLowerCase().includes(searchLower);
-    const matchRate = row.rate?.toString().includes(searchLower);
+    const matchIgst = row.igst?.toString().includes(searchLower);
+    const matchCgst = row.cgst?.toString().includes(searchLower);
+    const matchSgst = row.sgst?.toString().includes(searchLower);
     const matchStatus = row.status?.toLowerCase().includes(searchLower);
 
-    return matchName || matchType || matchRate || matchStatus;
+    return matchName || matchIgst || matchCgst || matchSgst || matchStatus;
   });
-
-  const getTypeColor = (type: string) => {
-    if (!type) return { bgcolor: 'primary.lighter', color: 'primary.dark' };
-    
-    switch (type.toLowerCase()) {
-      case 'igst':
-        return { bgcolor: 'info.lighter', color: 'info.dark' };
-      case 'sgst':
-        return { bgcolor: 'success.lighter', color: 'success.dark' };
-      case 'cgst':
-        return { bgcolor: 'warning.lighter', color: 'warning.dark' };
-      default:
-        return { bgcolor: 'primary.lighter', color: 'primary.dark' };
-    }
-  };
 
   const columns: Column<TaxRow>[] = [
     {
@@ -111,32 +99,28 @@ export function TaxView() {
       align: 'left',
     },
     {
-      id: 'type',
-      label: 'Type',
-      align: 'left',
-      format: (value) => {
-        const colors = getTypeColor(value as string);
-        return (
-          <BaseBox
-            sx={{
-              px: 1.5,
-              py: 0.5,
-              borderRadius: 0.75,
-              display: 'inline-flex',
-              ...colors,
-              fontWeight: 600,
-              fontSize: '0.75rem',
-              textTransform: 'uppercase',
-            }}
-          >
-            {value as string}
-          </BaseBox>
-        );
-      },
+      id: 'igst',
+      label: 'IGST (%)',
+      align: 'center',
+      format: (value) => (
+        <BaseTypography variant="body2" fontWeight={600}>
+          {value}%
+        </BaseTypography>
+      ),
     },
     {
-      id: 'rate',
-      label: 'Rate (%)',
+      id: 'cgst',
+      label: 'CGST (%)',
+      align: 'center',
+      format: (value) => (
+        <BaseTypography variant="body2" fontWeight={600}>
+          {value}%
+        </BaseTypography>
+      ),
+    },
+    {
+      id: 'sgst',
+      label: 'SGST (%)',
       align: 'center',
       format: (value) => (
         <BaseTypography variant="body2" fontWeight={600}>
@@ -330,24 +314,18 @@ export function TaxView() {
                     <BaseTypography variant="h6" sx={{ mb: 1 }}>
                       {row.name}
                     </BaseTypography>
-                    <BaseBox sx={{ display: 'flex', gap: 1, alignItems: 'center', flexWrap: 'wrap' }}>
-                      <BaseBox
-                        sx={{
-                          px: 1.5,
-                          py: 0.5,
-                          borderRadius: 0.75,
-                          display: 'inline-flex',
-                          ...getTypeColor(row.type),
-                          fontWeight: 600,
-                          fontSize: '0.75rem',
-                          textTransform: 'uppercase',
-                        }}
-                      >
-                        {row.type}
+                    <BaseBox sx={{ display: 'flex', gap: 1.5, alignItems: 'center', flexWrap: 'wrap' }}>
+                      <BaseBox sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                        <BaseTypography variant="caption" color="text.secondary">
+                          IGST: <BaseTypography component="span" variant="body2" fontWeight={600} color="primary.main">{row.igst}%</BaseTypography>
+                        </BaseTypography>
+                        <BaseTypography variant="caption" color="text.secondary">
+                          CGST: <BaseTypography component="span" variant="body2" fontWeight={600} color="primary.main">{row.cgst}%</BaseTypography>
+                        </BaseTypography>
+                        <BaseTypography variant="caption" color="text.secondary">
+                          SGST: <BaseTypography component="span" variant="body2" fontWeight={600} color="primary.main">{row.sgst}%</BaseTypography>
+                        </BaseTypography>
                       </BaseBox>
-                      <BaseTypography variant="h6" color="primary.main">
-                        {row.rate}%
-                      </BaseTypography>
                     </BaseBox>
                   </BaseBox>
                 </BaseCard>
@@ -400,34 +378,33 @@ export function TaxView() {
                   </BaseTypography>
                 </BaseBox>
 
-                {/* Type */}
+                {/* IGST */}
                 <BaseBox>
                   <BaseTypography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>
-                    Type
-                  </BaseTypography>
-                  <BaseBox
-                    sx={{
-                      px: 1.5,
-                      py: 0.5,
-                      borderRadius: 0.75,
-                      display: 'inline-flex',
-                      ...getTypeColor(selectedTax.type),
-                      fontWeight: 600,
-                      fontSize: '0.875rem',
-                      textTransform: 'uppercase',
-                    }}
-                  >
-                    {selectedTax.type}
-                  </BaseBox>
-                </BaseBox>
-
-                {/* Rate */}
-                <BaseBox>
-                  <BaseTypography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>
-                    Tax Rate
+                    IGST Rate
                   </BaseTypography>
                   <BaseTypography variant="h6" color="primary.main">
-                    {selectedTax.rate}%
+                    {selectedTax.igst}%
+                  </BaseTypography>
+                </BaseBox>
+
+                {/* CGST */}
+                <BaseBox>
+                  <BaseTypography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>
+                    CGST Rate
+                  </BaseTypography>
+                  <BaseTypography variant="h6" color="primary.main">
+                    {selectedTax.cgst}%
+                  </BaseTypography>
+                </BaseBox>
+
+                {/* SGST */}
+                <BaseBox>
+                  <BaseTypography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>
+                    SGST Rate
+                  </BaseTypography>
+                  <BaseTypography variant="h6" color="primary.main">
+                    {selectedTax.sgst}%
                   </BaseTypography>
                 </BaseBox>
 
@@ -442,13 +419,13 @@ export function TaxView() {
                       py: 0.5,
                       borderRadius: 0.75,
                       display: 'inline-flex',
-                      bgcolor: selectedTax.status ? 'success.lighter' : 'error.lighter',
-                      color: selectedTax.status ? 'success.dark' : 'error.dark',
+                      bgcolor: selectedTax.isActive ? 'success.lighter' : 'error.lighter',
+                      color: selectedTax.isActive ? 'success.dark' : 'error.dark',
                       fontWeight: 600,
                       fontSize: '0.875rem',
                     }}
                   >
-                    {selectedTax.status ? 'Active' : 'Inactive'}
+                    {selectedTax.isActive ? 'Active' : 'Inactive'}
                   </BaseBox>
                 </BaseBox>
               </BaseBox>

@@ -9,6 +9,7 @@ export interface Category {
   image: string;
   description: string;
   status: boolean;
+  isActive: boolean;
   parentId?: string | null;
 }
 
@@ -55,6 +56,7 @@ export const createCategory = createAsyncThunk(
     title: string;
     description: string;
     image: string;
+    isActive?: boolean;
     parentId?: string | null;
   }, { rejectWithValue }) => {
     try {
@@ -77,6 +79,7 @@ export const updateCategory = createAsyncThunk(
     title: string;
     description: string;
     image: string;
+    isActive?: boolean;
     parentId?: string | null;
   }, { rejectWithValue }) => {
     try {
@@ -88,6 +91,7 @@ export const updateCategory = createAsyncThunk(
         description: data.description,
         image: data.image,
         slug: data.slug || "",
+        isActive: data.isActive ?? true,
         parentId: parentId || null,
         id,
       };
@@ -150,6 +154,7 @@ const categorySlice = createSlice({
               image: item.image || '',
               description: item.description || '',
               status: item.status || false,
+              isActive: item.isActive ?? true,
               parentId: item.parentId || null,
             }))
           : [];
@@ -177,6 +182,7 @@ const categorySlice = createSlice({
             image: item.image || '',
             description: item.description || '',
             status: item.status || false,
+            isActive: item.isActive ?? true,
             parentId: item.parentId || null,
           };
         }
@@ -204,6 +210,7 @@ const categorySlice = createSlice({
             image: item.image || '',
             description: item.description || '',
             status: item.status || false,
+            isActive: item.isActive ?? true,
             parentId: item.parentId || null,
           });
         }
@@ -233,6 +240,7 @@ const categorySlice = createSlice({
               image: item.image || '',
               description: item.description || '',
               status: item.status || false,
+              isActive: item.isActive ?? true,
               parentId: item.parentId || null,
             };
           }

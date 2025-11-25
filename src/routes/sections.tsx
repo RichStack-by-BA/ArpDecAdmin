@@ -20,6 +20,7 @@ export const AddAdminPage = lazy(() => import('src/pages/admin-add'));
 export const CustomerPage = lazy(() => import('src/pages/customer'));
 export const SignInPage = lazy(() => import('src/pages/sign-in'));
 export const ForgotPasswordPage = lazy(() => import('src/pages/forgot-password'));
+export const VerifyOtpPage = lazy(() => import('src/pages/verify-otp'));
 export const ResetPasswordPage = lazy(() => import('src/pages/reset-password'));
 export const NeedHelpPage = lazy(() => import('src/pages/need-help'));
 export const ProductsPage = lazy(() => import('src/pages/products'));
@@ -99,6 +100,14 @@ export const routesSection: RouteObject[] = [
     element: (
       <AuthLayout>
         <ForgotPasswordPage />
+      </AuthLayout>
+    ),
+  },
+  {
+    path: 'verify-otp',
+    element: (
+      <AuthLayout>
+        <VerifyOtpPage />
       </AuthLayout>
     ),
   },

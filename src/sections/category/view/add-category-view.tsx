@@ -26,6 +26,8 @@ import {
   BaseTextField,
   BaseTypography,
   BaseCircularProgress,
+  BaseSwitch,
+  BaseFormControlLabel,
 } from 'src/components/baseComponents';
 
 // ----------------------------------------------------------------------
@@ -65,6 +67,7 @@ export function AddCategoryView() {
       title: '',
       description: '',
       image: '',
+      isActive: true,
     },
   });
 
@@ -89,6 +92,7 @@ export function AddCategoryView() {
         title: currentCategory.title || '',
         description: currentCategory.description,
         image: currentCategory.image,
+        isActive: currentCategory.isActive ?? true,
       });
       setImagePreview(currentCategory.image);
     }
@@ -136,6 +140,7 @@ export function AddCategoryView() {
         title: data.title,
         description: data.description,
         image: imageUrl,
+        isActive: data.isActive ?? true,
       };
 
       if (isEditMode && id) {
@@ -280,6 +285,23 @@ export function AddCategoryView() {
                       rows={4}
                       error={!!errors.description}
                       helperText={errors.description?.message}
+                    />
+                  )}
+                />
+
+                {/* Is Active */}
+                <Controller
+                  name="isActive"
+                  control={control}
+                  render={({ field }) => (
+                    <BaseFormControlLabel
+                      control={
+                        <BaseSwitch
+                          checked={field.value ?? true}
+                          onChange={(e) => field.onChange(e.target.checked)}
+                        />
+                      }
+                      label="Active Status"
                     />
                   )}
                 />

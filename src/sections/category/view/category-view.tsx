@@ -71,7 +71,7 @@ export function CategoryView() {
     id: category.id,
     name: category.name,
     slug: category.slug,
-    status: category.status ? 'Active' : 'Inactive',
+    status: category.isActive ? 'Active' : 'Inactive',
     image: category.image || '/assets/images/category/category-placeholder.png',
     description: category.description || 'No description',
     originalCategory: category,
@@ -439,13 +439,13 @@ export function CategoryView() {
                       py: 0.5,
                       borderRadius: 0.75,
                       display: 'inline-flex',
-                      bgcolor: selectedCategory.status ? 'success.lighter' : 'error.lighter',
-                      color: selectedCategory.status ? 'success.dark' : 'error.dark',
+                      bgcolor: selectedCategory.isActive ? 'success.lighter' : 'error.lighter',
+                      color: selectedCategory.isActive ? 'success.dark' : 'error.dark',
                       fontWeight: 600,
                       fontSize: '0.875rem',
                     }}
                   >
-                    {selectedCategory.status ? 'Active' : 'Inactive'}
+                    {selectedCategory.isActive ? 'Active' : 'Inactive'}
                   </BaseBox>
                 </BaseBox>
               </BaseBox>

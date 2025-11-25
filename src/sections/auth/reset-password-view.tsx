@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
@@ -10,26 +10,61 @@ import InputAdornment from '@mui/material/InputAdornment';
 
 import { useRouter } from 'src/routes/hooks';
 
+import { api } from 'src/api';
+
 import { Iconify } from 'src/components/iconify';
 
 export function ResetPasswordView() {
   const router = useRouter();
 
+  const [email, setEmail] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleSubmit = useCallback(() => {
+  useEffect(() => {
+    // Get email from URL query params
+    const params = new URLSearchParams(window.location.search);
+    const emailParam = params.get('email');
+    if (emailParam) {
+      setEmail(emailParam);
+    } else {
+      // If no email, redirect back to forgot password
+      router.push('/forgot-password');
+    }
+  }, [router]);
+
+  const handleSubmit = useCallback(async () => {
     if (password !== confirmPassword) {
-      alert('Passwords do not match');
+      setError('Passwords do not match');
       return;
     }
-    // TODO: Add API integration here
-    console.log('Password reset successfully');
-    setSubmitted(true);
-  }, [password, confirmPassword]);
+
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+
+    try {
+      await api.post('/auth/reset-password', {
+        email,
+        newPassword: password,
+      });
+      setSubmitted(true);
+    } catch (err: any) {
+      console.error('Failed to reset password:', err);
+      setError(err.response?.data?.message || 'Failed to reset password. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  }, [email, password, confirmPassword]);
 
   const renderForm = (
     <Box
@@ -38,6 +73,12 @@ export function ResetPasswordView() {
         flexDirection: 'column',
       }}
     >
+      {error && (
+        <Typography color="error" variant="body2" sx={{ mb: 2 }}>
+          {error}
+        </Typography>
+      )}
+
       <TextField
         fullWidth
         name="password"
@@ -94,9 +135,9 @@ export function ResetPasswordView() {
         color="inherit"
         variant="contained"
         onClick={handleSubmit}
-        disabled={!password || !confirmPassword}
+        disabled={!password || !confirmPassword || loading}
       >
-        Reset Password
+        {loading ? 'Resetting...' : 'Reset Password'}
       </Button>
 
       <Box sx={{ mt: 2, textAlign: 'center' }}>

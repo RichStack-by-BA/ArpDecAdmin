@@ -39,9 +39,16 @@ export const fetchUsers = createAsyncThunk(
   async (params: { page?: number; limit?: number; role?: string } = {}, { rejectWithValue }) => {
     try {
       const { page = 1, limit = 8, role } = params;
-      const response = await api.get(`/user/all?page=${page}&limit=${limit}`, {
-        data: role ? { role } : {},
+      const queryParams = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString(),
       });
+      
+      if (role) {
+        queryParams.append('role', role);
+      }
+      
+      const response = await api.get(`/user/all?${queryParams.toString()}`);
       return { ...response.data, page };
     } catch (error: any) {
       return rejectWithValue(

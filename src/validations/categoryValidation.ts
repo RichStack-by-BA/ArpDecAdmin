@@ -35,6 +35,10 @@ export const categorySchema = yup.object({
         (value as File).type
       );
     }),
+
+  isActive: yup
+    .boolean()
+    .default(true),
 });
 
 export type CategoryFormData = {
@@ -42,4 +46,5 @@ export type CategoryFormData = {
   title: string;
   description: string;
   image: File | string;
+  isActive?: boolean;
 };

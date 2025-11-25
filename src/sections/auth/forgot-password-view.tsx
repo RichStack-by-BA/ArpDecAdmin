@@ -26,14 +26,15 @@ export function ForgotPasswordView() {
     
     try {
       await api.post('/auth/forget-password', { email });
-      setSubmitted(true);
+      // Redirect to verify OTP page with email
+      router.push(`/verify-otp?email=${encodeURIComponent(email)}`);
     } catch (err: any) {
       console.error('Failed to send reset password email:', err);
       setError(err.response?.data?.message || 'Failed to send reset link. Please try again.');
     } finally {
       setLoading(false);
     }
-  }, [email]);
+  }, [email, router]);
 
   const renderForm = (
     <Box

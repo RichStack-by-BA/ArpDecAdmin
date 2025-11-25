@@ -9,14 +9,20 @@ export const addProductSchema = yup.object({
     .max(100, 'Product name must not exceed 100 characters'),
 
   thumbnail: yup
-    .string()
-    .url('Must be a valid URL')
-    .optional(),
-
-  shortDescription: yup
-    .string()
-    .max(200, 'Short description must not exceed 200 characters')
-    .optional(),
+    .mixed()
+    .required('Thumbnail image is required')
+    .test('fileSize', 'Thumbnail must be less than 1MB', (value) => {
+      if (!value) return false;
+      if (typeof value === 'string') return true; // For edit mode with existing URL
+      return (value as File).size <= 1 * 1024 * 1024;
+    })
+    .test('fileType', 'Only image files are allowed', (value) => {
+      if (!value) return false;
+      if (typeof value === 'string') return true; // For edit mode with existing URL
+      return ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'].includes(
+        (value as File).type
+      );
+    }),
 
   description: yup
     .string()
@@ -52,6 +58,13 @@ export const addProductSchema = yup.object({
     .typeError('Discount price must be a valid number')
     .optional(),
 
+  stock: yup
+    .number()
+    .required('Stock is required')
+    .integer('Stock must be a whole number')
+    .min(0, 'Stock cannot be negative')
+    .typeError('Stock must be a valid number'),
+
   images: yup
     .array()
     .min(1, 'Upload at least one product image')
@@ -86,12 +99,12 @@ export const addProductSchema = yup.object({
 
 export type AddProductFormData = {
   name: string;
-  thumbnail?: string;
-  shortDescription?: string;
+  thumbnail: File | string;
   description: string;
   selectedCategories: string[];
   price: number;
   discountPrice?: number;
+  stock: number;
   images: any[];
   colors?: string[];
   specifications?: Array<{ key: string; value: string }>;

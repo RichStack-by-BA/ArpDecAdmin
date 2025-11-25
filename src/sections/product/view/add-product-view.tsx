@@ -70,11 +70,11 @@ export function AddProductView() {
     defaultValues: {
       name: '',
       thumbnail: '',
-      shortDescription: '',
       description: '',
       selectedCategories: [],
       price: 0,
       discountPrice: undefined,
+      stock: 0,
       images: [],
       colors: [''],
       specifications: [{ key: '', value: '' }],
@@ -234,6 +234,7 @@ export function AddProductView() {
         categories: data.selectedCategories,
         price: data.price,
         discountPrice: data.discountPrice || 0,
+        stock: data.stock,
         thumbnail: thumbnailUrl,
         description: data.description,
         images: imageUrls,
@@ -413,6 +414,23 @@ export function AddProductView() {
                       )}
                     />
                   </BaseGrid>
+                  <BaseGrid size={{ xs: 12 }}>
+                    <Controller
+                      name="stock"
+                      control={control}
+                      render={({ field }) => (
+                        <BaseTextField
+                          {...field}
+                          fullWidth
+                          label="Stock Quantity"
+                          type="number"
+                          required
+                          error={!!errors.stock}
+                          helperText={errors.stock?.message}
+                        />
+                      )}
+                    />
+                  </BaseGrid>
                 </BaseGrid>
 
                 <Controller
@@ -474,22 +492,6 @@ export function AddProductView() {
                         </BaseBox>
                       )}
                     </BaseBox>
-                  )}
-                />
-
-                <Controller
-                  name="shortDescription"
-                  control={control}
-                  render={({ field }) => (
-                    <BaseTextField
-                      {...field}
-                      fullWidth
-                      label="Short Description"
-                      multiline
-                      rows={2}
-                      error={!!errors.shortDescription}
-                      helperText={errors.shortDescription?.message}
-                    />
                   )}
                 />
 

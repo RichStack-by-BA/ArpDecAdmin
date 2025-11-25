@@ -68,6 +68,7 @@ export const createUser = createAsyncThunk(
     password: string;
     role: string;
     status?: string;
+    isActive?: boolean;
   }, { rejectWithValue }) => {
     try {
       const payload = {
@@ -78,6 +79,7 @@ export const createUser = createAsyncThunk(
         password: userData.password,
         role: userData.role,
         status: userData.status || 'active',
+        isActive: userData.isActive ?? true,
       };
       const response = await api.post('/user/add', payload);
       return response.data;
@@ -100,6 +102,7 @@ export const updateUser = createAsyncThunk(
     password?: string;
     role: string;
     status?: string;
+    isActive?: boolean;
   }, { rejectWithValue }) => {
     try {
       const { id, ...data } = userData;
@@ -110,6 +113,7 @@ export const updateUser = createAsyncThunk(
         phone: data.phone || '',
         role: data.role,
         status: data.status || 'active',
+        isActive: data.isActive ?? true,
       };
       if (data.password) {
         payload.password = data.password;
@@ -178,7 +182,7 @@ const usersSlice = createSlice({
               updatedAt: item.updatedAt || '',
             }))
           : [];
-        state.totalCount = action.payload.data?.totalCount || state.users.length;
+        state.totalCount = action.payload.total || action.payload.data?.totalCount || action.payload.data?.total || state.users.length;
         state.currentPage = action.payload.page || 1;
       })
       .addCase(fetchUsers.rejected, (state, action) => {

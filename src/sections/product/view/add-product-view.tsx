@@ -12,6 +12,7 @@ import { useRouter } from 'src/routes/hooks';
 import { addProductSchema } from 'src/validations';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { addProduct } from 'src/store/slices/productSlice';
+import { uploadImage } from 'src/store/slices/uploadSlice';
 import { fetchCategories } from 'src/store/slices/categorySlice';
 import { Iconify } from 'src/components/iconify';
 import {
@@ -41,14 +42,20 @@ export function AddProductView() {
   const dispatch = useDispatch<AppDispatch>();
   const { categories } = useSelector((state: RootState) => state.category);
   const { loading } = useSelector((state: RootState) => state.product);
+  const { userDetails } = useSelector((state: RootState) => state.user);
 
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [images, setImages] = useState<File[]>([]);
+  const [thumbnail, setThumbnail] = useState<File | null>(null);
+  const [thumbnailPreview, setThumbnailPreview] = useState<string>('');
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<string>('');
+  const [selectOpen, setSelectOpen] = useState(false);
 
   // Fetch categories on component mount
   useEffect(() => {
-    dispatch(fetchCategories({}));
+    dispatch(fetchCategories({ page: 1, limit: 100 }));
   }, [dispatch]);
 
   const {
@@ -100,9 +107,50 @@ export function AddProductView() {
 
   const handleAddImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      const newImages = [...images, ...Array.from(e.target.files)];
-      setImages(newImages);
-      setValue('images', newImages as any, { shouldValidate: true });
+      const newFiles = Array.from(e.target.files);
+      
+      // Validate each file size (max 5MB)
+      const invalidFiles = newFiles.filter(file => file.size > 5 * 1024 * 1024);
+      
+      if (invalidFiles.length > 0) {
+        setError(`${invalidFiles.length} file(s) exceed the 5MB limit. Please select smaller files.`);
+        return;
+      }
+      
+      const updatedImages = [...images, ...newFiles];
+      setImages(updatedImages);
+      setValue('images', updatedImages as any, { shouldValidate: true });
+      setError('');
+    }
+  };
+
+  const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file size (max 1MB)
+      if (file.size > 1 * 1024 * 1024) {
+        setError('Thumbnail image must be less than 1MB');
+        setValue('thumbnail', '' as any);
+        return;
+      }
+
+      // Validate file type
+      if (!['image/jpeg', 'image/jpg', 'image/png', 'image/webp'].includes(file.type)) {
+        setError('Only image files (JPEG, PNG, WEBP) are allowed for thumbnail');
+        setValue('thumbnail', '' as any);
+        return;
+      }
+
+      setThumbnail(file);
+      setValue('thumbnail', file as any);
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setThumbnailPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+      setError('');
     }
   };
 
@@ -115,39 +163,107 @@ export function AddProductView() {
   const onSubmit = async (data: AddProductFormData) => {
     setError('');
     setSuccess('');
+    setUploading(true);
+    setUploadProgress('');
 
     try {
-      // Note: In production, upload images to server/cloud storage first
-      const imageUrls =
-        images.length > 0 ? images.map((_, idx) => `placeholder-url-${idx}.jpg`) : [];
+      if (!userDetails?.user?._id) {
+        setError('User ID not found. Please login again.');
+        setUploading(false);
+        return;
+      }
+
+      // Validate thumbnail
+      if (!thumbnail) {
+        setError('Please upload a thumbnail image.');
+        setUploading(false);
+        return;
+      }
+
+      // Validate images
+      if (images.length === 0) {
+        setError('Please upload at least one product image.');
+        setUploading(false);
+        return;
+      }
+
+      // Upload thumbnail first
+      setUploadProgress('Uploading thumbnail...');
+      let thumbnailUrl = '';
+      
+      try {
+        thumbnailUrl = await dispatch(
+          uploadImage({
+            userId: userDetails.user._id,
+            file: thumbnail,
+          })
+        ).unwrap();
+      } catch (uploadErr: any) {
+        setError(`Failed to upload thumbnail: ${uploadErr}`);
+        setUploading(false);
+        return;
+      }
+
+      // Upload all images
+      setUploadProgress(`Uploading images (0/${images.length})...`);
+      const imageUrls: string[] = [];
+      
+      for (let i = 0; i < images.length; i++) {
+        setUploadProgress(`Uploading images (${i + 1}/${images.length})...`);
+        
+        try {
+          const uploadedUrl = await dispatch(
+            uploadImage({
+              userId: userDetails.user._id,
+              file: images[i],
+            })
+          ).unwrap();
+          
+          imageUrls.push(uploadedUrl);
+        } catch (uploadErr: any) {
+          setError(`Failed to upload image ${i + 1}: ${uploadErr}`);
+          setUploading(false);
+          return;
+        }
+      }
+
+      setUploadProgress('Creating product...');
 
       const payload = {
         name: data.name,
         categories: data.selectedCategories,
         price: data.price,
-        discountPrice: data.discountPrice || undefined,
-        thumbnail: data.thumbnail || imageUrls[0] || '',
-        shortDescription: data.shortDescription || '',
+        discountPrice: data.discountPrice || 0,
+        thumbnail: thumbnailUrl,
         description: data.description,
         images: imageUrls,
         colors: data.colors?.filter((c) => c?.trim()) || [],
-        specifications: data.specifications?.filter((s) => s?.key && s?.value) || [],
-        policies: data.policies,
+        specifications: data.specifications
+          ?.filter((s) => s?.key && s?.value)
+          .map((s) => `${s.key}: ${s.value}`)
+          .join(', ') || '',
+        policies: `Return Policy: ${data.policies?.returnPolicy || ''} | Warranty: ${data.policies?.warranty || ''} | Delivery: ${data.policies?.deliveryInfo || ''}`,
         isActive: data.isActive,
+        createdBy: userDetails.user._id,
       };
 
       const result = await dispatch(addProduct(payload));
 
       if (addProduct.fulfilled.match(result)) {
         setSuccess('Product added successfully!');
+        setUploadProgress('');
         setTimeout(() => {
           router.push('/products');
         }, 1500);
       } else {
         setError((result.payload as string) || 'Failed to add product');
+        setUploadProgress('');
       }
     } catch (err: any) {
       setError(err.message || 'An error occurred while adding the product');
+      setUploadProgress('');
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -169,6 +285,12 @@ export function AddProductView() {
       {success && (
         <BaseAlert severity="success" sx={{ mb: 3 }}>
           {success}
+        </BaseAlert>
+      )}
+
+      {uploadProgress && (
+        <BaseAlert severity="info" sx={{ mb: 3 }}>
+          {uploadProgress}
         </BaseAlert>
       )}
 
@@ -200,12 +322,30 @@ export function AddProductView() {
                 <Controller
                   name="selectedCategories"
                   control={control}
-                  render={({ field }) => (
+                  render={({ field: { onChange, value, ...field } }) => (
                     <BaseFormControl fullWidth required error={!!errors.selectedCategories}>
-                      <BaseInputLabel>Categories</BaseInputLabel>
+                      <BaseInputLabel id="categories-label">Categories</BaseInputLabel>
                       <BaseSelect
                         {...field}
+                        labelId="categories-label"
+                        value={value || []}
+                        onChange={(e) => {
+                          onChange(e.target.value);
+                          setSelectOpen(false); // Close dropdown after selection
+                        }}
+                        open={selectOpen}
+                        onOpen={() => setSelectOpen(true)}
+                        onClose={() => setSelectOpen(false)}
                         multiple
+                        label="Categories"
+                        MenuProps={{
+                          PaperProps: {
+                            style: {
+                              maxHeight: 48 * 4.5 + 8,
+                              width: 250,
+                            },
+                          },
+                        }}
                         renderValue={(selected: unknown) => (
                           <BaseBox sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                             {(selected as string[]).map((value: string) => (
@@ -220,11 +360,15 @@ export function AddProductView() {
                           </BaseBox>
                         )}
                       >
-                        {categories.map((category) => (
-                          <BaseMenuItem key={category.id} value={category.id}>
-                            {category.name}
-                          </BaseMenuItem>
-                        ))}
+                        {categories.length === 0 ? (
+                          <BaseMenuItem disabled>No categories available</BaseMenuItem>
+                        ) : (
+                          categories.map((category) => (
+                            <BaseMenuItem key={category.id} value={category.id}>
+                              {category.name}
+                            </BaseMenuItem>
+                          ))
+                        )}
                       </BaseSelect>
                       {errors.selectedCategories && (
                         <BaseTypography variant="caption" color="error" sx={{ mt: 0.5, mx: 1.75 }}>
@@ -274,14 +418,62 @@ export function AddProductView() {
                 <Controller
                   name="thumbnail"
                   control={control}
-                  render={({ field }) => (
-                    <BaseTextField
-                      {...field}
-                      fullWidth
-                      label="Thumbnail URL"
-                      error={!!errors.thumbnail}
-                      helperText={errors.thumbnail?.message}
-                    />
+                  render={({ field: { value, ...field } }) => (
+                    <BaseBox>
+                      <BaseButton
+                        component="label"
+                        variant="outlined"
+                        fullWidth
+                        startIcon={<Iconify icon="solar:upload-bold" />}
+                      >
+                        Upload Thumbnail
+                        <input
+                          {...field}
+                          type="file"
+                          hidden
+                          accept="image/jpeg,image/jpg,image/png,image/webp"
+                          onChange={handleThumbnailChange}
+                        />
+                      </BaseButton>
+
+                      {errors.thumbnail && (
+                        <BaseTypography
+                          variant="caption"
+                          sx={{ color: 'error.main', mt: 1, display: 'block' }}
+                        >
+                          {errors.thumbnail.message as string}
+                        </BaseTypography>
+                      )}
+
+                      <BaseTypography variant="caption" sx={{ color: 'text.secondary', mt: 1, display: 'block' }}>
+                        Max size: 1MB • Formats: JPG, PNG, WEBP
+                      </BaseTypography>
+
+                      {thumbnailPreview && (
+                        <BaseBox
+                          sx={{
+                            mt: 2,
+                            width: '100%',
+                            height: 200,
+                            borderRadius: 1,
+                            overflow: 'hidden',
+                            border: '1px solid',
+                            borderColor: 'divider',
+                          }}
+                        >
+                          <img
+                            src={thumbnailPreview}
+                            alt="Thumbnail preview"
+                            style={{
+                              width: '100%',
+                              height: '100%',
+                              objectFit: 'cover',
+                            }}
+                            onError={() => setThumbnailPreview('')}
+                          />
+                        </BaseBox>
+                      )}
+                    </BaseBox>
                   )}
                 />
 
@@ -340,6 +532,9 @@ export function AddProductView() {
                   {errors.images.message}
                 </BaseTypography>
               )}
+              <BaseTypography variant="caption" color="text.secondary" sx={{ mb: 2, display: 'block' }}>
+                Maximum file size: 5MB per image. Supported formats: JPEG, PNG, WEBP
+              </BaseTypography>
               <BaseBox sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
                 {images.map((image, index) => (
                   <BaseBox
@@ -556,12 +751,12 @@ export function AddProductView() {
                   fullWidth
                   variant="outlined"
                   onClick={() => router.push('/products')}
-                  disabled={loading}
+                  disabled={loading || uploading}
                 >
                   Cancel
                 </BaseButton>
-                <BaseButton fullWidth variant="contained" type="submit" disabled={loading}>
-                  {loading ? <BaseCircularProgress size={24} /> : 'Add Product'}
+                <BaseButton fullWidth variant="contained" type="submit" disabled={loading || uploading}>
+                  {loading || uploading ? <BaseCircularProgress size={24} /> : 'Add Product'}
                 </BaseButton>
               </BaseBox>
             </BaseCard>

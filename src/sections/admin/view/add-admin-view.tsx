@@ -21,12 +21,14 @@ import {
   BaseAlert,
   BaseButton,
   BaseSelect,
+  BaseSwitch,
   BaseMenuItem,
   BaseTextField,
   BaseInputLabel,
   BaseTypography,
   BaseFormControl,
   BaseCircularProgress,
+  BaseFormControlLabel,
 } from 'src/components/baseComponents';
 
 // ----------------------------------------------------------------------
@@ -38,19 +40,24 @@ interface AdminFormData {
   phone?: string;
   password?: string;
   role: string;
+  isActive: boolean;
 }
 
 const adminSchema = yup.object().shape({
   firstName: yup.string().required('First name is required').min(2, 'First name must be at least 2 characters'),
   lastName: yup.string().required('Last name is required').min(2, 'Last name must be at least 2 characters'),
   email: yup.string().required('Email is required').email('Email must be valid'),
-  phone: yup.string().optional(),
+  phone: yup
+    .string()
+    .optional()
+    .matches(/^[6-9]\d{9}$/, 'Phone number must be a valid 10-digit Indian number starting with 6, 7, 8, or 9'),
   password: yup.string().when('$isEditMode', {
     is: false,
     then: (schema) => schema.required('Password is required').min(8, 'Password must be at least 8 characters'),
     otherwise: (schema) => schema.optional().min(8, 'Password must be at least 8 characters'),
   }),
   role: yup.string().required('Role is required'),
+  isActive: yup.boolean().default(true),
 });
 
 export function AddAdminView() {
@@ -80,6 +87,7 @@ export function AddAdminView() {
       phone: '',
       password: '',
       role: 'admin',
+      isActive: true,
     },
   });
 
@@ -99,6 +107,7 @@ export function AddAdminView() {
         email: currentAdmin.email,
         phone: currentAdmin.phone || '',
         role: currentAdmin.role,
+        isActive: currentAdmin.status === true || currentAdmin.status === 'active',
       });
     }
   }, [currentAdmin, isEditMode, reset]);
@@ -121,7 +130,8 @@ export function AddAdminView() {
         email: data.email,
         phone: data.phone || '',
         role: data.role,
-        status: 'active',
+        status: data.isActive ? 'active' : 'inactive',
+        isActive: data.isActive,
       };
 
       if (isEditMode && id) {
@@ -306,6 +316,25 @@ export function AddAdminView() {
                             </BaseTypography>
                           )}
                         </BaseFormControl>
+                      )}
+                    />
+                  </BaseGrid>
+
+                  {/* Active Status */}
+                  <BaseGrid size={{ xs: 12 }}>
+                    <Controller
+                      name="isActive"
+                      control={control}
+                      render={({ field }) => (
+                        <BaseFormControlLabel
+                          control={
+                            <BaseSwitch
+                              checked={field.value ?? true}
+                              onChange={(e) => field.onChange(e.target.checked)}
+                            />
+                          }
+                          label="Active Status"
+                        />
                       )}
                     />
                   </BaseGrid>

@@ -51,6 +51,13 @@ export function AdminView() {
     dispatch(fetchUsers({ page, limit: PAGE_LIMIT, role: 'admin' }));
   }, [dispatch, page]);
 
+  // Reset to page 1 when search changes
+  useEffect(() => {
+    if (search) {
+      setPage(1);
+    }
+  }, [search]);
+
   const handlePageChange = (_event: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);
   };
@@ -235,7 +242,7 @@ export function AdminView() {
           <>
             <DataTable columns={columns} rows={filteredRows} />
 
-            {!error && totalCount > PAGE_LIMIT && (
+            {!error && !search && totalCount > PAGE_LIMIT && (
               <BaseBox sx={{ p: 2, display: 'flex', justifyContent: 'center' }}>
                 <BasePagination
                   count={Math.ceil(totalCount / PAGE_LIMIT)}

@@ -4,7 +4,6 @@ import { api } from 'src/api';
 export interface Policy {
   id: string;
   name: string;
-  type: string;
   content: string;
   status: boolean;
   createdAt: string;
@@ -64,7 +63,6 @@ export const createPolicy = createAsyncThunk(
   'policy/createPolicy',
   async (policyData: {
     name: string;
-    type: string;
     content: string;
     status?: boolean;
   }, { rejectWithValue }) => {
@@ -84,7 +82,6 @@ export const updatePolicy = createAsyncThunk(
   async (policyData: {
     id: string;
     name: string;
-    type: string;
     content: string;
     status?: boolean;
   }, { rejectWithValue }) => {
@@ -92,7 +89,6 @@ export const updatePolicy = createAsyncThunk(
       const { id, ...data } = policyData;
       const payload = {
         name: data.name,
-        type: data.type,
         content: data.content,
         status: data.status ?? true,
         id,
@@ -137,7 +133,6 @@ const policySlice = createSlice({
           ? items.map((item: any) => ({
               id: item._id,
               name: item.name,
-              type: item.type,
               content: item.content,
               status: item.status || false,
               createdAt: item.createdAt,
@@ -163,7 +158,6 @@ const policySlice = createSlice({
           state.currentPolicy = {
             id: item._id,
             name: item.name,
-            type: item.type,
             content: item.content,
             status: item.status || false,
             createdAt: item.createdAt,
@@ -189,7 +183,6 @@ const policySlice = createSlice({
           state.policies.push({
             id: item._id,
             name: item.name,
-            type: item.type,
             content: item.content,
             status: item.status || false,
             createdAt: item.createdAt,
@@ -217,7 +210,6 @@ const policySlice = createSlice({
             state.policies[index] = {
               id: item._id,
               name: item.name,
-              type: item.type,
               content: item.content,
               status: item.status || false,
               createdAt: item.createdAt,

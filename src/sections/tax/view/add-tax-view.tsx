@@ -22,13 +22,9 @@ import {
   BaseGrid,
   BaseAlert,
   BaseButton,
-  BaseSelect,
   BaseSwitch,
-  BaseMenuItem,
   BaseTextField,
-  BaseInputLabel,
   BaseTypography,
-  BaseFormControl,
   BaseCircularProgress,
   BaseFormControlLabel,
 } from 'src/components/baseComponents';

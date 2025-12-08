@@ -30,7 +30,6 @@ import {
 type PolicyRow = {
   id: string;
   name: string;
-  type: string;
   content: string;
   status: string;
   originalPolicy: Policy;
@@ -69,7 +68,6 @@ export function PolicyView() {
   const tableRows: PolicyRow[] = policies.map((policy) => ({
     id: policy.id,
     name: policy.name,
-    type: policy.type,
     content: policy.content,
     status: policy.status ? 'Active' : 'Inactive',
     originalPolicy: policy,
@@ -82,11 +80,10 @@ export function PolicyView() {
     const searchLower = search.toLowerCase().trim();
 
     const matchName = row.name?.toLowerCase().includes(searchLower);
-    const matchType = row.type?.toLowerCase().includes(searchLower);
     const matchContent = row.content?.toLowerCase().includes(searchLower);
     const matchStatus = row.status?.toLowerCase().includes(searchLower);
 
-    return matchName || matchType || matchContent || matchStatus;
+    return matchName || matchContent || matchStatus;
   });
 
   const columns: Column<PolicyRow>[] = [
@@ -94,28 +91,6 @@ export function PolicyView() {
       id: 'name',
       label: 'Policy Name',
       align: 'left',
-    },
-    {
-      id: 'type',
-      label: 'Type',
-      align: 'left',
-      format: (value) => (
-        <BaseBox
-          sx={{
-            px: 1.5,
-            py: 0.5,
-            borderRadius: 0.75,
-            display: 'inline-flex',
-            bgcolor: 'primary.lighter',
-            color: 'primary.dark',
-            fontWeight: 600,
-            fontSize: '0.75rem',
-            textTransform: 'capitalize',
-          }}
-        >
-          {value as string}
-        </BaseBox>
-      ),
     },
     {
       id: 'status',
@@ -303,21 +278,20 @@ export function PolicyView() {
                     <BaseTypography variant="h6" sx={{ mb: 1 }}>
                       {row.name}
                     </BaseTypography>
-                    <BaseBox
-                      sx={{
-                        px: 1.5,
-                        py: 0.5,
-                        borderRadius: 0.75,
-                        display: 'inline-flex',
-                        bgcolor: 'primary.lighter',
-                        color: 'primary.dark',
-                        fontWeight: 600,
-                        fontSize: '0.75rem',
-                        textTransform: 'capitalize',
+                    <BaseBox 
+                      sx={{ 
+                        color: 'text.secondary',
+                        fontSize: '0.875rem',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        '& p': { margin: 0 },
+                        '& *': { fontSize: 'inherit !important' },
                       }}
-                    >
-                      {row.type}
-                    </BaseBox>
+                      dangerouslySetInnerHTML={{ __html: row.content }}
+                    />
                   </BaseBox>
                 </BaseCard>
               ))}
@@ -369,36 +343,19 @@ export function PolicyView() {
                   </BaseTypography>
                 </BaseBox>
 
-                {/* Type */}
-                <BaseBox>
-                  <BaseTypography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>
-                    Type
-                  </BaseTypography>
-                  <BaseBox
-                    sx={{
-                      px: 1.5,
-                      py: 0.5,
-                      borderRadius: 0.75,
-                      display: 'inline-flex',
-                      bgcolor: 'primary.lighter',
-                      color: 'primary.dark',
-                      fontWeight: 600,
-                      fontSize: '0.875rem',
-                      textTransform: 'capitalize',
-                    }}
-                  >
-                    {selectedPolicy.type}
-                  </BaseBox>
-                </BaseBox>
-
                 {/* Content */}
                 <BaseBox>
                   <BaseTypography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>
                     Content
                   </BaseTypography>
-                  <BaseTypography variant="body1">
-                    {selectedPolicy.content || 'No content available'}
-                  </BaseTypography>
+                  <BaseBox
+                    sx={{ 
+                      '& p': { margin: '0.5em 0' },
+                      '& ul, & ol': { paddingLeft: '1.5em', margin: '0.5em 0' },
+                      '& h1, & h2, & h3': { margin: '0.75em 0 0.5em' },
+                    }}
+                    dangerouslySetInnerHTML={{ __html: selectedPolicy.content || 'No content available' }}
+                  />
                 </BaseBox>
 
                 {/* Status */}

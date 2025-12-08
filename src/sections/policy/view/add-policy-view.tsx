@@ -22,25 +22,15 @@ import {
   BaseGrid,
   BaseAlert,
   BaseButton,
-  BaseSelect,
   BaseSwitch,
-  BaseMenuItem,
   BaseTextField,
-  BaseInputLabel,
   BaseTypography,
-  BaseFormControl,
+  BaseRichTextEditor,
   BaseCircularProgress,
   BaseFormControlLabel,
 } from 'src/components/baseComponents';
 
 // ----------------------------------------------------------------------
-
-const POLICY_TYPES = [
-  { value: 'return', label: 'Return Policy' },
-  { value: 'cancellation', label: 'Cancellation Policy' },
-  { value: 'shipping', label: 'Shipping Policy' },
-  { value: 'warranty', label: 'Warranty Policy' },
-];
 
 export function AddPolicyView() {
   const { id } = useParams<{ id: string }>();
@@ -63,7 +53,6 @@ export function AddPolicyView() {
     mode: 'onChange',
     defaultValues: {
       name: '',
-      type: 'return',
       content: '',
       status: true,
     },
@@ -81,7 +70,6 @@ export function AddPolicyView() {
     if (isEditMode && currentPolicy) {
       reset({
         name: currentPolicy.name,
-        type: currentPolicy.type,
         content: currentPolicy.content,
         status: currentPolicy.status,
       });
@@ -102,7 +90,6 @@ export function AddPolicyView() {
     try {
       const policyData = {
         name: data.name,
-        type: data.type,
         content: data.content,
         status: data.status ?? true,
       };
@@ -178,54 +165,26 @@ export function AddPolicyView() {
                   )}
                 />
 
-                {/* Policy Type */}
-                <Controller
-                  name="type"
-                  control={control}
-                  render={({ field }) => (
-                    <BaseFormControl fullWidth required error={!!errors.type}>
-                      <BaseInputLabel id="policy-type-label">Policy Type</BaseInputLabel>
-                      <BaseSelect
-                        {...field}
-                        labelId="policy-type-label"
-                        label="Policy Type"
-                      >
-                        {POLICY_TYPES.map((option) => (
-                          <BaseMenuItem key={option.value} value={option.value}>
-                            {option.label}
-                          </BaseMenuItem>
-                        ))}
-                      </BaseSelect>
-                      {errors.type && (
-                        <BaseTypography
-                          variant="caption"
-                          sx={{ color: 'error.main', mt: 0.5 }}
-                        >
-                          {errors.type.message}
-                        </BaseTypography>
-                      )}
-                    </BaseFormControl>
-                  )}
-                />
-
                 {/* Content */}
-                <Controller
-                  name="content"
-                  control={control}
-                  render={({ field }) => (
-                    <BaseTextField
-                      {...field}
-                      label="Policy Content"
-                      placeholder="Enter the policy details..."
-                      fullWidth
-                      required
-                      multiline
-                      rows={8}
-                      error={!!errors.content}
-                      helperText={errors.content?.message}
-                    />
-                  )}
-                />
+                <BaseBox>
+                  <BaseTypography variant="subtitle2" sx={{ mb: 1 }}>
+                    Policy Content <span style={{ color: 'red' }}>*</span>
+                  </BaseTypography>
+                  <Controller
+                    name="content"
+                    control={control}
+                    render={({ field: { value, onChange } }) => (
+                      <BaseRichTextEditor
+                        value={value}
+                        onChange={onChange}
+                        placeholder="Enter the policy details..."
+                        error={!!errors.content}
+                        helperText={errors.content?.message}
+                        height={300}
+                      />
+                    )}
+                  />
+                </BaseBox>
               </BaseBox>
             </BaseCard>
           </BaseGrid>

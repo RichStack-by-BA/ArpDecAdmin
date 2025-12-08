@@ -23,10 +23,10 @@ import {
   BaseGrid,
   BaseAlert,
   BaseButton,
+  BaseSwitch,
   BaseTextField,
   BaseTypography,
   BaseCircularProgress,
-  BaseSwitch,
   BaseFormControlLabel,
 } from 'src/components/baseComponents';
 

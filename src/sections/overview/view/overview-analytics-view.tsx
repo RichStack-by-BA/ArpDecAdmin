@@ -1,3 +1,6 @@
+import type { RootState } from 'src/store';
+import { useSelector } from 'react-redux';
+
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 
@@ -17,10 +20,13 @@ import { AnalyticsConversionRates } from '../analytics-conversion-rates';
 // ----------------------------------------------------------------------
 
 export function OverviewAnalyticsView() {
+  const { userDetails } = useSelector((state: RootState) => state.user);
+  const userName = userDetails?.user?.firstName || 'User';
+
   return (
     <DashboardContent maxWidth="xl">
       <Typography variant="h4" sx={{ mb: { xs: 3, md: 5 } }}>
-        Hi, Welcome Arpan 👋
+        Hi, Welcome {userName} 👋
       </Typography>
 
       <Grid container spacing={3}>

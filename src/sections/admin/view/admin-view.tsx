@@ -40,7 +40,7 @@ type AdminRow = {
 export function AdminView() {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
-  const { users: admins, loading, error, totalCount, currentPage } = useSelector((state: RootState) => state.users);
+  const { users: admins, loading, error, totalCount } = useSelector((state: RootState) => state.users);
 
   const [search, setSearch] = useState('');
   const [selectedAdmin, setSelectedAdmin] = useState<User | null>(null);

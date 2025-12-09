@@ -40,7 +40,7 @@ type CategoryRow = {
 export function CategoryView() {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
-  const { categories, loading, error, totalCount, currentPage } = useSelector((state: RootState) => state.category);
+  const { categories, loading, error, totalCount } = useSelector((state: RootState) => state.category);
 
   const [search, setSearch] = useState('');
   const [view, setView] = useState<'table' | 'grid'>('table');

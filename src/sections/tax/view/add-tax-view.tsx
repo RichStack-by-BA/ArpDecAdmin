@@ -31,12 +31,6 @@ import {
 
 // ----------------------------------------------------------------------
 
-const TAX_TYPES = [
-  { value: 'igst', label: 'IGST - Integrated Goods and Services Tax' },
-  { value: 'sgst', label: 'SGST - State Goods and Services Tax' },
-  { value: 'cgst', label: 'CGST - Central Goods and Services Tax' },
-];
-
 export function AddTaxView() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();

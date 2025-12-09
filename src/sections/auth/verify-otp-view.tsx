@@ -39,7 +39,7 @@ export function VerifyOtpView() {
     setError('');
 
     try {
-      const response = await api.post('/auth/verify-otp', { email, otp });
+      await api.post('/auth/verify-otp', { email, otp });
       
       // Redirect to reset password page with token or email
       router.push(`/reset-password?email=${encodeURIComponent(email)}&verified=true`);
@@ -142,7 +142,7 @@ export function VerifyOtpView() {
 
         <Box sx={{ textAlign: 'center', mb: 2 }}>
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            Didn't receive the code?{' '}
+              Didn&apos;t receive the code?{' '}
             <Link
               variant="body2"
               sx={{ cursor: 'pointer', fontWeight: 600 }}

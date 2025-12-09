@@ -33,7 +33,7 @@ export const addProductSchema = yup.object({
   discountPrice: yup
     .number()
     .positive('Discount price must be greater than 0')
-    .test('less-than-price', 'Discount price must be less than regular price', function (value) {
+    .test('less-than-price', 'Discount price must be less than regular price', function validateDiscountPrice(value) {
       const { price } = this.parent;
       if (!value || !price) return true;
       return value < price;

@@ -62,7 +62,7 @@ export function NeedHelpView() {
             mb: 2,
           }}
         >
-          <Iconify icon="solar:info-circle-bold" width={48} sx={{ color: 'primary.main' }} />
+          <Iconify icon="solar:question-circle-bold" width={48} sx={{ color: 'primary.main' }} />
         </Box>
 
         <Typography variant="h4">Need Help?</Typography>
@@ -73,7 +73,7 @@ export function NeedHelpView() {
             textAlign: 'center',
           }}
         >
-          We're here to assist you. Choose the best way to reach us.
+          We&apos;re here to assist you. Choose the best way to reach us.
         </Typography>
       </Box>
 

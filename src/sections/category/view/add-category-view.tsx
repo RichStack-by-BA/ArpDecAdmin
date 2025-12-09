@@ -39,7 +39,7 @@ export function AddCategoryView() {
 
   const isEditMode = Boolean(id);
 
-  const { categories, currentCategory, loading, error, successMessage } = useSelector(
+  const { currentCategory, loading, error, successMessage } = useSelector(
     (state: RootState) => state.category
   );
 

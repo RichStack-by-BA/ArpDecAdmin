@@ -10,12 +10,12 @@ import { useForm, Controller, useFieldArray } from 'react-hook-form';
 
 import { useRouter } from 'src/routes/hooks';
 import { addProductSchema } from 'src/validations';
+import { fetchTaxes } from 'src/store/slices/taxSlice';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { addProduct } from 'src/store/slices/productSlice';
 import { uploadImage } from 'src/store/slices/uploadSlice';
-import { fetchCategories } from 'src/store/slices/categorySlice';
-import { fetchTaxes } from 'src/store/slices/taxSlice';
 import { fetchPolicies } from 'src/store/slices/policySlice';
+import { fetchCategories } from 'src/store/slices/categorySlice';
 import { Iconify } from 'src/components/iconify';
 import {
   BaseBox,
@@ -32,8 +32,8 @@ import {
   BaseTypography,
   BaseIconButton,
   BaseInputLabel,
-  BaseFormControl,
   BaseRadioGroup,
+  BaseFormControl,
   BaseRichTextEditor,
   BaseCircularProgress,
   BaseFormControlLabel,
@@ -196,8 +196,8 @@ export function AddProductView() {
         return;
       }
 
-      let imageUrls: string[] = [];
-      let variantsData: Array<{ name: string; image: string; stock: number }> = [];
+      const imageUrls: string[] = [];
+      const variantsData: Array<{ name: string; image: string; stock: number }> = [];
 
       // Handle default mode - upload images
       if (data.imageMode === 'default') {
@@ -424,11 +424,11 @@ export function AddProductView() {
                         }}
                         renderValue={(selected: unknown) => (
                           <BaseBox sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                            {(selected as string[]).map((value: string) => (
+                            {(selected as string[]).map((categoryId: string) => (
                               <BaseChip
-                                key={value}
+                                key={categoryId}
                                 label={
-                                  categories.find((cat) => cat.id === value)?.name || value
+                                  categories.find((cat) => cat.id === categoryId)?.name || categoryId
                                 }
                                 size="small"
                               />
@@ -609,9 +609,9 @@ export function AddProductView() {
                       {...field}
                       row
                       onChange={(e) => {
-                        const value = e.target.value;
-                        field.onChange(value);
-                        if (value === 'default') {
+                        const selectedValue = e.target.value;
+                        field.onChange(selectedValue);
+                        if (selectedValue === 'default') {
                           setVariants([]);
                           setValue('variants', []);
                         } else {

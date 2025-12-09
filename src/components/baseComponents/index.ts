@@ -9,6 +9,8 @@ export { BaseButton } from './BaseButton';
 export { BaseDialog } from './BaseDialog';
 export { BaseSelect } from './BaseSelect';
 export { BaseSwitch } from './BaseSwitch';
+export { default as BaseRadio } from './BaseRadio';
+export { default as BaseRadioGroup } from './BaseRadioGroup';
 export { BaseMenuItem } from './BaseMenuItem';
 export { BaseTextField } from './BaseTextField';
 export { BaseIconButton } from './BaseIconButton';

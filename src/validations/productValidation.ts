@@ -8,22 +8,6 @@ export const addProductSchema = yup.object({
     .min(3, 'Product name must be at least 3 characters')
     .max(100, 'Product name must not exceed 100 characters'),
 
-  thumbnail: yup
-    .mixed()
-    .required('Thumbnail image is required')
-    .test('fileSize', 'Thumbnail must be less than 1MB', (value) => {
-      if (!value) return false;
-      if (typeof value === 'string') return true; // For edit mode with existing URL
-      return (value as File).size <= 1 * 1024 * 1024;
-    })
-    .test('fileType', 'Only image files are allowed', (value) => {
-      if (!value) return false;
-      if (typeof value === 'string') return true; // For edit mode with existing URL
-      return ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'].includes(
-        (value as File).type
-      );
-    }),
-
   description: yup
     .string()
     .required('Description is required')
@@ -60,16 +44,45 @@ export const addProductSchema = yup.object({
 
   stock: yup
     .number()
-    .required('Stock is required')
-    .integer('Stock must be a whole number')
-    .min(0, 'Stock cannot be negative')
+    .when('imageMode', {
+      is: 'default',
+      then: (schema) => schema.required('Stock is required').integer('Stock must be a whole number').min(0, 'Stock cannot be negative'),
+      otherwise: (schema) => schema.notRequired().nullable(),
+    })
     .typeError('Stock must be a valid number'),
+
+  taxId: yup
+    .string()
+    .required('Tax is required'),
+
+  imageMode: yup
+    .string()
+    .oneOf(['default', 'colors'], 'Invalid image mode')
+    .default('default'),
 
   images: yup
     .array()
-    .min(1, 'Upload at least one product image')
-    .required('Product images are required')
+    .when('imageMode', {
+      is: 'default',
+      then: (schema) => schema.min(1, 'Upload at least one product image').required('Product images are required'),
+      otherwise: (schema) => schema.notRequired().nullable(),
+    })
     .default([]),
+
+  variants: yup
+    .array()
+    .of(
+      yup.object({
+        name: yup.string().required('Color name is required'),
+        image: yup.mixed().required('Color image is required'),
+        stock: yup.number().required('Stock is required').integer().min(0, 'Stock cannot be negative'),
+      })
+    )
+    .when('imageMode', {
+      is: 'colors',
+      then: (schema) => schema.min(1, 'Add at least one color variant').required('Variants are required'),
+      otherwise: (schema) => schema.notRequired().nullable(),
+    }),
 
   colors: yup
     .array()
@@ -86,12 +99,8 @@ export const addProductSchema = yup.object({
     )
     .optional(),
 
-  policies: yup
-    .object({
-      returnPolicy: yup.string().optional(),
-      warranty: yup.string().optional(),
-      deliveryInfo: yup.string().optional(),
-    })
+  policy: yup
+    .string()
     .optional(),
 
   isActive: yup.boolean().default(true),
@@ -99,19 +108,17 @@ export const addProductSchema = yup.object({
 
 export type AddProductFormData = {
   name: string;
-  thumbnail: File | string;
   description: string;
   selectedCategories: string[];
   price: number;
   discountPrice?: number;
   stock: number;
+  taxId: string;
+  imageMode: 'default' | 'colors';
   images: any[];
+  variants?: Array<{ name: string; image: File | string; stock: number }>;
   colors?: string[];
   specifications?: Array<{ key: string; value: string }>;
-  policies?: {
-    returnPolicy?: string;
-    warranty?: string;
-    deliveryInfo?: string;
-  };
+  policy?: string;
   isActive: boolean;
 };

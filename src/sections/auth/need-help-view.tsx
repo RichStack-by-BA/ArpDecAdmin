@@ -62,7 +62,7 @@ export function NeedHelpView() {
             mb: 2,
           }}
         >
-          <Iconify icon="solar:question-circle-bold" width={48} sx={{ color: 'primary.main' }} />
+          <Iconify icon="solar:help-bold" width={48} sx={{ color: 'primary.main' }} />
         </Box>
 
         <Typography variant="h4">Need Help?</Typography>

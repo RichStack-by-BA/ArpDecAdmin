@@ -16,6 +16,7 @@ export function ForgotPasswordView() {
   const router = useRouter();
 
   const [email, setEmail] = useState('');
+  const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -25,6 +26,7 @@ export function ForgotPasswordView() {
     
     try {
       await api.post('/auth/forget-password', { email });
+      setSubmitted(true);
       // Redirect to verify OTP page with email
       router.push(`/verify-otp?email=${encodeURIComponent(email)}`);
     } catch (err: any) {

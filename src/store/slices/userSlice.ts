@@ -10,6 +10,8 @@ type UserState = {
   error: string | null;
   token: string | null;
   userDetails: any | null;
+  selectedUser: any | null;
+  userLoading: boolean;
 };
 
 const initialState: UserState = {
@@ -19,6 +21,8 @@ const initialState: UserState = {
   error: null,
   token: null,
   userDetails: null,
+  selectedUser: null,
+  userLoading: false,
 };
 
 // Async thunk for login API
@@ -52,6 +56,20 @@ export const fetchUserDetails = createAsyncThunk(
     } catch (error: any) {
       return rejectWithValue(
         error.response?.data?.message || error.message || 'Failed to fetch user details'
+      );
+    }
+  }
+);
+
+export const fetchUserById = createAsyncThunk(
+  'user/fetchUserById',
+  async (userId: string, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/user/${userId}`);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || error.message || 'Failed to fetch user by ID'
       );
     }
   }
@@ -100,6 +118,18 @@ const userSlice = createSlice({
       })
       .addCase(fetchUserDetails.rejected, (state, action) => {
         state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(fetchUserById.pending, (state) => {
+        state.userLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchUserById.fulfilled, (state, action) => {
+        state.userLoading = false;
+        state.selectedUser = action.payload;
+      })
+      .addCase(fetchUserById.rejected, (state, action) => {
+        state.userLoading = false;
         state.error = action.payload as string;
       })
   },

@@ -260,17 +260,18 @@ const usersSlice = createSlice({
       })
       .addCase(fetchUserById.fulfilled, (state, action) => {
         state.loading = false;
-        const user = action.payload.data;
+        // Handle response with different wrapper structures: data, user, or direct
+        const user = action.payload.data.user || action.payload.data || action.payload;
         if (user) {
           state.currentUser = {
-            id: user._id,
+            id: user._id || user.id,
             name: `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.name || '',
             firstName: user.firstName || '',
             lastName: user.lastName || '',
             email: user.email,
             phone: user.phone || '',
             role: user.role || 'admin',
-            status: user.status === 'active' || user.status === true,
+            status: user.status === 'active' || user.status === true || user.isActive === true,
             createdAt: user.createdAt || '',
             updatedAt: user.updatedAt || '',
           };

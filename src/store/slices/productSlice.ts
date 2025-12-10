@@ -7,6 +7,7 @@ export interface Product {
   price: number;
   discountPrice: number;
   coverUrl: string;
+  image: string;
   images: string[];
   colors: string[];
   status: boolean;
@@ -88,6 +89,7 @@ const productSlice = createSlice({
               price: item.price,
               discountPrice: item.discountPrice || 0,
               coverUrl: item.thumbnail || item.images?.[0] || '',
+              image: item.image || item.images?.[0] || '',
               images: item.images || [],
               colors: item.colors || [],
               status: item.isActive,

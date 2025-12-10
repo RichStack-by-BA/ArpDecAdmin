@@ -29,9 +29,10 @@ type UserTableRowProps = {
   row: UserProps;
   selected: boolean;
   onSelectRow: () => void;
+  onViewUser?: (user: UserProps) => void;
 };
 
-export function UserTableRow({ row, selected, onSelectRow }: UserTableRowProps) {
+export function UserTableRow({ row, selected, onSelectRow, onViewUser }: UserTableRowProps) {
   const [openPopover, setOpenPopover] = useState<HTMLButtonElement | null>(null);
 
   const handleOpenPopover = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
@@ -41,6 +42,11 @@ export function UserTableRow({ row, selected, onSelectRow }: UserTableRowProps) 
   const handleClosePopover = useCallback(() => {
     setOpenPopover(null);
   }, []);
+
+  const handleViewClick = useCallback(() => {
+    handleClosePopover();
+    onViewUser?.(row);
+  }, [onViewUser, row, handleClosePopover]);
 
   return (
     <>
@@ -108,6 +114,11 @@ export function UserTableRow({ row, selected, onSelectRow }: UserTableRowProps) 
             },
           }}
         >
+          <MenuItem onClick={handleViewClick}>
+            <Iconify icon="solar:eye-bold" />
+            View
+          </MenuItem>
+
           <MenuItem onClick={handleClosePopover}>
             <Iconify icon="solar:pen-bold" />
             Edit

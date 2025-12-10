@@ -52,6 +52,7 @@ export function ProductsView() {
   const handlePageChange = (_event: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);
   };
+  console.log(products,'===productproduct');
 
   // Transform products into rows for the table
   const tableRows: ProductRow[] = products.map((product) => ({
@@ -61,7 +62,7 @@ export function ProductsView() {
     stock: product.stock,
     status: product.isActive ? 'Active' : 'Inactive',
     category: product.categories?.[0]?.name || 'N/A',
-    image: product.images?.[0] || product.coverUrl || '/assets/images/product/product-placeholder.png',
+    image: product.image || product.images?.[0] || product.coverUrl || '/assets/images/product/product-placeholder.png',
     originalProduct: product,
   }));
 

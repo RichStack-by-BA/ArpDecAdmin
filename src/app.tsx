@@ -54,7 +54,7 @@ export default function App({ children }: AppProps) {
   return (
     <ThemeProvider>
       {children}
-      {githubButton()}
+      {/* {githubButton()} */}
     </ThemeProvider>
   );
 }

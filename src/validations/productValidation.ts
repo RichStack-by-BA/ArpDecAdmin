@@ -74,7 +74,7 @@ export const addProductSchema = yup.object({
     .of(
       yup.object({
         name: yup.string().required('Color name is required'),
-        image: yup.mixed().required('Color image is required'),
+        images: yup.array().min(1, 'Upload at least one image for this variant').required('Images are required'),
         stock: yup.number().required('Stock is required').integer().min(0, 'Stock cannot be negative'),
       })
     )

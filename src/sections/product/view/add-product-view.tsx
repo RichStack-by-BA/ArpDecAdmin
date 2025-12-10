@@ -53,7 +53,7 @@ export function AddProductView() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [images, setImages] = useState<File[]>([]);
-  const [variants, setVariants] = useState<Array<{ name: string; image: File | null; imagePreview: string; stock: number | string }>>([]);
+  const [variants, setVariants] = useState<Array<{ name: string; images: File[]; imagePreviews: string[]; stock: number | string }>>([]);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<string>('');
   const [selectOpen, setSelectOpen] = useState(false);
@@ -78,9 +78,9 @@ export function AddProductView() {
       name: '',
       description: '',
       selectedCategories: [],
-      price: 0,
+      price: undefined,
       discountPrice: undefined,
-      stock: 0,
+      stock: undefined,
       taxId: '',
       imageMode: 'default',
       images: [],
@@ -104,7 +104,7 @@ export function AddProductView() {
 
   // Variant Management Functions
   const handleAddVariant = () => {
-    const newVariant = { name: '', image: null, imagePreview: '', stock: '' };
+    const newVariant = { name: '', images: [], imagePreviews: [], stock: '' };
     setVariants([...variants, newVariant]);
   };
 
@@ -129,33 +129,51 @@ export function AddProductView() {
   };
 
   const handleVariantImageChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        setError('Variant image must be less than 5MB');
+    const files = e.target.files;
+    if (files) {
+      const newFiles = Array.from(files);
+      
+      // Validate each file size (max 5MB)
+      const invalidFiles = newFiles.filter(file => file.size > 5 * 1024 * 1024);
+      
+      if (invalidFiles.length > 0) {
+        setError(`${invalidFiles.length} file(s) exceed the 5MB limit. Please select smaller files.`);
         return;
       }
 
-      // Validate file type
-      if (!['image/jpeg', 'image/jpg', 'image/png', 'image/webp'].includes(file.type)) {
+      // Validate file types
+      const invalidTypes = newFiles.filter(file => !['image/jpeg', 'image/jpg', 'image/png', 'image/webp'].includes(file.type));
+      if (invalidTypes.length > 0) {
         setError('Only image files (JPEG, PNG, WEBP) are allowed');
         return;
       }
 
       const updatedVariants = [...variants];
-      updatedVariants[index].image = file;
+      updatedVariants[index].images = [...updatedVariants[index].images, ...newFiles];
 
-      // Create preview
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        updatedVariants[index].imagePreview = reader.result as string;
+      // Create previews for all new files
+      const previewPromises = newFiles.map(file => new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.readAsDataURL(file);
+      }));
+
+      Promise.all(previewPromises).then(previews => {
+        updatedVariants[index].imagePreviews = [...updatedVariants[index].imagePreviews, ...previews];
         setVariants(updatedVariants);
         setValue('variants', updatedVariants as any);
-      };
-      reader.readAsDataURL(file);
+      });
+      
       setError('');
     }
+  };
+
+  const handleRemoveVariantImage = (variantIndex: number, imageIndex: number) => {
+    const updatedVariants = [...variants];
+    updatedVariants[variantIndex].images = updatedVariants[variantIndex].images.filter((_, i) => i !== imageIndex);
+    updatedVariants[variantIndex].imagePreviews = updatedVariants[variantIndex].imagePreviews.filter((_, i) => i !== imageIndex);
+    setVariants(updatedVariants);
+    setValue('variants', updatedVariants as any);
   };
 
   const handleAddImage = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -197,7 +215,7 @@ export function AddProductView() {
       }
 
       const imageUrls: string[] = [];
-      const variantsData: Array<{ name: string; image: string; stock: number }> = [];
+      const variantsData: Array<{ name: string; images: string[]; stock: number }> = [];
 
       // Handle default mode - upload images
       if (data.imageMode === 'default') {
@@ -241,7 +259,7 @@ export function AddProductView() {
 
         // Validate each variant has required fields
         for (let i = 0; i < variants.length; i++) {
-          if (!variants[i].name || !variants[i].image) {
+          if (!variants[i].name || variants[i].images.length === 0) {
             setError(`Please complete all fields for variant ${i + 1}`);
             setUploading(false);
             return;
@@ -249,29 +267,38 @@ export function AddProductView() {
         }
 
         // Upload variant images
-        setUploadProgress(`Uploading variant images (0/${variants.length})...`);
+        const totalImagesToUpload = variants.reduce((sum, v) => sum + v.images.length, 0);
+        let uploadedCount = 0;
         
         for (let i = 0; i < variants.length; i++) {
-          setUploadProgress(`Uploading variant images (${i + 1}/${variants.length})...`);
+          const variant = variants[i];
+          const uploadedUrls: string[] = [];
           
-          try {
-            const uploadedUrl = await dispatch(
-              uploadImage({
-                userId: userDetails.user._id,
-                file: variants[i].image!,
-              })
-            ).unwrap();
+          for (let j = 0; j < variant.images.length; j++) {
+            uploadedCount++;
+            setUploadProgress(`Uploading variant images (${uploadedCount}/${totalImagesToUpload})...`);
             
-            variantsData.push({
-              name: variants[i].name,
-              image: uploadedUrl,
-              stock: Number(variants[i].stock) || 0,
-            });
-          } catch (uploadErr: any) {
-            setError(`Failed to upload variant image ${i + 1}: ${uploadErr}`);
-            setUploading(false);
-            return;
+            try {
+              const uploadedUrl = await dispatch(
+                uploadImage({
+                  userId: userDetails.user._id,
+                  file: variant.images[j],
+                })
+              ).unwrap();
+              
+              uploadedUrls.push(uploadedUrl);
+            } catch (uploadErr: any) {
+              setError(`Failed to upload variant ${i + 1} image ${j + 1}: ${uploadErr}`);
+              setUploading(false);
+              return;
+            }
           }
+          
+          variantsData.push({
+            name: variant.name,
+            images: uploadedUrls,
+            stock: Number(variant.stock) || 0,
+          });
         }
       }
 
@@ -333,11 +360,27 @@ export function AddProductView() {
   return (
     <DashboardContent>
       <BaseBox sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-        <BaseIconButton onClick={() => router.push('/products')} sx={{ mr: 1 }}>
+        <BaseIconButton onClick={() => router.push('/products')} sx={{ mr: 1 }} disabled={uploading}>
           <Iconify icon="eva:arrow-ios-forward-fill" sx={{ transform: 'rotate(180deg)' }} />
         </BaseIconButton>
         <BaseTypography variant="h4">Add New Product</BaseTypography>
       </BaseBox>
+
+      {(uploading || loading) && (
+        <BaseAlert severity="info" sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
+          <BaseCircularProgress size={20} />
+          <BaseBox>
+            <BaseTypography variant="body2" sx={{ fontWeight: 600 }}>
+              Processing...
+            </BaseTypography>
+            {uploadProgress && (
+              <BaseTypography variant="caption" color="text.secondary">
+                {uploadProgress}
+              </BaseTypography>
+            )}
+          </BaseBox>
+        </BaseAlert>
+      )}
 
       {error && (
         <BaseAlert severity="error" sx={{ mb: 3 }}>
@@ -361,12 +404,6 @@ export function AddProductView() {
       {success && (
         <BaseAlert severity="success" sx={{ mb: 3 }}>
           {success}
-        </BaseAlert>
-      )}
-
-      {uploadProgress && (
-        <BaseAlert severity="info" sx={{ mb: 3 }}>
-          {uploadProgress}
         </BaseAlert>
       )}
 
@@ -520,29 +557,10 @@ export function AddProductView() {
                       )}
                     />
                   </BaseGrid>
-                  {imageMode === 'default' && (
-                    <BaseGrid size={{ xs: 12 }}>
-                      <Controller
-                        name="stock"
-                        control={control}
-                        render={({ field }) => (
-                          <BaseTextField
-                            {...field}
-                            fullWidth
-                            label="Stock Quantity"
-                            type="number"
-                            required
-                            error={!!errors.stock}
-                            helperText={errors.stock?.message}
-                          />
-                        )}
-                      />
-                    </BaseGrid>
-                  )}
                 </BaseGrid>
 
                 <Controller
-                  name="taxId"
+                  name="policy"
                   control={control}
                   render={({ field }) => (
                     <BaseFormControl fullWidth error={!!errors.policy}>
@@ -597,7 +615,7 @@ export function AddProductView() {
 
             {/* Images / Variants */}
             <BaseCard sx={{ p: 3, mb: 3 }}>
-              <BaseTypography variant="h6" sx={{ mb: 2 }}>Product Images *</BaseTypography>
+              <BaseTypography variant="h6" sx={{ mb: 2 }}>Product Images * and Stock</BaseTypography>
               
               {/* Radio Selection for Image Mode */}
               <Controller
@@ -638,6 +656,23 @@ export function AddProductView() {
               {/* Default Mode - Regular Images */}
               {imageMode === 'default' && (
                 <>
+                  <Controller
+                    name="stock"
+                    control={control}
+                    render={({ field }) => (
+                      <BaseTextField
+                        {...field}
+                        fullWidth
+                        label="Stock Quantity"
+                        type="number"
+                        required
+                        error={!!errors.stock}
+                        helperText={errors.stock?.message}
+                        sx={{ mb: 3 }}
+                      />
+                    )}
+                  />
+                  
                   <BaseBox sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
                     <BaseTypography variant="body2" color="text.secondary">
                       Upload product images
@@ -759,35 +794,64 @@ export function AddProductView() {
                               fullWidth
                               startIcon={<Iconify icon="solar:upload-bold" />}
                             >
-                              Upload Color Image
+                              Upload Product Images
                               <input
                                 type="file"
                                 hidden
+                                multiple
                                 accept="image/jpeg,image/jpg,image/png,image/webp"
                                 onChange={(e) => handleVariantImageChange(index, e)}
                               />
                             </BaseButton>
                             <BaseTypography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
-                              Max size: 5MB • Formats: JPG, PNG, WEBP
+                              Max size: 5MB per image • Formats: JPG, PNG, WEBP
                             </BaseTypography>
                           </BaseBox>
-                          {variant.imagePreview && (
-                            <BaseBox
-                              sx={{
-                                width: '100%',
-                                height: 150,
-                                borderRadius: 1,
-                                overflow: 'hidden',
-                                border: '1px solid',
-                                borderColor: 'divider',
-                              }}
-                            >
-                              <img
-                                src={variant.imagePreview}
-                                alt={`${variant.name} preview`}
-                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                              />
+                          
+                          {/* Display uploaded images */}
+                          {variant.imagePreviews.length > 0 && (
+                            <BaseBox sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+                              {variant.imagePreviews.map((preview, imgIndex) => (
+                                <BaseBox
+                                  key={imgIndex}
+                                  sx={{
+                                    position: 'relative',
+                                    width: 120,
+                                    height: 120,
+                                    borderRadius: 1,
+                                    overflow: 'hidden',
+                                    border: '1px solid',
+                                    borderColor: 'divider',
+                                  }}
+                                >
+                                  <img
+                                    src={preview}
+                                    alt={`${variant.name} ${imgIndex + 1}`}
+                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                  />
+                                  <BaseIconButton
+                                    size="small"
+                                    color="error"
+                                    onClick={() => handleRemoveVariantImage(index, imgIndex)}
+                                    sx={{
+                                      position: 'absolute',
+                                      top: 4,
+                                      right: 4,
+                                      bgcolor: 'background.paper',
+                                      '&:hover': { bgcolor: 'background.paper' },
+                                    }}
+                                  >
+                                    <Iconify icon="solar:trash-bin-trash-bold" width={16} />
+                                  </BaseIconButton>
+                                </BaseBox>
+                              ))}
                             </BaseBox>
+                          )}
+                          
+                          {variant.imagePreviews.length === 0 && (
+                            <BaseTypography variant="body2" color="text.secondary">
+                              No images uploaded for this variant yet.
+                            </BaseTypography>
                           )}
                         </BaseBox>
                       </BaseCard>

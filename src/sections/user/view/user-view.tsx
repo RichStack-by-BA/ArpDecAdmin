@@ -14,6 +14,13 @@ import { DashboardContent } from 'src/layouts/dashboard';
 
 import { Iconify } from 'src/components/iconify';
 import { Scrollbar } from 'src/components/scrollbar';
+import {
+  BaseBox,
+  BaseGrid,
+  BaseDialog,
+  BaseTypography,
+  BaseIconButton,
+} from 'src/components/baseComponents';
 
 import { TableNoData } from '../table-no-data';
 import { UserTableRow } from '../user-table-row';
@@ -30,6 +37,8 @@ export function UserView() {
   const table = useTable();
 
   const [filterName, setFilterName] = useState('');
+  const [selectedUser, setSelectedUser] = useState<UserProps | null>(null);
+  const [openModal, setOpenModal] = useState(false);
 
   const dataFiltered: UserProps[] = applyFilter({
     inputData: _users,
@@ -38,6 +47,16 @@ export function UserView() {
   });
 
   const notFound = !dataFiltered.length && !!filterName;
+
+  const handleViewUser = useCallback((user: UserProps) => {
+    setSelectedUser(user);
+    setOpenModal(true);
+  }, []);
+
+  const handleCloseModal = useCallback(() => {
+    setOpenModal(false);
+    setSelectedUser(null);
+  }, []);
 
   return (
     <DashboardContent>
@@ -106,6 +125,7 @@ export function UserView() {
                       row={row}
                       selected={table.selected.includes(row.id)}
                       onSelectRow={() => table.onSelectRow(row.id)}
+                      onViewUser={handleViewUser}
                     />
                   ))}
 
@@ -130,6 +150,90 @@ export function UserView() {
           onRowsPerPageChange={table.onChangeRowsPerPage}
         />
       </Card>
+
+      {/* View User Modal */}
+      <BaseDialog
+        open={openModal}
+        onClose={handleCloseModal}
+        maxWidth="sm"
+        fullWidth
+      >
+        <BaseDialog.Title>
+          <BaseBox sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pr: 2 }}>
+            <BaseTypography variant="h5">User Details</BaseTypography>
+            <BaseIconButton onClick={handleCloseModal} size="small">
+              <Iconify icon="mingcute:close-line" />
+            </BaseIconButton>
+          </BaseBox>
+        </BaseDialog.Title>
+        <BaseDialog.Content dividers>
+          {selectedUser && (
+            <BaseGrid container spacing={3}>
+              <BaseGrid size={{ xs: 12, sm: 6 }}>
+                <BaseTypography variant="subtitle2" color="text.secondary" gutterBottom>
+                  Name
+                </BaseTypography>
+                <BaseTypography variant="body1">{selectedUser.name}</BaseTypography>
+              </BaseGrid>
+
+              <BaseGrid size={{ xs: 12, sm: 6 }}>
+                <BaseTypography variant="subtitle2" color="text.secondary" gutterBottom>
+                  Company
+                </BaseTypography>
+                <BaseTypography variant="body1">{selectedUser.company}</BaseTypography>
+              </BaseGrid>
+
+              <BaseGrid size={{ xs: 12, sm: 6 }}>
+                <BaseTypography variant="subtitle2" color="text.secondary" gutterBottom>
+                  Role
+                </BaseTypography>
+                <BaseTypography variant="body1">{selectedUser.role}</BaseTypography>
+              </BaseGrid>
+
+              <BaseGrid size={{ xs: 12, sm: 6 }}>
+                <BaseTypography variant="subtitle2" color="text.secondary" gutterBottom>
+                  Verified
+                </BaseTypography>
+                <BaseBox
+                  sx={{
+                    px: 1.5,
+                    py: 0.5,
+                    borderRadius: 0.75,
+                    display: 'inline-flex',
+                    bgcolor: selectedUser.isVerified ? 'success.lighter' : 'warning.lighter',
+                    color: selectedUser.isVerified ? 'success.dark' : 'warning.dark',
+                    fontWeight: 600,
+                    fontSize: '0.75rem',
+                  }}
+                >
+                  {selectedUser.isVerified ? 'Verified' : 'Not Verified'}
+                </BaseBox>
+              </BaseGrid>
+
+              <BaseGrid size={{ xs: 12, sm: 6 }}>
+                <BaseTypography variant="subtitle2" color="text.secondary" gutterBottom>
+                  Status
+                </BaseTypography>
+                <BaseBox
+                  sx={{
+                    px: 1.5,
+                    py: 0.5,
+                    borderRadius: 0.75,
+                    display: 'inline-flex',
+                    bgcolor: selectedUser.status === 'banned' ? 'error.lighter' : 'success.lighter',
+                    color: selectedUser.status === 'banned' ? 'error.dark' : 'success.dark',
+                    fontWeight: 600,
+                    fontSize: '0.75rem',
+                    textTransform: 'capitalize',
+                  }}
+                >
+                  {selectedUser.status}
+                </BaseBox>
+              </BaseGrid>
+            </BaseGrid>
+          )}
+        </BaseDialog.Content>
+      </BaseDialog>
     </DashboardContent>
   );
 }

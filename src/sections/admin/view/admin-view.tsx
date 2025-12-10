@@ -7,13 +7,14 @@ import { useNavigate } from 'react-router-dom';
 
 import { useDispatch, useSelector } from 'react-redux';
 
-import { PAGE_LIMIT } from 'src/constant';
+import { PAGE_LIMIT, VIEW_ICONS } from 'src/constant';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { fetchUsers } from 'src/store/slices/usersSlice';
 import { Iconify } from 'src/components/iconify';
 import {
   BaseBox,
   BaseCard,
+  BaseGrid,
   BaseAlert,
   DataTable,
   BaseButton,
@@ -43,6 +44,7 @@ export function AdminView() {
   const { users: admins, loading, error, totalCount } = useSelector((state: RootState) => state.users);
 
   const [search, setSearch] = useState('');
+  const [view, setView] = useState<'table' | 'grid'>('table');
   const [selectedAdmin, setSelectedAdmin] = useState<User | null>(null);
   const [openModal, setOpenModal] = useState(false);
   const [page, setPage] = useState(1);
@@ -209,22 +211,43 @@ export function AdminView() {
       )}
 
       <BaseCard>
-        <BaseBox sx={{ p: 3 }}>
-          <BaseTextField
-            fullWidth
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search admins..."
-            slotProps={{
-              input: {
-                startAdornment: (
-                  <BaseBox sx={{ mr: 1, display: 'flex', alignItems: 'center' }}>
-                    <Iconify icon="eva:search-fill" width={20} />
-                  </BaseBox>
-                ),
-              },
-            }}
-          />
+        <BaseBox sx={{ p: 3, pb: 0 }}>
+          <BaseBox sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+            <BaseTextField
+              fullWidth
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search admins..."
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <BaseBox sx={{ mr: 1, display: 'flex', alignItems: 'center' }}>
+                      <Iconify icon="eva:search-fill" width={20} />
+                    </BaseBox>
+                  ),
+                },
+              }}
+            />
+
+            <BaseBox sx={{ display: 'flex', gap: 1 }}>
+              <BaseButton
+                variant={view === 'table' ? 'contained' : 'outlined'}
+                color="inherit"
+                onClick={() => setView('table')}
+                sx={{ minWidth: 'auto', px: 2 }}
+              >
+                <Iconify icon={VIEW_ICONS.TABLE} />
+              </BaseButton>
+              <BaseButton
+                variant={view === 'grid' ? 'contained' : 'outlined'}
+                color="inherit"
+                onClick={() => setView('grid')}
+                sx={{ minWidth: 'auto', px: 2 }}
+              >
+                <Iconify icon={VIEW_ICONS.GRID} />
+              </BaseButton>
+            </BaseBox>
+          </BaseBox>
         </BaseBox>
 
         {loading ? (
@@ -240,7 +263,97 @@ export function AdminView() {
           </BaseBox>
         ) : (
           <>
-            <DataTable columns={columns} rows={filteredRows} />
+            {view === 'table' ? (
+              <DataTable columns={columns} rows={filteredRows} />
+            ) : (
+              <BaseBox sx={{ p: 3 }}>
+                <BaseBox
+                  sx={{
+                    display: 'grid',
+                    gap: 3,
+                    gridTemplateColumns: {
+                      xs: 'repeat(1, 1fr)',
+                      sm: 'repeat(2, 1fr)',
+                      md: 'repeat(3, 1fr)',
+                      lg: 'repeat(4, 1fr)',
+                    },
+                  }}
+                >
+                  {filteredRows.map((row) => (
+                    <BaseCard key={row.id} sx={{ overflow: 'hidden', '&:hover': { boxShadow: 3 }, transition: 'box-shadow 0.3s' }}>
+                      <BaseBox sx={{ p: 2 }}>
+                        <BaseBox sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+                          <BaseBox
+                            sx={{
+                              px: 1.5,
+                              py: 0.5,
+                              borderRadius: 0.75,
+                              display: 'inline-flex',
+                              bgcolor: row.status === 'Active' ? 'success.lighter' : 'error.lighter',
+                              color: row.status === 'Active' ? 'success.dark' : 'error.dark',
+                              fontWeight: 600,
+                              fontSize: '0.75rem',
+                            }}
+                          >
+                            {row.status}
+                          </BaseBox>
+                          <BaseBox sx={{ display: 'flex', gap: 0.5 }}>
+                            <BaseIconButton
+                              size="small"
+                              color="primary"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleViewAdmin(row.originalAdmin);
+                              }}
+                            >
+                              <Iconify icon="solar:eye-bold" width={18} />
+                            </BaseIconButton>
+                            <BaseIconButton
+                              size="small"
+                              color="secondary"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigate(`/admin/edit/${row.id}`);
+                              }}
+                            >
+                              <Iconify icon="solar:pen-bold" width={18} />
+                            </BaseIconButton>
+                          </BaseBox>
+                        </BaseBox>
+                        <BaseTypography variant="h6" sx={{ mb: 1 }}>
+                          {row.name}
+                        </BaseTypography>
+                        <BaseBox sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                          <BaseTypography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
+                            {row.email}
+                          </BaseTypography>
+                          <BaseTypography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
+                            {row.phone}
+                          </BaseTypography>
+                          <BaseBox
+                            sx={{
+                              mt: 1,
+                              px: 1.5,
+                              py: 0.5,
+                              borderRadius: 0.75,
+                              display: 'inline-flex',
+                              bgcolor: row.role === 'admin' ? 'primary.lighter' : 'secondary.lighter',
+                              color: row.role === 'admin' ? 'primary.dark' : 'secondary.dark',
+                              fontWeight: 600,
+                              fontSize: '0.75rem',
+                              textTransform: 'capitalize',
+                              width: 'fit-content',
+                            }}
+                          >
+                            {row.role}
+                          </BaseBox>
+                        </BaseBox>
+                      </BaseBox>
+                    </BaseCard>
+                  ))}
+                </BaseBox>
+              </BaseBox>
+            )}
 
             {!error && !search && totalCount > PAGE_LIMIT && (
               <BaseBox sx={{ p: 2, display: 'flex', justifyContent: 'center' }}>
@@ -260,77 +373,87 @@ export function AdminView() {
       <BaseDialog
         open={openModal}
         onClose={handleCloseModal}
-        title="Admin Details"
         maxWidth="sm"
+        fullWidth
       >
-        {selectedAdmin && (
-          <BaseBox sx={{ p: 2 }}>
-            <BaseBox sx={{ mb: 3 }}>
-              <BaseTypography variant="subtitle2" color="text.secondary" gutterBottom>
-                Name
-              </BaseTypography>
-              <BaseTypography variant="body1">{selectedAdmin.name}</BaseTypography>
-            </BaseBox>
-
-            <BaseBox sx={{ mb: 3 }}>
-              <BaseTypography variant="subtitle2" color="text.secondary" gutterBottom>
-                Email
-              </BaseTypography>
-              <BaseTypography variant="body1">{selectedAdmin.email}</BaseTypography>
-            </BaseBox>
-
-            <BaseBox sx={{ mb: 3 }}>
-              <BaseTypography variant="subtitle2" color="text.secondary" gutterBottom>
-                Phone
-              </BaseTypography>
-              <BaseTypography variant="body1">{selectedAdmin.phone || 'N/A'}</BaseTypography>
-            </BaseBox>
-
-            <BaseBox sx={{ mb: 3 }}>
-              <BaseTypography variant="subtitle2" color="text.secondary" gutterBottom>
-                Role
-              </BaseTypography>
-              <BaseTypography variant="body1" sx={{ textTransform: 'capitalize' }}>
-                {selectedAdmin.role}
-              </BaseTypography>
-            </BaseBox>
-
-            <BaseBox sx={{ mb: 3 }}>
-              <BaseTypography variant="subtitle2" color="text.secondary" gutterBottom>
-                Status
-              </BaseTypography>
-              <BaseBox
-                sx={{
-                  px: 1.5,
-                  py: 0.5,
-                  borderRadius: 0.75,
-                  display: 'inline-flex',
-                  bgcolor: selectedAdmin.status ? 'success.lighter' : 'error.lighter',
-                  color: selectedAdmin.status ? 'success.dark' : 'error.dark',
-                  fontWeight: 600,
-                  fontSize: '0.75rem',
-                }}
-              >
-                {selectedAdmin.status ? 'Active' : 'Inactive'}
-              </BaseBox>
-            </BaseBox>
-
-            <BaseBox sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 3 }}>
-              <BaseButton variant="outlined" onClick={handleCloseModal}>
-                Close
-              </BaseButton>
-              <BaseButton
-                variant="contained"
-                onClick={() => {
-                  navigate(`/admin/edit/${selectedAdmin.id}`);
-                  handleCloseModal();
-                }}
-              >
-                Edit
-              </BaseButton>
-            </BaseBox>
+        <BaseDialog.Title>
+          <BaseBox sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pr: 2 }}>
+            <BaseTypography variant="h5">Admin Details</BaseTypography>
+            <BaseIconButton onClick={handleCloseModal} size="small">
+              <Iconify icon="mingcute:close-line" />
+            </BaseIconButton>
           </BaseBox>
-        )}
+        </BaseDialog.Title>
+        <BaseDialog.Content dividers>
+          {selectedAdmin && (
+            <BaseGrid container spacing={3}>
+              <BaseGrid size={{ xs: 12, sm: 6 }}>
+                <BaseTypography variant="subtitle2" color="text.secondary" gutterBottom>
+                  Name
+                </BaseTypography>
+                <BaseTypography variant="body1">{selectedAdmin.name}</BaseTypography>
+              </BaseGrid>
+
+              <BaseGrid size={{ xs: 12, sm: 6 }}>
+                <BaseTypography variant="subtitle2" color="text.secondary" gutterBottom>
+                  Email
+                </BaseTypography>
+                <BaseTypography variant="body1">{selectedAdmin.email}</BaseTypography>
+              </BaseGrid>
+
+              <BaseGrid size={{ xs: 12, sm: 6 }}>
+                <BaseTypography variant="subtitle2" color="text.secondary" gutterBottom>
+                  Phone
+                </BaseTypography>
+                <BaseTypography variant="body1">{selectedAdmin.phone || 'N/A'}</BaseTypography>
+              </BaseGrid>
+
+              <BaseGrid size={{ xs: 12, sm: 6 }}>
+                <BaseTypography variant="subtitle2" color="text.secondary" gutterBottom>
+                  Role
+                </BaseTypography>
+                <BaseTypography variant="body1" sx={{ textTransform: 'capitalize' }}>
+                  {selectedAdmin.role}
+                </BaseTypography>
+              </BaseGrid>
+
+              <BaseGrid size={{ xs: 12, sm: 6 }}>
+                <BaseTypography variant="subtitle2" color="text.secondary" gutterBottom>
+                  Status
+                </BaseTypography>
+                <BaseBox
+                  sx={{
+                    px: 1.5,
+                    py: 0.5,
+                    borderRadius: 0.75,
+                    display: 'inline-flex',
+                    bgcolor: selectedAdmin.status ? 'success.lighter' : 'error.lighter',
+                    color: selectedAdmin.status ? 'success.dark' : 'error.dark',
+                    fontWeight: 600,
+                    fontSize: '0.75rem',
+                  }}
+                >
+                  {selectedAdmin.status ? 'Active' : 'Inactive'}
+                </BaseBox>
+              </BaseGrid>
+
+              <BaseGrid size={{ xs: 12 }} sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 2 }}>
+                <BaseButton variant="outlined" onClick={handleCloseModal}>
+                  Close
+                </BaseButton>
+                <BaseButton
+                  variant="contained"
+                  onClick={() => {
+                    navigate(`/admin/edit/${selectedAdmin.id}`);
+                    handleCloseModal();
+                  }}
+                >
+                  Edit
+                </BaseButton>
+              </BaseGrid>
+            </BaseGrid>
+          )}
+        </BaseDialog.Content>
       </BaseDialog>
     </DashboardContent>
   );

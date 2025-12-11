@@ -21,6 +21,7 @@ import {
   BaseTextField,
   BaseTypography,
   BasePagination,
+  BaseIconButton,
   BaseCircularProgress,
 } from 'src/components/baseComponents';
 // ----------------------------------------------------------------------
@@ -52,7 +53,6 @@ export function ProductsView() {
   const handlePageChange = (_event: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);
   };
-  console.log(products,'===productproduct');
 
   // Transform products into rows for the table
   const tableRows: ProductRow[] = products.map((product) => ({
@@ -142,6 +142,20 @@ export function ProductsView() {
         >
           {value}
         </BaseBox>
+      ),
+    },
+    {
+      id: 'actions',
+      label: 'Actions',
+      align: 'center',
+      format: (value, row) => (
+        <BaseIconButton
+          size="small"
+          color="primary"
+          onClick={() => router.push(`/products/edit/${row?.originalProduct?.id}`)}
+        >
+          <Iconify icon="solar:pen-bold" />
+        </BaseIconButton>
       ),
     },
   ];
@@ -260,16 +274,7 @@ export function ProductsView() {
                     />
                   </BaseBox>
                   <BaseBox sx={{ p: 2 }}>
-                    <BaseTypography variant="h6" sx={{ mb: 1 }}>
-                      {row.name}
-                    </BaseTypography>
-                    <BaseTypography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                      {row.category}
-                    </BaseTypography>
-                    <BaseBox sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
-                      <BaseTypography variant="h6" color="primary">
-                        ₹{row.price}
-                      </BaseTypography>
+                    <BaseBox sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                       <BaseBox
                         sx={{
                           px: 1.5,
@@ -284,7 +289,23 @@ export function ProductsView() {
                       >
                         {row.status}
                       </BaseBox>
+                      <BaseIconButton
+                        size="small"
+                        color="primary"
+                        onClick={() => router.push(`/products/edit/${row.originalProduct.id}`)}
+                      >
+                        <Iconify icon="solar:pen-bold" width={18} />
+                      </BaseIconButton>
                     </BaseBox>
+                    <BaseTypography variant="h6" sx={{ mb: 1 }}>
+                      {row.name}
+                    </BaseTypography>
+                    <BaseTypography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                      {row.category}
+                    </BaseTypography>
+                    <BaseTypography variant="h6" color="primary">
+                      ₹{row.price}
+                    </BaseTypography>
                   </BaseBox>
                 </BaseCard>
               ))}

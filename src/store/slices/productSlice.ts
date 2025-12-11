@@ -20,11 +20,22 @@ export interface Product {
     slug: string;
   }>;
   priceSale: number | null;
+  description?: string;
+  specifications?: string;
+  taxId?: string;
+  policy?: string;
+  variants?: Array<{
+    name: string;
+    images: string[];
+    stock: number;
+  }>;
 }
 
 interface ProductState {
   products: Product[];
+  selectedProduct: Product | null;
   loading: boolean;
+  productLoading: boolean;
   error: string | null;
   totalCount: number;
   currentPage: number;
@@ -32,7 +43,9 @@ interface ProductState {
 
 const initialState: ProductState = {
   products: [],
+  selectedProduct: null,
   loading: false,
+  productLoading: false,
   error: null,
   totalCount: 0,
   currentPage: 1,
@@ -63,6 +76,30 @@ export const addProduct = createAsyncThunk(
   }
 );
 
+export const fetchProductById = createAsyncThunk(
+  'product/fetchProductById',
+  async (productId: string, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/product/${productId}`);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to fetch product');
+    }
+  }
+);
+
+export const updateProduct = createAsyncThunk(
+  'product/updateProduct',
+  async ({ productId, productData }: { productId: string; productData: any }, { rejectWithValue }) => {
+    try {
+      const response = await api.patch(`/product/edit/${productId}`, productData);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to update product');
+    }
+  }
+);
+
 const productSlice = createSlice({
   name: 'product',
   initialState,
@@ -71,6 +108,9 @@ const productSlice = createSlice({
       state.products = [];
       state.loading = false;
       state.error = null;
+    },
+    clearSelectedProduct: (state) => {
+      state.selectedProduct = null;
     },
   },
   extraReducers: (builder) => {
@@ -119,9 +159,56 @@ const productSlice = createSlice({
       .addCase(addProduct.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+      })
+      .addCase(fetchProductById.pending, (state) => {
+        state.productLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchProductById.fulfilled, (state, action) => {
+        state.productLoading = false;
+        const item = action.payload.data?.product;
+        if (item) {
+          state.selectedProduct = {
+            id: item._id,
+            name: item.name,
+            price: item.price,
+            discountPrice: item.discountPrice || 0,
+            coverUrl: item.thumbnail || item.images?.[0] || '',
+            image: item.image || item.images?.[0] || '',
+            images: item.images || [],
+            colors: item.colors || [],
+            status: item.isActive,
+            isActive: item.isActive,
+            stock: item.stock || 0,
+            categoryId: item.categories?.[0] || '',
+            categories: item.categories?.map((catId: string) => ({ _id: catId, name: '', slug: '' })) || [],
+            priceSale: item.discountPrice && item.discountPrice > 0 ? item.discountPrice : null,
+            description: item.description || '',
+            specifications: item.specifications || '',
+            taxId: item.taxId || '',
+            policy: item.policy || '',
+            variants: item.variants || [],
+          };
+        }
+      })
+      .addCase(fetchProductById.rejected, (state, action) => {
+        state.productLoading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(updateProduct.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateProduct.fulfilled, (state, action) => {
+        state.loading = false;
+        // Optionally update the product in the list
+      })
+      .addCase(updateProduct.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
       });
   },
 });
 
-export const { resetProducts } = productSlice.actions;
+export const { resetProducts, clearSelectedProduct } = productSlice.actions;
 export default productSlice.reducer;

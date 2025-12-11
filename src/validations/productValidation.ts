@@ -90,13 +90,7 @@ export const addProductSchema = yup.object({
     .optional(),
 
   specifications: yup
-    .array()
-    .of(
-      yup.object({
-        key: yup.string().required(),
-        value: yup.string().required(),
-      })
-    )
+    .string()
     .optional(),
 
   policy: yup
@@ -118,7 +112,7 @@ export type AddProductFormData = {
   images: any[];
   variants?: Array<{ name: string; image: File | string; stock: number }>;
   colors?: string[];
-  specifications?: Array<{ key: string; value: string }>;
+  specifications?: string;
   policy?: string;
   isActive: boolean;
 };

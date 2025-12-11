@@ -4,9 +4,9 @@ import type { AddProductFormData } from 'src/validations';
 import { useState, useEffect } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 
-import { useDispatch, useSelector } from 'react-redux';
+import { useForm, Controller } from 'react-hook-form';
 
-import { useForm, Controller, useFieldArray } from 'react-hook-form';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { useRouter } from 'src/routes/hooks';
 import { addProductSchema } from 'src/validations';
@@ -85,22 +85,13 @@ export function AddProductView() {
       imageMode: 'default',
       images: [],
       variants: [],
-      specifications: [{ key: '', value: '' }],
+      specifications: '',
       policy: '',
       isActive: true,
     },
   });
 
   const imageMode = watch('imageMode');
-
-  const {
-    fields: specFields,
-    append: appendSpec,
-    remove: removeSpec,
-  } = useFieldArray({
-    control,
-    name: 'specifications',
-  });
 
   // Variant Management Functions
   const handleAddVariant = () => {
@@ -304,13 +295,6 @@ export function AddProductView() {
 
       setUploadProgress('Creating product...');
 
-      // Convert specifications to HTML format
-      const specificationsHtml = data.specifications
-        ?.filter((s) => s?.key && s?.value)
-        .map((s) => `<li>${s.key}: ${s.value}</li>`)
-        .join('');
-      const specificationsString = specificationsHtml ? `<ul>${specificationsHtml}</ul>` : '';
-
       const payload: any = {
         name: data.name,
         categories: data.selectedCategories,
@@ -318,7 +302,7 @@ export function AddProductView() {
         discountPrice: data.discountPrice || 0,
         taxId: data.taxId,
         description: data.description,
-        specifications: specificationsString,
+        specifications: data.specifications || '',
         isActive: data.isActive,
       };
 
@@ -868,48 +852,28 @@ export function AddProductView() {
 
             {/* Specifications */}
             <BaseCard sx={{ p: 3, mb: 3 }}>
-              <BaseBox sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                <BaseTypography variant="h6">Specifications</BaseTypography>
-                <BaseButton
-                  size="small"
-                  startIcon={<Iconify icon="mingcute:add-line" />}
-                  onClick={() => appendSpec({ key: '', value: '' })}
-                >
-                  Add Specification
-                </BaseButton>
-              </BaseBox>
-              <BaseTypography
-                variant="caption"
-                color="text.secondary"
-                sx={{ mb: 2, display: 'block' }}
-              >
-                Add product specifications as key-value pairs.
+              <BaseTypography variant="h6" sx={{ mb: 3 }}>
+                Specifications
               </BaseTypography>
-              <BaseBox sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                {specFields.map((field, index) => (
-                  <BaseBox key={field.id} sx={{ display: 'flex', gap: 1 }}>
-                    <Controller
-                      name={`specifications.${index}.key`}
-                      control={control}
-                      render={({ field: specField }) => (
-                        <BaseTextField {...specField} label="Key" sx={{ flex: 1 }} />
-                      )}
+
+              <Controller
+                name="specifications"
+                control={control}
+                render={({ field }) => (
+                  <BaseBox>
+                    <BaseRichTextEditor
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder="Enter product specifications..."
                     />
-                    <Controller
-                      name={`specifications.${index}.value`}
-                      control={control}
-                      render={({ field: specField }) => (
-                        <BaseTextField {...specField} label="Value" sx={{ flex: 1 }} />
-                      )}
-                    />
-                    {specFields.length > 1 && (
-                      <BaseIconButton color="error" onClick={() => removeSpec(index)}>
-                        <Iconify icon="solar:trash-bin-trash-bold" />
-                      </BaseIconButton>
+                    {errors.specifications && (
+                      <BaseTypography color="error" variant="caption" sx={{ mt: 0.5, display: 'block' }}>
+                        {errors.specifications.message}
+                      </BaseTypography>
                     )}
                   </BaseBox>
-                ))}
-              </BaseBox>
+                )}
+              />
             </BaseCard>
           </BaseGrid>
 

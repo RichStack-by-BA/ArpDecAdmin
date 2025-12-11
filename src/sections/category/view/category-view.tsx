@@ -365,37 +365,9 @@ export function CategoryView() {
         </BaseDialog.Title>
         <BaseDialog.Content dividers>
           {selectedCategory && (
-            <BaseBox sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-              {/* Image */}
-              <BaseBox
-                sx={{
-                  width: '100%',
-                  height: 300,
-                  borderRadius: 2,
-                  overflow: 'hidden',
-                  bgcolor: 'background.neutral',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <BaseBox
-                  component="img"
-                  src={selectedCategory.image}
-                  alt={selectedCategory.name}
-                  sx={{
-                    maxWidth: '100%',
-                    maxHeight: '100%',
-                    objectFit: 'contain',
-                  }}
-                  onError={(e: any) => {
-                    e.target.style.display = 'none';
-                  }}
-                />
-              </BaseBox>
-
-              {/* Details Grid */}
-              <BaseBox sx={{ display: 'grid', gap: 2 }}>
+            <BaseBox sx={{ display: 'flex', gap: 3}}>
+              {/* Left Side - Details */}
+              <BaseBox sx={{ flex: 1, gap: '12px', flexDirection: 'column'  }}>
                 {/* Name */}
                 <BaseBox>
                   <BaseTypography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>
@@ -448,6 +420,35 @@ export function CategoryView() {
                     {selectedCategory.isActive ? 'Active' : 'Inactive'}
                   </BaseBox>
                 </BaseBox>
+              </BaseBox>
+
+              {/* Right Side - Image */}
+              <BaseBox
+                sx={{
+                  flex: 1,
+                  maxHeight: '300px',
+                  maxWidth: '50%',
+                  borderRadius: 2,
+                  overflow: 'hidden',
+                  bgcolor: 'background.neutral',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <BaseBox
+                  component="img"
+                  src={selectedCategory.image}
+                  alt={selectedCategory.name}
+                  sx={{
+                    maxWidth: '100%',
+                    maxHeight: '100%',
+                    objectFit: 'contain',
+                  }}
+                  onError={(e: any) => {
+                    e.target.style.display = 'none';
+                  }}
+                />
               </BaseBox>
             </BaseBox>
           )}

@@ -7,14 +7,12 @@ import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
 import { useTheme } from '@mui/material/styles';
 
-import { _langs, _notifications } from 'src/_mock';
 
 import { NavMobile, NavDesktop } from './nav';
 import { layoutClasses } from '../core/classes';
 import { _account } from '../nav-config-account';
 import { dashboardLayoutVars } from './css-vars';
 import { MainSection } from '../core/main-section';
-import { Searchbar } from '../components/searchbar';
 import { useNavData } from '../nav-config-dashboard';
 import { _workspaces } from '../nav-config-workspace';
 import { MenuButton } from '../components/menu-button';

@@ -101,7 +101,6 @@ export function AddAdminView() {
   // Populate form when editing
   useEffect(() => {
     if (isEditMode && currentAdmin) {
-      console.log('Populating form with admin data:', currentAdmin);
       reset({
         firstName: currentAdmin.firstName || '',
         lastName: currentAdmin.lastName || '',

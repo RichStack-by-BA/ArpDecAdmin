@@ -25,6 +25,8 @@ export const ResetPasswordPage = lazy(() => import('src/pages/reset-password'));
 export const NeedHelpPage = lazy(() => import('src/pages/need-help'));
 export const ProductsPage = lazy(() => import('src/pages/products'));
 export const AddProductPage = lazy(() => import('src/pages/product-add'));
+// eslint-disable-next-line import/no-unresolved
+export const EditProductPage = lazy(() => import('src/pages/product-edit'));
 export const OrdersPage = lazy(() => import('src/pages/order'));
 export const CategoryPage = lazy(() => import('src/pages/category'));
 export const PolicyPage = lazy(() => import('src/pages/policy'));
@@ -73,6 +75,7 @@ export const routesSection: RouteObject[] = [
       { path: 'customer', element: <CustomerPage /> },
       { path: 'products', element: <ProductsPage /> },
       { path: 'products/add', element: <AddProductPage /> },
+      { path: 'products/edit/:id', element: <EditProductPage /> },
       { path: 'orders', element: <OrdersPage /> },
       { path: 'category', element: <CategoryPage /> },
       { path: 'category/add', element: <AddCategoryPage /> },

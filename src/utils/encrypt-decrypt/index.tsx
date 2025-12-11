@@ -44,7 +44,6 @@ const getToken = (): string | null => {
   const storedValue = localStorage.getItem(RAW_TOKEN_KEY);
   if (!storedValue) return null;
   const decrypted = decryptData(storedValue);
-  console.log("decrypted token:", decrypted);
   return typeof decrypted === "string" ? decrypted : null;
 };
 

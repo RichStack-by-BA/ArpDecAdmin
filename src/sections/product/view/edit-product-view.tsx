@@ -64,6 +64,11 @@ export function EditProductView() {
   const [selectOpen, setSelectOpen] = useState(false);
   const [dataLoaded, setDataLoaded] = useState(false);
 
+  // Reset dataLoaded when productId changes
+  useEffect(() => {
+    setDataLoaded(false);
+  }, [productId]);
+
   // Fetch product data on mount
   useEffect(() => {
     if (productId) {
@@ -75,6 +80,7 @@ export function EditProductView() {
 
     return () => {
       dispatch(clearSelectedProduct());
+      setDataLoaded(false); // Reset dataLoaded when component unmounts
     };
   }, [dispatch, productId]);
 

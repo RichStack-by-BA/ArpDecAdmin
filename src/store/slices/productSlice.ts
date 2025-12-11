@@ -3,15 +3,19 @@ import { api } from 'src/api';
 
 export interface Product {
   id: string;
+  _id?: string;
   name: string;
+  slug?: string;
   price: number;
   discountPrice: number;
+  discountPercentage?: number;
   coverUrl: string;
   image: string;
   images: string[];
   colors: string[];
   status: boolean;
   isActive: boolean;
+  isVariant?: boolean;
   stock: number;
   categoryId: string;
   categories: Array<{
@@ -22,13 +26,20 @@ export interface Product {
   priceSale: number | null;
   description?: string;
   specifications?: string;
-  taxId?: string;
-  policy?: string;
+  taxId?: string | any;
+  policy?: string | any;
   variants?: Array<{
     name: string;
     images: string[];
     stock: number;
   }>;
+  wishlistCount?: number;
+  totalWishlistCount?: number;
+  rating?: number;
+  totalReviews?: number;
+  createdBy?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 interface ProductState {
@@ -125,19 +136,35 @@ const productSlice = createSlice({
         state.products = Array.isArray(items)
           ? items.map((item: any) => ({
               id: item._id,
+              _id: item._id,
               name: item.name,
+              slug: item.slug,
               price: item.price,
               discountPrice: item.discountPrice || 0,
+              discountPercentage: item.discountPercentage,
               coverUrl: item.thumbnail || item.images?.[0] || '',
               image: item.image || item.images?.[0] || '',
               images: item.images || [],
               colors: item.colors || [],
               status: item.isActive,
               isActive: item.isActive,
+              isVariant: item.isVariant,
               stock: item.stock || 0,
               categoryId: item.categories?.[0]?._id || '',
               categories: item.categories || [],
               priceSale: item.discountPrice && item.discountPrice > 0 ? item.discountPrice : null,
+              description: item.description || '',
+              specifications: item.specifications || '',
+              taxId: item.taxId || '',
+              policy: item.policy || '',
+              variants: item.variants || [],
+              wishlistCount: item.wishlistCount || 0,
+              totalWishlistCount: item.totalWishlistCount || 0,
+              rating: item.rating || 0,
+              totalReviews: item.totalReviews || 0,
+              createdBy: item.createdBy,
+              createdAt: item.createdAt,
+              updatedAt: item.updatedAt,
             }))
           : [];
         state.totalCount = action.payload.data?.count || 0;

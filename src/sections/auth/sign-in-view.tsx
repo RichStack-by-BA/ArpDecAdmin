@@ -7,7 +7,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
 import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
@@ -130,7 +129,7 @@ export function SignInView() {
         }}
       >
         <Typography variant="h5">Sign in</Typography>
-        <Typography
+        {/* <Typography
           variant="body2"
           sx={{
             color: 'text.secondary',
@@ -140,18 +139,18 @@ export function SignInView() {
           <Link variant="subtitle2" sx={{ ml: 0.5 }}>
             Get started
           </Link>
-        </Typography>
+        </Typography> */}
       </Box>
       {renderForm}
-      <Divider sx={{ my: 3, '&::before, &::after': { borderTopStyle: 'dashed' } }}>
+      {/* <Divider sx={{ my: 3, '&::before, &::after': { borderTopStyle: 'dashed' } }}>
         <Typography
           variant="overline"
           sx={{ color: 'text.secondary', fontWeight: 'fontWeightMedium' }}
         >
           OR
         </Typography>
-      </Divider>
-      <Box
+      </Divider> */}
+      {/* <Box
         sx={{
           gap: 1,
           display: 'flex',
@@ -167,7 +166,7 @@ export function SignInView() {
         <IconButton color="inherit">
           <Iconify width={22} icon="socials:twitter" />
         </IconButton>
-      </Box>
+      </Box> */}
     </>
   );
 }

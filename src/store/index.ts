@@ -4,6 +4,7 @@ import taxReducer from './slices/taxSlice';
 import userReducer from './slices/userSlice'; // example slice
 import authReducer from './slices/authSlice';
 import usersReducer from './slices/usersSlice';
+import offerReducer from './slices/offerSlice';
 import orderReducer from './slices/orderSlice';
 import uploadReducer from './slices/uploadSlice';
 import policyReducer from './slices/policySlice';
@@ -21,6 +22,7 @@ export const store = configureStore({
     upload: uploadReducer,
     policy: policyReducer,
     tax: taxReducer,
+    offer: offerReducer,
     // add more slices here
   },
 });

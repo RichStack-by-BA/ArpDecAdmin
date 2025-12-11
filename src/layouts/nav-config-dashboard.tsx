@@ -20,6 +20,7 @@ export const useNavData = (): NavItem[] => {
   const { products } = useSelector((state: RootState) => state.product);
   const { orders } = useSelector((state: RootState) => state.order);
   const { categories } = useSelector((state: RootState) => state.category);
+  const { offers } = useSelector((state: RootState) => state.offer);
   const { policies } = useSelector((state: RootState) => state.policy);
   const { taxes } = useSelector((state: RootState) => state.tax);
   const { users } = useSelector((state: RootState) => state.users);
@@ -27,6 +28,7 @@ export const useNavData = (): NavItem[] => {
   const productCount = products?.length || 0;
   const orderCount = orders?.length || 0;
   const categoryCount = categories?.length || 0;
+  const offerCount = offers?.length || 0;
   const policyCount = policies?.length || 0;
   const taxCount = taxes?.length || 0;
   const adminCount = users?.length || 0;
@@ -64,6 +66,16 @@ export const useNavData = (): NavItem[] => {
       info: categoryCount > 0 ? (
         <Label color="error" variant="inverted">
           +{categoryCount}
+        </Label>
+      ) : undefined,
+    },
+    {
+      title: 'Offers',
+      path: '/offer',
+      icon: icon('ic-cart'),
+      info: offerCount > 0 ? (
+        <Label color="success" variant="inverted">
+          {offerCount}
         </Label>
       ) : undefined,
     },

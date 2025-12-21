@@ -113,20 +113,53 @@ export function EditProductView() {
 
   const imageMode = watch('imageMode');
 
+  // Sync form's images and variants fields with local state for validation
+  useEffect(() => {
+    if (imageMode === 'default') {
+      // Combine new and existing images for validation
+      setValue('images', [...images, ...existingImages]);
+    } else if (imageMode === 'colors') {
+      // For validation, pass both new and existing images as 'images' and 'existingImages', cast as any for react-hook-form
+      setValue(
+        'variants',
+        variants.map(v => ({
+          name: v.name,
+          images: v.images,
+          existingImages: v.existingImages,
+          stock: typeof v.stock === 'string' ? Number(v.stock) : v.stock,
+        })) as any
+      );
+    }
+  }, [imageMode, images, existingImages, variants, setValue]);
+
   // Sync variants state with form data
   useEffect(() => {
-    if (imageMode === 'colors' && variants.length > 0) {
-      const formVariants = variants.map(v => ({
-        name: v.name,
-        images: v.images,
-        existingImages: v.existingImages,
-        stock: Number(v.stock) || 0,
-      }));
-      setValue('variants', formVariants as any);
+    // Only clear images and existingImages on mode change
+    setImages([]);
+    setExistingImages([]);
+    if (imageMode === 'colors') {
+      // Prefill variants from product data if available
+      if (selectedProduct && selectedProduct.variants && selectedProduct.variants.length > 0) {
+        const loadedVariants = selectedProduct.variants.map((variant: any) => ({
+          name: variant.name || '',
+          images: [],
+          imagePreviews: [],
+          stock: variant.stock || 0,
+          existingImages: variant.images || [],
+        }));
+        setVariants(loadedVariants);
+      } else {
+        setVariants([]);
+      }
     } else if (imageMode === 'default') {
+      setVariants([]);
       setValue('variants', []);
+      // If switching from variants to default, set existingImages from selectedProduct.images if available
+      if (selectedProduct && selectedProduct.images) {
+        setExistingImages(selectedProduct.images);
+      }
     }
-  }, [variants, imageMode, setValue]);
+  }, [imageMode, setValue, selectedProduct]);
 
   // Populate form when product data is loaded
   useEffect(() => {
@@ -233,8 +266,8 @@ export function EditProductView() {
   // Remove existing variant image
   const handleRemoveExistingVariantImage = (variantIndex: number, imageIndex: number) => {
     const updated = [...variants];
-    if (updated[variantIndex].existingImages) {
-      updated[variantIndex].existingImages!.splice(imageIndex, 1);
+    if (Array.isArray(updated[variantIndex].existingImages)) {
+      updated[variantIndex].existingImages = updated[variantIndex].existingImages.filter((_, i) => i !== imageIndex);
     }
     setVariants(updated);
   };
@@ -254,22 +287,22 @@ export function EditProductView() {
 
     try {
       // Validate images for default mode
-      if (data.imageMode === 'default') {
-        if (images.length === 0 && existingImages.length === 0) {
-          setError('Please upload at least one product image.');
-          setUploading(false);
-          return;
-        }
-      }
-
-      // Validate variants for colors mode
-      if (data.imageMode === 'colors') {
-        if (variants.length === 0) {
-          setError('Please add at least one color variant.');
-          setUploading(false);
-          return;
-        }
-
+      if (imageMode === 'default') {
+        // Combine new and existing images for validation
+        setValue('images', [...images, ...existingImages]);
+      } else if (imageMode === 'colors') {
+        // For react-hook-form, setValue must match the type expected in AddProductFormData
+        // The schema expects { name, image, stock }, but for validation, we need to pass images and existingImages
+        // So, for validation, we can cast to any to satisfy TypeScript, since the schema will handle the check
+        setValue(
+          'variants',
+          variants.map(v => ({
+            name: v.name,
+            images: v.images,
+            existingImages: v.existingImages,
+            stock: typeof v.stock === 'string' ? Number(v.stock) : v.stock,
+          })) as any
+        );
         for (const variant of variants) {
           if (!variant.name || variant.name.trim() === '') {
             setError('All variants must have a name.');
@@ -454,13 +487,16 @@ export function EditProductView() {
       <form 
         onSubmit={(e) => {
           handleSubmit(onSubmit, (validationErrors) => {
-            // Try to extract a specific error message for variant images
+            // Always log validation errors for debugging
+             
+            console.log('Validation errors:', validationErrors);
+            // Show specific variant image error if present
             let errorMsg = 'Please fix the validation errors before submitting.';
             if (validationErrors?.variants && Array.isArray(validationErrors.variants)) {
               for (let i = 0; i < validationErrors.variants.length; i++) {
                 const variantError = validationErrors.variants[i];
-                if (variantError && variantError.images && variantError.images.message) {
-                  errorMsg = `Variant ${i + 1}: ${variantError.images.message}`;
+                if (variantError && variantError.message) {
+                  errorMsg = variantError.message;
                   break;
                 }
               }

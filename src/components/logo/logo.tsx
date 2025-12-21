@@ -26,7 +26,7 @@ export function Logo({
 }: LogoProps) {
   const singleLogo = (
     <img
-      src="/src/components/logo/GoldenADLogo.png"
+      src="/assets/logo/GoldenADLogo.png"
       alt="Logo"
       style={{ width: '100%', height: '100%', objectFit: 'contain' }}
     />
@@ -34,7 +34,7 @@ export function Logo({
 
   const fullLogo = (
     <img
-      src="/src/components/logo/GoldenADLogo.png"
+      src="/assets/logo/GoldenADLogo.png"
       alt="Logo"
       style={{ width: '100%', height: '100%', objectFit: 'contain' }}
     />

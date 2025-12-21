@@ -99,6 +99,7 @@ export function AdminView() {
 
     return matchName || matchEmail || matchPhone || matchRole || matchStatus;
   });
+  console.log('selectedAdmin:', selectedAdmin);
 
   const columns: Column<AdminRow>[] = [
     {
@@ -389,54 +390,59 @@ export function AdminView() {
             <BaseGrid container spacing={3}>
               <BaseGrid size={{ xs: 12, sm: 6 }}>
                 <BaseTypography variant="subtitle2" color="text.secondary" gutterBottom>
-                  Name
+                  Admin ID
                 </BaseTypography>
-                <BaseTypography variant="body1">{selectedAdmin.name}</BaseTypography>
+                <BaseTypography variant="body1">{selectedAdmin.id}</BaseTypography>
               </BaseGrid>
-
-              <BaseGrid size={{ xs: 12, sm: 6 }}>
-                <BaseTypography variant="subtitle2" color="text.secondary" gutterBottom>
-                  Email
-                </BaseTypography>
-                <BaseTypography variant="body1">{selectedAdmin.email}</BaseTypography>
-              </BaseGrid>
-
               <BaseGrid size={{ xs: 12, sm: 6 }}>
                 <BaseTypography variant="subtitle2" color="text.secondary" gutterBottom>
                   Phone
                 </BaseTypography>
-                <BaseTypography variant="body1">{selectedAdmin.phone || 'N/A'}</BaseTypography>
+                <BaseTypography variant="body1">{selectedAdmin.phone || '-'}</BaseTypography>
               </BaseGrid>
-
               <BaseGrid size={{ xs: 12, sm: 6 }}>
                 <BaseTypography variant="subtitle2" color="text.secondary" gutterBottom>
-                  Role
+                  First Name
                 </BaseTypography>
-                <BaseTypography variant="body1" sx={{ textTransform: 'capitalize' }}>
-                  {selectedAdmin.role}
+                <BaseTypography variant="body1">{selectedAdmin.firstName || '-'}</BaseTypography>
+              </BaseGrid>
+              <BaseGrid size={{ xs: 12, sm: 6 }}>
+                <BaseTypography variant="subtitle2" color="text.secondary" gutterBottom>
+                  Last Name
+                </BaseTypography>
+                <BaseTypography variant="body1">{selectedAdmin.lastName || '-'}</BaseTypography>
+              </BaseGrid>
+              <BaseGrid size={{ xs: 12, sm: 6 }}>
+                <BaseTypography variant="subtitle2" color="text.secondary" gutterBottom>
+                  Email
+                </BaseTypography>
+                <BaseTypography variant="body1">
+                  {selectedAdmin.email}
+                  {typeof selectedAdmin.isEmailVerified !== 'undefined' && (
+                    <span style={{ marginLeft: 8, color: selectedAdmin.isEmailVerified ? '#229A16' : '#B71D18', fontWeight: 600, fontSize: '0.9em' }}>
+                      ({selectedAdmin.isEmailVerified ? 'Verified' : 'Not Verified'})
+                    </span>
+                  )}
                 </BaseTypography>
               </BaseGrid>
-
               <BaseGrid size={{ xs: 12, sm: 6 }}>
                 <BaseTypography variant="subtitle2" color="text.secondary" gutterBottom>
                   Status
                 </BaseTypography>
-                <BaseBox
-                  sx={{
-                    px: 1.5,
-                    py: 0.5,
-                    borderRadius: 0.75,
-                    display: 'inline-flex',
-                    bgcolor: selectedAdmin.status ? 'success.lighter' : 'error.lighter',
-                    color: selectedAdmin.status ? 'success.dark' : 'error.dark',
-                    fontWeight: 600,
-                    fontSize: '0.75rem',
-                  }}
-                >
-                  {selectedAdmin.status ? 'Active' : 'Inactive'}
-                </BaseBox>
+                <BaseTypography variant="body1">{selectedAdmin.status === true || selectedAdmin.status === 'Active' ? 'Active' : 'Inactive'}</BaseTypography>
               </BaseGrid>
-
+              <BaseGrid size={{ xs: 12, sm: 6 }}>
+                <BaseTypography variant="subtitle2" color="text.secondary" gutterBottom>
+                  Created At
+                </BaseTypography>
+                <BaseTypography variant="body1">{new Date(selectedAdmin.createdAt).toLocaleString()}</BaseTypography>
+              </BaseGrid>
+              <BaseGrid size={{ xs: 12, sm: 6 }}>
+                <BaseTypography variant="subtitle2" color="text.secondary" gutterBottom>
+                  Updated At
+                </BaseTypography>
+                <BaseTypography variant="body1">{new Date(selectedAdmin.updatedAt).toLocaleString()}</BaseTypography>
+              </BaseGrid>
               <BaseGrid size={{ xs: 12 }} sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 2 }}>
                 <BaseButton variant="outlined" onClick={handleCloseModal}>
                   Close

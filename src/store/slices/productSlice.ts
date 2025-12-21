@@ -213,7 +213,7 @@ const productSlice = createSlice({
             description: item.description || '',
             specifications: item.specifications || '',
             taxId: item.taxId || '',
-            policy: item.policy || '',
+            policy: typeof item.policy === 'object' && item.policy ? (item.policy._id || item.policy.id || '') : (item.policy || ''),
             variants: item.variants || [],
           };
         }

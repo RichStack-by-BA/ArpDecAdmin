@@ -119,6 +119,7 @@ export function EditProductView() {
       const formVariants = variants.map(v => ({
         name: v.name,
         images: v.images,
+        existingImages: v.existingImages,
         stock: Number(v.stock) || 0,
       }));
       setValue('variants', formVariants as any);
@@ -453,7 +454,18 @@ export function EditProductView() {
       <form 
         onSubmit={(e) => {
           handleSubmit(onSubmit, (validationErrors) => {
-            setError('Please fix the validation errors before submitting.');
+            // Try to extract a specific error message for variant images
+            let errorMsg = 'Please fix the validation errors before submitting.';
+            if (validationErrors?.variants && Array.isArray(validationErrors.variants)) {
+              for (let i = 0; i < validationErrors.variants.length; i++) {
+                const variantError = validationErrors.variants[i];
+                if (variantError && variantError.images && variantError.images.message) {
+                  errorMsg = `Variant ${i + 1}: ${variantError.images.message}`;
+                  break;
+                }
+              }
+            }
+            setError(errorMsg);
           })(e);
         }}
       >

@@ -74,9 +74,18 @@ export const addProductSchema = yup.object({
     .of(
       yup.object({
         name: yup.string().required('Color name is required'),
-        images: yup.array().min(1, 'Upload at least one image for this variant').required('Images are required'),
+        images: yup.array(),
+        existingImages: yup.array(),
         stock: yup.number().required('Stock is required').integer().min(0, 'Stock cannot be negative'),
-      })
+      }).test(
+        'has-image',
+        'Upload at least one image for this variant',
+        function (value) {
+          const hasNew = Array.isArray(value.images) && value.images.length > 0;
+          const hasExisting = Array.isArray(value.existingImages) && value.existingImages.length > 0;
+          return hasNew || hasExisting;
+        }
+      )
     )
     .when('imageMode', {
       is: 'colors',

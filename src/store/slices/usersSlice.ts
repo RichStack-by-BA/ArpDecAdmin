@@ -10,6 +10,7 @@ export interface User {
   phone?: string;
   role: string;
   status: boolean | string;
+  isEmailVerified?: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -178,6 +179,7 @@ const usersSlice = createSlice({
               phone: item.phone || '',
               role: item.role || 'admin',
               status: item.status === 'active' || item.status === true,
+              isEmailVerified: typeof item.isEmailVerified !== 'undefined' ? item.isEmailVerified : undefined,
               createdAt: item.createdAt || '',
               updatedAt: item.updatedAt || '',
             }))
@@ -210,6 +212,7 @@ const usersSlice = createSlice({
             phone: newUser.phone || '',
             role: newUser.role || 'admin',
             status: newUser.status === 'active' || newUser.status === true,
+            isEmailVerified: typeof newUser.isEmailVerified !== 'undefined' ? newUser.isEmailVerified : undefined,
             createdAt: newUser.createdAt || '',
             updatedAt: newUser.updatedAt || '',
           });
@@ -242,6 +245,7 @@ const usersSlice = createSlice({
               phone: updatedUser.phone || '',
               role: updatedUser.role || 'admin',
               status: updatedUser.status === 'active' || updatedUser.status === true,
+              isEmailVerified: typeof updatedUser.isEmailVerified !== 'undefined' ? updatedUser.isEmailVerified : undefined,
               createdAt: updatedUser.createdAt || '',
               updatedAt: updatedUser.updatedAt || '',
             };
@@ -272,6 +276,7 @@ const usersSlice = createSlice({
             phone: user.phone || '',
             role: user.role || 'admin',
             status: user.status === 'active' || user.status === true || user.isActive === true,
+            isEmailVerified: typeof user.isEmailVerified !== 'undefined' ? user.isEmailVerified : undefined,
             createdAt: user.createdAt || '',
             updatedAt: user.updatedAt || '',
           };

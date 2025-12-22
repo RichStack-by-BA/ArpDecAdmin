@@ -235,7 +235,7 @@ export function AdminView() {
                 variant={view === 'table' ? 'contained' : 'outlined'}
                 color="inherit"
                 onClick={() => setView('table')}
-                sx={{ minWidth: 'auto', px: 2 }}
+                sx={{ width: 40, height: 40, minWidth: 0, borderRadius: 1, p: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               >
                 <Iconify icon={VIEW_ICONS.TABLE} />
               </BaseButton>
@@ -243,7 +243,7 @@ export function AdminView() {
                 variant={view === 'grid' ? 'contained' : 'outlined'}
                 color="inherit"
                 onClick={() => setView('grid')}
-                sx={{ minWidth: 'auto', px: 2 }}
+                sx={{ width: 40, height: 40, minWidth: 0, borderRadius: 1, p: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               >
                 <Iconify icon={VIEW_ICONS.GRID} />
               </BaseButton>

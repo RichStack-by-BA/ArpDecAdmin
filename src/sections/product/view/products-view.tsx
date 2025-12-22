@@ -244,7 +244,7 @@ export function ProductsView() {
                 variant={view === 'table' ? 'contained' : 'outlined'}
                 color="inherit"
                 onClick={() => setView('table')}
-                sx={{ minWidth: 'auto', px: 2 }}
+                sx={{ width: 40, height: 40, minWidth: 0, borderRadius: 1, p: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               >
                 <Iconify icon={VIEW_ICONS.TABLE} />
               </BaseButton>
@@ -252,7 +252,7 @@ export function ProductsView() {
                 variant={view === 'grid' ? 'contained' : 'outlined'}
                 color="inherit"
                 onClick={() => setView('grid')}
-                sx={{ minWidth: 'auto', px: 2 }}
+                sx={{ width: 40, height: 40, minWidth: 0, borderRadius: 1, p: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               >
                 <Iconify icon={VIEW_ICONS.GRID} />
               </BaseButton>
@@ -264,95 +264,103 @@ export function ProductsView() {
           <DataTable columns={columns} rows={filteredRows} />
         ) : (
           <BaseBox sx={{ p: 3 }}>
-            <BaseBox
-              sx={{
-                display: 'grid',
-                gap: 3,
-                gridTemplateColumns: {
-                  xs: 'repeat(1, 1fr)',
-                  sm: 'repeat(2, 1fr)',
-                  md: 'repeat(3, 1fr)',
-                  lg: 'repeat(4, 1fr)',
-                },
-              }}
-            >
-              {filteredRows.map((row) => (
-                <BaseCard key={row.id} sx={{ overflow: 'hidden', '&:hover': { boxShadow: 3 }, transition: 'box-shadow 0.3s' }}>
-                  <BaseBox
-                    sx={{
-                      position: 'relative',
-                      width: '100%',
-                      height: 200,
-                      bgcolor: 'background.neutral',
-                      overflow: 'hidden',
-                    }}
-                  >
+            {filteredRows.length === 0 ? (
+              <BaseBox sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                <BaseTypography variant="body2" sx={{ color: 'text.secondary',paddingBottom: 2 }}>
+                  No data available
+                </BaseTypography>
+              </BaseBox>
+            ) : (
+              <BaseBox
+                sx={{
+                  display: 'grid',
+                  gap: 3,
+                  gridTemplateColumns: {
+                    xs: 'repeat(1, 1fr)',
+                    sm: 'repeat(2, 1fr)',
+                    md: 'repeat(3, 1fr)',
+                    lg: 'repeat(4, 1fr)',
+                  },
+                }}
+              >
+                {filteredRows.map((row) => (
+                  <BaseCard key={row.id} sx={{ overflow: 'hidden', '&:hover': { boxShadow: 3 }, transition: 'box-shadow 0.3s' }}>
                     <BaseBox
-                      component="img"
-                      src={row.image as string}
-                      alt={row.name}
                       sx={{
+                        position: 'relative',
                         width: '100%',
-                        height: '100%',
-                        objectFit: 'cover',
+                        // height: 200,
+                        bgcolor: 'background.neutral',
+                        overflow: 'hidden',
                       }}
-                      onError={(e: any) => {
-                        e.target.style.display = 'none';
-                      }}
-                    />
-                  </BaseBox>
-                  <BaseBox sx={{ p: 2 }}>
-                    <BaseBox sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                    >
                       <BaseBox
+                        component="img"
+                        src={row.image as string}
+                        alt={row.name}
                         sx={{
-                          px: 1.5,
-                          py: 0.5,
-                          borderRadius: 0.75,
-                          display: 'inline-flex',
-                          bgcolor: row.status === 'Active' ? 'success.lighter' : 'error.lighter',
-                          color: row.status === 'Active' ? 'success.dark' : 'error.dark',
-                          fontWeight: 600,
-                          fontSize: '0.75rem',
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
                         }}
-                      >
-                        {row.status}
-                      </BaseBox>
-                      <BaseBox sx={{ display: 'flex', gap: 0.5 }}>
-                        <BaseIconButton
-                          size="small"
-                          color="primary"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleViewProduct(row.originalProduct);
-                          }}
-                        >
-                          <Iconify icon="solar:eye-bold" width={18} />
-                        </BaseIconButton>
-                        <BaseIconButton
-                          size="small"
-                          color="primary"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            router.push(`/products/edit/${row.originalProduct.id}`);
-                          }}
-                        >
-                          <Iconify icon="solar:pen-bold" width={18} />
-                        </BaseIconButton>
-                      </BaseBox>
+                        onError={(e: any) => {
+                          e.target.style.display = 'none';
+                        }}
+                      />
                     </BaseBox>
-                    <BaseTypography variant="h6" sx={{ mb: 1 }}>
-                      {row.name}
-                    </BaseTypography>
-                    <BaseTypography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                      {row.category}
-                    </BaseTypography>
-                    <BaseTypography variant="h6" color="primary">
-                      ₹{row.price}
-                    </BaseTypography>
-                  </BaseBox>
-                </BaseCard>
-              ))}
-            </BaseBox>
+                    <BaseBox sx={{ p: 2 }}>
+                      <BaseBox sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                        <BaseBox
+                          sx={{
+                            px: 1.5,
+                            py: 0.5,
+                            borderRadius: 0.75,
+                            display: 'inline-flex',
+                            bgcolor: row.status === 'Active' ? 'success.lighter' : 'error.lighter',
+                            color: row.status === 'Active' ? 'success.dark' : 'error.dark',
+                            fontWeight: 600,
+                            fontSize: '0.75rem',
+                          }}
+                        >
+                          {row.status}
+                        </BaseBox>
+                        <BaseBox sx={{ display: 'flex', gap: 0.5 }}>
+                          <BaseIconButton
+                            size="small"
+                            color="primary"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleViewProduct(row.originalProduct);
+                            }}
+                          >
+                            <Iconify icon="solar:eye-bold" width={18} />
+                          </BaseIconButton>
+                          <BaseIconButton
+                            size="small"
+                            color="primary"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              router.push(`/products/edit/${row.originalProduct.id}`);
+                            }}
+                          >
+                            <Iconify icon="solar:pen-bold" width={18} />
+                          </BaseIconButton>
+                        </BaseBox>
+                      </BaseBox>
+                      <BaseTypography variant="h6" sx={{ mb: 1 }}>
+                        {row.name}
+                      </BaseTypography>
+                      <BaseTypography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                        {row.category}
+                      </BaseTypography>
+                      <BaseTypography variant="h6" color="primary">
+                        ₹{row.price}
+                      </BaseTypography>
+                    </BaseBox>
+                  </BaseCard>
+                ))}
+              </BaseBox>
+            )}
           </BaseBox>
         )}
 
@@ -387,279 +395,142 @@ export function ProductsView() {
         </BaseDialog.Title>
         <BaseDialog.Content dividers>
           {selectedProduct && (
-            <>
-              {console.log('=== Rendering selectedProduct ===', selectedProduct)}
-              <BaseGrid container spacing={3}>
-              {/* Product Images - only show if no variants */}
-              {(!selectedProduct.variants || selectedProduct.variants.length === 0) && (
+            <BaseGrid container spacing={3}>
+                {/* Product Name & Price */}
+                <BaseGrid size={{ xs: 12, md: 6 }}>
+                  <BaseBox>
+                    <BaseTypography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>Product Name</BaseTypography>
+                    <BaseTypography variant="body1" fontWeight={600}>{selectedProduct.name}</BaseTypography>
+                  </BaseBox>
+                </BaseGrid>
+                <BaseGrid size={{ xs: 12, md: 6 }}>
+                  <BaseBox>
+                    <BaseTypography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>Price</BaseTypography>
+                    <BaseTypography variant="body1" fontWeight={600}>₹{selectedProduct.price}</BaseTypography>
+                  </BaseBox>
+                </BaseGrid>
+
+                {/* Discount (Discount Price - Discount Percentage) */}
+                <BaseGrid size={{ xs: 12, md: 6 }}>
+                  <BaseBox>
+                    <BaseTypography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>Discount</BaseTypography>
+                    <BaseTypography variant="body1" fontWeight={600}>
+                      {selectedProduct.discountPrice ? `₹${selectedProduct.discountPrice}` : 'N/A'}
+                      {selectedProduct.discountPercentage ? ` (${selectedProduct.discountPercentage}%)` : ''}
+                    </BaseTypography>
+                  </BaseBox>
+                </BaseGrid>
+                {/* Status (Active-green/Inactive-red) */}
+                <BaseGrid size={{ xs: 12, md: 6 }}>
+                  <BaseBox>
+                    <BaseTypography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>Status</BaseTypography>
+                    <BaseBox sx={{ display: 'inline-block', px: 1.5, py: 0.5, borderRadius: 1, bgcolor: selectedProduct.isActive ? '#22c55e' : '#ef4444', color: 'white', fontWeight: 500, fontSize: 12, textTransform: 'uppercase' }}>{selectedProduct.isActive ? 'Active' : 'Inactive'}</BaseBox>
+                  </BaseBox>
+                </BaseGrid>
+
+                {/* Description (full width) */}
                 <BaseGrid size={{ xs: 12 }}>
                   <BaseBox>
-                    <BaseTypography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>
-                      Product Images
-                    </BaseTypography>
-                    {selectedProduct.images && selectedProduct.images.length > 0 ? (
-                      <BaseBox sx={{ display: 'flex', gap: 1, mt: 1, flexWrap: 'wrap' }}>
-                        {selectedProduct.images.map((img: string, index: number) => (
-                          <BaseBox
-                            key={index}
-                            component="img"
-                            src={img}
-                            alt={`${selectedProduct.name} ${index + 1}`}
-                            sx={{
-                              width: 120,
-                              height: 120,
-                              borderRadius: 2,
-                              objectFit: 'cover',
-                              border: '1px solid',
-                              borderColor: 'divider',
-                            }}
-                          />
+                    <BaseTypography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>Description</BaseTypography>
+                    <BaseBox sx={{ '& p': { margin: 0 }, '& ul': { marginTop: 0.5 } }} dangerouslySetInnerHTML={{ __html: selectedProduct.description || 'No description available' }} />
+                  </BaseBox>
+                </BaseGrid>
+
+                {/* Categories & Tax */}
+                <BaseGrid size={{ xs: 12, md: 6 }}>
+                  <BaseBox>
+                    <BaseTypography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>Categories</BaseTypography>
+                    <BaseTypography variant="body1" fontWeight={600}>{selectedProduct.categories?.map((cat: any) => cat.name || cat).join(', ') || 'N/A'}</BaseTypography>
+                  </BaseBox>
+                </BaseGrid>
+                <BaseGrid size={{ xs: 12, md: 6 }}>
+                  <BaseBox>
+                    <BaseTypography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>Tax</BaseTypography>
+                    <BaseTypography variant="body1" fontWeight={600}>{selectedProduct.taxId ? (typeof selectedProduct.taxId === 'string' ? selectedProduct.taxId : selectedProduct.taxId?.name || 'N/A') : 'N/A'}</BaseTypography>
+                  </BaseBox>
+                </BaseGrid>
+
+                {/* Policy & Wishlist Count */}
+                <BaseGrid size={{ xs: 12, md: 6 }}>
+                  <BaseBox>
+                    <BaseTypography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>Policy</BaseTypography>
+                    <BaseTypography variant="body1" fontWeight={600}>{selectedProduct.policy ? (typeof selectedProduct.policy === 'string' ? selectedProduct.policy : selectedProduct.policy?.name || 'N/A') : 'N/A'}</BaseTypography>
+                  </BaseBox>
+                </BaseGrid>
+                <BaseGrid size={{ xs: 12, md: 6 }}>
+                  <BaseBox>
+                    <BaseTypography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>Wishlist Count</BaseTypography>
+                    <BaseTypography variant="body1" fontWeight={600}>{selectedProduct.wishlistCount || selectedProduct.totalWishlistCount || 0}</BaseTypography>
+                  </BaseBox>
+                </BaseGrid>
+
+                {/* Variants (if present, with name, stock, images) (full width) */}
+                {selectedProduct.variants && selectedProduct.variants.length > 0 && (
+                  <BaseGrid size={{ xs: 12 }}>
+                    <BaseBox>
+                      <BaseTypography variant="caption" color="text.secondary" sx={{ mb: 1, display: 'block' }}>Variants</BaseTypography>
+                      <BaseBox sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                        {selectedProduct.variants.map((variant: any, index: number) => (
+                          <BaseBox key={index} sx={{ p: 2, bgcolor: 'background.neutral', borderRadius: 1 }}>
+                            <BaseTypography variant="body1" fontWeight={600} sx={{ mb: 1 }}>{variant.name} - Stock: {variant.stock}</BaseTypography>
+                            {variant.images && variant.images.length > 0 && (
+                              <BaseBox sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap' }}>
+                                {variant.images.map((img: string, imgIndex: number) => (
+                                  <BaseBox key={imgIndex} component="img" src={img} alt={`${variant.name} ${imgIndex + 1}`} sx={{ width: 100, height: 100, borderRadius: 1, objectFit: 'cover', border: '1px solid', borderColor: 'divider' }} />
+                                ))}
+                              </BaseBox>
+                            )}
+                          </BaseBox>
                         ))}
                       </BaseBox>
+                    </BaseBox>
+                  </BaseGrid>
+                )}
+
+                {/* Product Images, Stock (if no variants), Rating, Specifications */}
+                {(!selectedProduct.variants || selectedProduct.variants.length === 0) && (
+                  <BaseGrid size={{ xs: 12, md: 6 }}>
+                    <BaseBox>
+                      <BaseTypography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>Product Images</BaseTypography>
+                      {selectedProduct.images && selectedProduct.images.length > 0 ? (
+                        <BaseBox sx={{ display: 'flex', gap: 1, mt: 1, flexWrap: 'wrap' }}>
+                          {selectedProduct.images.map((img: string, index: number) => (
+                            <BaseBox key={index} component="img" src={img} alt={`${selectedProduct.name} ${index + 1}`} sx={{ width: 120, height: 120, borderRadius: 2, objectFit: 'cover', border: '1px solid', borderColor: 'divider' }} />
+                          ))}
+                        </BaseBox>
+                      ) : (
+                        <BaseBox sx={{ width: '100%', height: 300, borderRadius: 2, overflow: 'hidden', bgcolor: 'background.neutral' }}>
+                          <BaseBox component="img" src={selectedProduct.image || selectedProduct.coverUrl || '/assets/images/product/product-placeholder.png'} alt={selectedProduct.name} sx={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        </BaseBox>
+                      )}
+                    </BaseBox>
+                  </BaseGrid>
+                )}
+                {(!selectedProduct.variants || selectedProduct.variants.length === 0) && (
+                  <BaseGrid size={{ xs: 12, md: 6 }}>
+                    <BaseBox>
+                      <BaseTypography variant="caption" color="text.secondary" sx={{ mt: 2, display: 'block' }}>Stock</BaseTypography>
+                      <BaseTypography variant="body1" fontWeight={600}>{selectedProduct.stock || 0}</BaseTypography>
+                    </BaseBox>
+                  </BaseGrid>
+                )}
+                <BaseGrid size={{ xs: 12, md: 6 }}>
+                  <BaseBox>
+                    <BaseTypography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>Rating</BaseTypography>
+                    <BaseTypography variant="body1" fontWeight={600}>{selectedProduct.rating || 0} ⭐ ({selectedProduct.totalReviews || 0} reviews)</BaseTypography>
+                  </BaseBox>
+                </BaseGrid>
+                <BaseGrid size={{ xs: 12, md: 6 }}>
+                  <BaseBox>
+                    <BaseTypography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>Specifications</BaseTypography>
+                    {selectedProduct.specifications ? (
+                      <BaseBox sx={{ '& ul': { marginTop: 0.5, paddingLeft: 2 }, '& li': { marginBottom: 0.5 } }} dangerouslySetInnerHTML={{ __html: selectedProduct.specifications }} />
                     ) : (
-                      <BaseBox
-                        sx={{
-                          width: '100%',
-                          height: 300,
-                          borderRadius: 2,
-                          overflow: 'hidden',
-                          bgcolor: 'background.neutral',
-                        }}
-                      >
-                        <BaseBox
-                          component="img"
-                          src={selectedProduct.image || selectedProduct.coverUrl || '/assets/images/product/product-placeholder.png'}
-                          alt={selectedProduct.name}
-                          sx={{
-                            width: '100%',
-                            height: '100%',
-                            objectFit: 'cover',
-                          }}
-                        />
-                      </BaseBox>
+                      <BaseTypography variant="body1" fontWeight={600}>N/A</BaseTypography>
                     )}
                   </BaseBox>
                 </BaseGrid>
-              )}
-
-              {/* First Row: Product Name & Price */}
-              <BaseGrid size={{ xs: 12, md: 6 }}>
-                <BaseBox>
-                  <BaseTypography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>
-                    Product Name
-                  </BaseTypography>
-                  <BaseTypography variant="body1" fontWeight={600}>
-                    {selectedProduct.name}
-                  </BaseTypography>
-                </BaseBox>
               </BaseGrid>
-
-              <BaseGrid size={{ xs: 12, md: 6 }}>
-                <BaseBox>
-                  <BaseTypography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>
-                    Price
-                  </BaseTypography>
-                  <BaseTypography variant="body1" fontWeight={600}>
-                    ₹{selectedProduct.price}
-                  </BaseTypography>
-                </BaseBox>
-              </BaseGrid>
-
-              {/* Second Row: Discount Price & Discount Percentage */}
-              <BaseGrid size={{ xs: 12, md: 6 }}>
-                <BaseBox>
-                  <BaseTypography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>
-                    Discount Price
-                  </BaseTypography>
-                  <BaseTypography variant="body1" fontWeight={600}>
-                    {selectedProduct.discountPrice ? `₹${selectedProduct.discountPrice}` : 'N/A'}
-                  </BaseTypography>
-                </BaseBox>
-              </BaseGrid>
-
-              <BaseGrid size={{ xs: 12, md: 6 }}>
-                <BaseBox>
-                  <BaseTypography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>
-                    Discount Percentage
-                  </BaseTypography>
-                  <BaseTypography variant="body1" fontWeight={600}>
-                    {selectedProduct.discountPercentage ? `${selectedProduct.discountPercentage}%` : 'N/A'}
-                  </BaseTypography>
-                </BaseBox>
-              </BaseGrid>
-
-              {/* Third Row: Stock & Rating */}
-              <BaseGrid size={{ xs: 12, md: 6 }}>
-                <BaseBox>
-                  <BaseTypography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>
-                    Stock
-                  </BaseTypography>
-                  <BaseTypography variant="body1" fontWeight={600}>
-                    {selectedProduct.stock || 0}
-                  </BaseTypography>
-                </BaseBox>
-              </BaseGrid>
-
-              <BaseGrid size={{ xs: 12, md: 6 }}>
-                <BaseBox>
-                  <BaseTypography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>
-                    Rating
-                  </BaseTypography>
-                  <BaseTypography variant="body1" fontWeight={600}>
-                    {selectedProduct.rating || 0} ⭐ ({selectedProduct.totalReviews || 0} reviews)
-                  </BaseTypography>
-                </BaseBox>
-              </BaseGrid>
-
-              {/* Fourth Row: Description (full width) */}
-              <BaseGrid size={{ xs: 12 }}>
-                <BaseBox>
-                  <BaseTypography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>
-                    Description
-                  </BaseTypography>
-                  <BaseBox 
-                    sx={{ '& p': { margin: 0 }, '& ul': { marginTop: 0.5 } }}
-                    dangerouslySetInnerHTML={{ __html: selectedProduct.description || 'No description available' }}
-                  />
-                </BaseBox>
-              </BaseGrid>
-
-              {/* Categories */}
-              <BaseGrid size={{ xs: 12, md: 6 }}>
-                <BaseBox>
-                  <BaseTypography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>
-                    Categories
-                  </BaseTypography>
-                  <BaseTypography variant="body1" fontWeight={600}>
-                    {selectedProduct.categories?.map((cat: any) => cat.name || cat).join(', ') || 'N/A'}
-                  </BaseTypography>
-                </BaseBox>
-              </BaseGrid>
-
-              {/* Tax */}
-              <BaseGrid size={{ xs: 12, md: 6 }}>
-                <BaseBox>
-                  <BaseTypography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>
-                    Tax
-                  </BaseTypography>
-                  <BaseTypography variant="body1" fontWeight={600}>
-                    {selectedProduct.taxId 
-                      ? (typeof selectedProduct.taxId === 'string' ? selectedProduct.taxId : selectedProduct.taxId?.name || 'N/A')
-                      : 'N/A'}
-                  </BaseTypography>
-                </BaseBox>
-              </BaseGrid>
-
-              {/* Policy */}
-              <BaseGrid size={{ xs: 12, md: 6 }}>
-                <BaseBox>
-                  <BaseTypography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>
-                    Policy
-                  </BaseTypography>
-                  <BaseTypography variant="body1" fontWeight={600}>
-                    {selectedProduct.policy 
-                      ? (typeof selectedProduct.policy === 'string' ? selectedProduct.policy : selectedProduct.policy?.name || 'N/A')
-                      : 'N/A'}
-                  </BaseTypography>
-                </BaseBox>
-              </BaseGrid>
-
-              {/* Wishlist Count */}
-              <BaseGrid size={{ xs: 12, md: 6 }}>
-                <BaseBox>
-                  <BaseTypography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>
-                    Wishlist Count
-                  </BaseTypography>
-                  <BaseTypography variant="body1" fontWeight={600}>
-                    {selectedProduct.wishlistCount || selectedProduct.totalWishlistCount || 0}
-                  </BaseTypography>
-                </BaseBox>
-              </BaseGrid>
-
-              {/* Is Variant
-              <BaseGrid size={{ xs: 12, md: 6 }}>
-                <BaseBox>
-                  <BaseTypography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>
-                    Has Variants
-                  </BaseTypography>
-                  <BaseTypography variant="body1" fontWeight={600}>
-                    {selectedProduct.isVariant ? 'Yes' : 'No'}
-                  </BaseTypography>
-                </BaseBox>
-              </BaseGrid> */}
-
-              {/* Variants */}
-              {selectedProduct.variants && selectedProduct.variants.length > 0 && (
-                <BaseGrid size={{ xs: 12 }}>
-                  <BaseBox>
-                    <BaseTypography variant="caption" color="text.secondary" sx={{ mb: 1, display: 'block' }}>
-                      Variants
-                    </BaseTypography>
-                    <BaseBox sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                      {selectedProduct.variants.map((variant: any, index: number) => (
-                        <BaseBox key={index} sx={{ p: 2, bgcolor: 'background.neutral', borderRadius: 1 }}>
-                          <BaseTypography variant="body1" fontWeight={600} sx={{ mb: 1 }}>
-                            {variant.name} - Stock: {variant.stock}
-                          </BaseTypography>
-                          {variant.images && variant.images.length > 0 && (
-                            <BaseBox sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap' }}>
-                              {variant.images.map((img: string, imgIndex: number) => (
-                                <BaseBox
-                                  key={imgIndex}
-                                  component="img"
-                                  src={img}
-                                  alt={`${variant.name} ${imgIndex + 1}`}
-                                  sx={{
-                                    width: 100,
-                                    height: 100,
-                                    borderRadius: 1,
-                                    objectFit: 'cover',
-                                    border: '1px solid',
-                                    borderColor: 'divider',
-                                  }}
-                                />
-                              ))}
-                            </BaseBox>
-                          )}
-                        </BaseBox>
-                      ))}
-                    </BaseBox>
-                  </BaseBox>
-                </BaseGrid>
-              )}
-
-              {/* Status */}
-              <BaseGrid size={{ xs: 12, md: 6 }}>
-                <BaseBox>
-                  <BaseTypography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>
-                    Status
-                  </BaseTypography>
-                  <BaseTypography variant="body1" fontWeight={600}>
-                    {selectedProduct.isActive ? 'Active' : 'Inactive'}
-                  </BaseTypography>
-                </BaseBox>
-              </BaseGrid>
-
-              {/* Specifications - moved to the end */}
-              <BaseGrid size={{ xs: 12 }}>
-                <BaseBox>
-                  <BaseTypography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>
-                    Specifications
-                  </BaseTypography>
-                  {selectedProduct.specifications ? (
-                    <BaseBox 
-                      sx={{ '& ul': { marginTop: 0.5, paddingLeft: 2 }, '& li': { marginBottom: 0.5 } }}
-                      dangerouslySetInnerHTML={{ __html: selectedProduct.specifications }}
-                    />
-                  ) : (
-                    <BaseTypography variant="body1" fontWeight={600}>
-                      N/A
-                    </BaseTypography>
-                  )}
-                </BaseBox>
-              </BaseGrid>
-            </BaseGrid>
-            </>
           )}
         </BaseDialog.Content>
         <BaseDialog.Actions>

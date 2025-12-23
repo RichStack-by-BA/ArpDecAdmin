@@ -25,13 +25,13 @@ export const useNavData = (): NavItem[] => {
   const { taxes } = useSelector((state: RootState) => state.tax);
   const { users } = useSelector((state: RootState) => state.users);
 
-  const productCount = products?.length || 0;
-  const orderCount = orders?.length || 0;
-  const categoryCount = categories?.length || 0;
-  const offerCount = offers?.length || 0;
-  const policyCount = policies?.length || 0;
-  const taxCount = taxes?.length || 0;
-  const adminCount = users?.length || 0;
+  // const productCount = products?.length || 0;
+  // const orderCount = orders?.length || 0;
+  // const categoryCount = categories?.length || 0;
+  // const offerCount = offers?.length || 0;
+  // const policyCount = policies?.length || 0;
+  // const taxCount = taxes?.length || 0;
+  // const adminCount = users?.length || 0;
 
   return [
     {

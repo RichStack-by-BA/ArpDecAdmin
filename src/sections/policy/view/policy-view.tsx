@@ -386,6 +386,18 @@ export function PolicyView() {
           <BaseButton onClick={handleCloseModal} variant="outlined" color="inherit">
             Close
           </BaseButton>
+          {selectedPolicy && (
+            <BaseButton
+              onClick={() => {
+                handleCloseModal();
+                navigate(`/policy/edit/${selectedPolicy.id}`);
+              }}
+              variant="contained"
+              startIcon={<Iconify icon="solar:pen-bold" />}
+            >
+              Edit Policy
+            </BaseButton>
+          )}
         </BaseDialog.Actions>
       </BaseDialog>
     </DashboardContent>

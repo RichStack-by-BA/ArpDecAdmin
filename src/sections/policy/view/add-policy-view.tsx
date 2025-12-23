@@ -180,7 +180,7 @@ export function AddPolicyView() {
                         placeholder="Enter the policy details..."
                         error={!!errors.content}
                         helperText={errors.content?.message}
-                        height={300}
+                        height={200}
                       />
                     )}
                   />

@@ -45,10 +45,16 @@ export function AddProductView() {
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
   const { categories } = useSelector((state: RootState) => state.category);
+  // Only active categories
+  const activeCategories = categories.filter((cat) => cat.status === true || cat.status === 'Active');
   const { loading } = useSelector((state: RootState) => state.product);
   const { userDetails } = useSelector((state: RootState) => state.user);
   const { taxes } = useSelector((state: RootState) => state.tax);
+  // Only active taxes
+  const activeTaxes = taxes.filter((tax) => tax.status === true || tax.status === 'Active');
   const { policies } = useSelector((state: RootState) => state.policy);
+  // Only active policies
+  const activePolicies = policies.filter((policy) => policy.status === true || policy.status === 'Active');
 
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -457,10 +463,10 @@ export function AddProductView() {
                           </BaseBox>
                         )}
                       >
-                        {categories.length === 0 ? (
-                          <BaseMenuItem disabled>No categories available</BaseMenuItem>
+                        {activeCategories.length === 0 ? (
+                          <BaseMenuItem disabled>No active categories available</BaseMenuItem>
                         ) : (
-                          categories.map((category) => (
+                          activeCategories.map((category) => (
                             <BaseMenuItem key={category.id} value={category.id}>
                               {category.name}
                             </BaseMenuItem>
@@ -522,10 +528,10 @@ export function AddProductView() {
                             labelId="tax-label"
                             label="Tax"
                           >
-                            {taxes.length === 0 ? (
-                              <BaseMenuItem disabled>No taxes available</BaseMenuItem>
+                            {activeTaxes.length === 0 ? (
+                              <BaseMenuItem disabled>No active taxes available</BaseMenuItem>
                             ) : (
-                              taxes.map((tax) => (
+                              activeTaxes.map((tax) => (
                                 <BaseMenuItem key={tax.id} value={tax.id}>
                                   {tax.name} (IGST: {tax.igst}%, CGST: {tax.cgst}%, SGST: {tax.sgst}%)
                                 </BaseMenuItem>
@@ -557,10 +563,10 @@ export function AddProductView() {
                         <BaseMenuItem value="">
                           <em>None</em>
                         </BaseMenuItem>
-                        {policies.length === 0 ? (
-                          <BaseMenuItem disabled>No policies available</BaseMenuItem>
+                        {activePolicies.length === 0 ? (
+                          <BaseMenuItem disabled>No active policies available</BaseMenuItem>
                         ) : (
-                          policies.map((policy) => (
+                          activePolicies.map((policy) => (
                             <BaseMenuItem key={policy.id} value={policy.id}>
                               {policy.name}
                             </BaseMenuItem>
@@ -589,7 +595,7 @@ export function AddProductView() {
                         placeholder="Enter detailed product description with rich formatting..."
                         helperText={errors.description?.message || "Use the toolbar to format your text. Supports headings, bold, italic, lists, colors, and links."}
                         error={!!errors.description}
-                        height={250}
+                        height={120}
                       />
                     )}
                   />
@@ -865,6 +871,7 @@ export function AddProductView() {
                       value={field.value}
                       onChange={field.onChange}
                       placeholder="Enter product specifications..."
+                      height={120}
                     />
                     {errors.specifications && (
                       <BaseTypography color="error" variant="caption" sx={{ mt: 0.5, display: 'block' }}>

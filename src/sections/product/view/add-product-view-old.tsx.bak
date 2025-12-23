@@ -269,7 +269,7 @@ export function AddProductView() {
                   onChange={(value) => handleInputChange('description', value)}
                   placeholder="Enter detailed product description with rich formatting..."
                   helperText="Use the toolbar to format your text. Supports headings, bold, italic, lists, colors, and links."
-                  height={250}
+                  height={150}
                 />
               </BaseBox>
             </BaseBox>

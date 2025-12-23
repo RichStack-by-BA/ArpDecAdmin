@@ -52,9 +52,9 @@ export function AddTaxView() {
     mode: 'onChange',
     defaultValues: {
       name: '',
-      igst: 0,
-      cgst: 0,
-      sgst: 0,
+      igst: isEditMode ? 0 : undefined,
+      cgst: isEditMode ? 0 : undefined,
+      sgst: isEditMode ? 0 : undefined,
       isActive: true,
     },
   });
@@ -71,9 +71,9 @@ export function AddTaxView() {
     if (isEditMode && currentTax) {
       reset({
         name: currentTax.name,
-        igst: (currentTax as any).igst || 0,
-        cgst: (currentTax as any).cgst || 0,
-        sgst: (currentTax as any).sgst || 0,
+        igst: Number((currentTax as any).igst),
+        cgst: Number((currentTax as any).cgst),
+        sgst: Number((currentTax as any).sgst),
         isActive: currentTax.status,
       });
     }

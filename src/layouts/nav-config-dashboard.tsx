@@ -2,7 +2,6 @@ import type { RootState } from 'src/store';
 
 import { useSelector } from 'react-redux';
 
-import { Label } from 'src/components/label';
 import { SvgColor } from 'src/components/svg-color';
 
 // ----------------------------------------------------------------------

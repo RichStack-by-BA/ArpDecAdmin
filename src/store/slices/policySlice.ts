@@ -5,7 +5,7 @@ export interface Policy {
   id: string;
   name: string;
   content: string;
-  status: boolean;
+  isActive: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -64,7 +64,7 @@ export const createPolicy = createAsyncThunk(
   async (policyData: {
     name: string;
     content: string;
-    status?: boolean;
+    isActive?: boolean;
   }, { rejectWithValue }) => {
     try {
       const response = await api.post('/policy/add', policyData);
@@ -83,14 +83,14 @@ export const updatePolicy = createAsyncThunk(
     id: string;
     name: string;
     content: string;
-    status?: boolean;
+    isActive?: boolean;
   }, { rejectWithValue }) => {
     try {
       const { id, ...data } = policyData;
       const payload = {
         name: data.name,
         content: data.content,
-        status: data.status ?? true,
+        isActive: data.isActive ?? true,
         id,
       };
       const response = await api.patch(`/policy/edit/${id}`, payload);
@@ -134,7 +134,7 @@ const policySlice = createSlice({
               id: item._id,
               name: item.name,
               content: item.content,
-              status: item.status || false,
+              isActive: item.isActive || false,
               createdAt: item.createdAt,
               updatedAt: item.updatedAt,
             }))
@@ -159,7 +159,7 @@ const policySlice = createSlice({
             id: item._id,
             name: item.name,
             content: item.content,
-            status: item.status || false,
+            isActive: item.isActive || false,
             createdAt: item.createdAt,
             updatedAt: item.updatedAt,
           };
@@ -184,7 +184,7 @@ const policySlice = createSlice({
             id: item._id,
             name: item.name,
             content: item.content,
-            status: item.status || false,
+            isActive: item.isActive || false,
             createdAt: item.createdAt,
             updatedAt: item.updatedAt,
           });
@@ -211,7 +211,7 @@ const policySlice = createSlice({
               id: item._id,
               name: item.name,
               content: item.content,
-              status: item.status || false,
+              isActive: item.isActive || false,
               createdAt: item.createdAt,
               updatedAt: item.updatedAt,
             };

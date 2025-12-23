@@ -31,6 +31,7 @@ type PolicyRow = {
   id: string;
   name: string;
   content: string;
+  isActive: boolean;
   status: string;
   originalPolicy: Policy;
 };
@@ -69,7 +70,8 @@ export function PolicyView() {
     id: policy.id,
     name: policy.name,
     content: policy.content,
-    status: policy.status ? 'Active' : 'Inactive',
+    isActive: policy.isActive,
+    status: policy.isActive ? 'Active' : 'Inactive',
     originalPolicy: policy,
   }));
 
@@ -81,7 +83,7 @@ export function PolicyView() {
 
     const matchName = row.name?.toLowerCase().includes(searchLower);
     const matchContent = row.content?.toLowerCase().includes(searchLower);
-    const matchStatus = row.status?.toLowerCase().includes(searchLower);
+    const matchStatus = row.isActive ? 'active'.includes(searchLower) : 'inactive'.includes(searchLower);
 
     return matchName || matchContent || matchStatus;
   });
@@ -244,13 +246,13 @@ export function PolicyView() {
                           py: 0.5,
                           borderRadius: 0.75,
                           display: 'inline-flex',
-                          bgcolor: row.status === 'Active' ? 'success.lighter' : 'error.lighter',
-                          color: row.status === 'Active' ? 'success.dark' : 'error.dark',
+                          bgcolor: row.isActive ? 'success.lighter' : 'error.lighter',
+                          color: row.isActive ? 'success.dark' : 'error.dark',
                           fontWeight: 600,
                           fontSize: '0.75rem',
                         }}
                       >
-                        {row.status}
+                        {row.isActive ? 'Active' : 'Inactive'}
                       </BaseBox>
                       <BaseBox sx={{ display: 'flex', gap: 0.5 }}>
                         <BaseIconButton
@@ -369,13 +371,13 @@ export function PolicyView() {
                       py: 0.5,
                       borderRadius: 0.75,
                       display: 'inline-flex',
-                      bgcolor: selectedPolicy.status ? 'success.lighter' : 'error.lighter',
-                      color: selectedPolicy.status ? 'success.dark' : 'error.dark',
+                      bgcolor: selectedPolicy.isActive ? 'success.lighter' : 'error.lighter',
+                      color: selectedPolicy.isActive ? 'success.dark' : 'error.dark',
                       fontWeight: 600,
                       fontSize: '0.875rem',
                     }}
                   >
-                    {selectedPolicy.status ? 'Active' : 'Inactive'}
+                    {selectedPolicy.isActive ? 'Active' : 'Inactive'}
                   </BaseBox>
                 </BaseBox>
               </BaseBox>

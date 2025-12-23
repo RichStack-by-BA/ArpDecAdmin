@@ -46,15 +46,17 @@ export function AddProductView() {
   const dispatch = useDispatch<AppDispatch>();
   const { categories } = useSelector((state: RootState) => state.category);
   // Only active categories
-  const activeCategories = categories.filter((cat) => cat.status === true || cat.status === 'Active');
+  
+  const activeCategories = categories.filter((cat) => cat && cat.isActive === true);
   const { loading } = useSelector((state: RootState) => state.product);
   const { userDetails } = useSelector((state: RootState) => state.user);
   const { taxes } = useSelector((state: RootState) => state.tax);
   // Only active taxes
-  const activeTaxes = taxes.filter((tax) => tax.status === true || tax.status === 'Active');
+  console.log(taxes)
+  const activeTaxes = taxes.filter((tax) => tax.isActive && tax.isActive === true);
   const { policies } = useSelector((state: RootState) => state.policy);
   // Only active policies
-  const activePolicies = policies.filter((policy) => policy.status === true || policy.status === 'Active');
+  const activePolicies = policies.filter((policy) => policy.isActive === true);
 
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');

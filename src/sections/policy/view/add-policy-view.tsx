@@ -54,7 +54,7 @@ export function AddPolicyView() {
     defaultValues: {
       name: '',
       content: '',
-      status: true,
+      isActive: true,
     },
   });
 
@@ -71,7 +71,7 @@ export function AddPolicyView() {
       reset({
         name: currentPolicy.name,
         content: currentPolicy.content,
-        status: currentPolicy.status,
+        isActive: currentPolicy.isActive,
       });
     }
   }, [currentPolicy, isEditMode, reset]);
@@ -91,7 +91,7 @@ export function AddPolicyView() {
       const policyData = {
         name: data.name,
         content: data.content,
-        status: data.status ?? true,
+        isActive: data.isActive ?? true,
       };
 
       if (isEditMode && id) {
@@ -198,7 +198,7 @@ export function AddPolicyView() {
               </BaseTypography>
 
               <Controller
-                name="status"
+                name="isActive"
                 control={control}
                 render={({ field: { value, onChange } }) => (
                   <BaseFormControlLabel

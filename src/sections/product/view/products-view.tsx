@@ -289,9 +289,12 @@ export function ProductsView() {
                       sx={{
                         position: 'relative',
                         width: '100%',
-                        // height: 200,
+                        height: 180,
                         bgcolor: 'background.neutral',
                         overflow: 'hidden',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
                       }}
                     >
                       <BaseBox
@@ -302,13 +305,16 @@ export function ProductsView() {
                           width: '100%',
                           height: '100%',
                           objectFit: 'cover',
+                          objectPosition: 'center',
+                          borderRadius: 0,
+                          transition: 'transform 0.3s',
                         }}
                         onError={(e: any) => {
                           e.target.style.display = 'none';
                         }}
                       />
                     </BaseBox>
-                    <BaseBox sx={{ p: 2 }}>
+                    <BaseBox sx={{ p: 2, minHeight: 120, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                       <BaseBox sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                         <BaseBox
                           sx={{
@@ -489,38 +495,42 @@ export function ProductsView() {
 
                 {/* Product Images, Stock (if no variants), Rating, Specifications */}
                 {(!selectedProduct.variants || selectedProduct.variants.length === 0) && (
-                  <BaseGrid size={{ xs: 12, md: 6 }}>
+                  <>
+                    <BaseGrid size={{ xs: 12, md: 6 }}>
+                      <BaseBox>
+                        <BaseTypography variant="caption" color="text.secondary" sx={{ mt: 2, display: 'block' }}>Stock</BaseTypography>
+                        <BaseTypography variant="body1" fontWeight={600}>{selectedProduct.stock || 0}</BaseTypography>
+                      </BaseBox>
+                    </BaseGrid>
+                    <BaseGrid size={{ xs: 12, md: 6 }}>
+                      <BaseBox>
+                        <BaseTypography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>Rating</BaseTypography>
+                        <BaseTypography variant="body1" fontWeight={600}>{selectedProduct.rating || 0} ⭐ ({selectedProduct.totalReviews || 0} reviews)</BaseTypography>
+                      </BaseBox>
+                    </BaseGrid>
+                  </>
+                )}
+                {/* Product Images (show only if no variants) */}
+                {(!selectedProduct.variants || selectedProduct.variants.length === 0) && (
+                  <BaseGrid size={{ xs: 12 }}>
                     <BaseBox>
                       <BaseTypography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>Product Images</BaseTypography>
                       {selectedProduct.images && selectedProduct.images.length > 0 ? (
                         <BaseBox sx={{ display: 'flex', gap: 1, mt: 1, flexWrap: 'wrap' }}>
                           {selectedProduct.images.map((img: string, index: number) => (
-                            <BaseBox key={index} component="img" src={img} alt={`${selectedProduct.name} ${index + 1}`} sx={{ width: 120, height: 120, borderRadius: 2, objectFit: 'cover', border: '1px solid', borderColor: 'divider' }} />
+                            <BaseBox key={index} component="img" src={img} alt={`${selectedProduct.name} ${index + 1}`} sx={{ width: 120, height: 120, minHeight: 120, maxHeight: 180, borderRadius: 2, objectFit: 'cover', border: '1px solid', borderColor: 'divider' }} />
                           ))}
                         </BaseBox>
                       ) : (
-                        <BaseBox sx={{ width: '100%', height: 300, borderRadius: 2, overflow: 'hidden', bgcolor: 'background.neutral' }}>
+                        <BaseBox sx={{ width: '100%', height: 180, borderRadius: 2, overflow: 'hidden', bgcolor: 'background.neutral' }}>
                           <BaseBox component="img" src={selectedProduct.image || selectedProduct.coverUrl || '/assets/images/product/product-placeholder.png'} alt={selectedProduct.name} sx={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         </BaseBox>
                       )}
                     </BaseBox>
                   </BaseGrid>
                 )}
-                {(!selectedProduct.variants || selectedProduct.variants.length === 0) && (
-                  <BaseGrid size={{ xs: 12, md: 6 }}>
-                    <BaseBox>
-                      <BaseTypography variant="caption" color="text.secondary" sx={{ mt: 2, display: 'block' }}>Stock</BaseTypography>
-                      <BaseTypography variant="body1" fontWeight={600}>{selectedProduct.stock || 0}</BaseTypography>
-                    </BaseBox>
-                  </BaseGrid>
-                )}
-                <BaseGrid size={{ xs: 12, md: 6 }}>
-                  <BaseBox>
-                    <BaseTypography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>Rating</BaseTypography>
-                    <BaseTypography variant="body1" fontWeight={600}>{selectedProduct.rating || 0} ⭐ ({selectedProduct.totalReviews || 0} reviews)</BaseTypography>
-                  </BaseBox>
-                </BaseGrid>
-                <BaseGrid size={{ xs: 12, md: 6 }}>
+                {/* Specifications (always very last row) */}
+                <BaseGrid size={{ xs: 12 }}>
                   <BaseBox>
                     <BaseTypography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>Specifications</BaseTypography>
                     {selectedProduct.specifications ? (

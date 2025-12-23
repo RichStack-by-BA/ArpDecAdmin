@@ -8,7 +8,7 @@ export const policySchema = Yup.object().shape({
   content: Yup.string()
     .required('Policy content is required')
     .min(10, 'Policy content must be at least 10 characters'),
-  status: Yup.boolean(),
+  isActive: Yup.boolean(),
 });
 
 export type PolicyFormData = Yup.InferType<typeof policySchema>;

@@ -104,7 +104,7 @@ export const addProductSchema = yup.object({
 
   policy: yup
     .string()
-    .optional(),
+    .required('Policy selection is required'),
 
   isActive: yup.boolean().default(true),
 });

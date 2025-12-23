@@ -304,8 +304,8 @@ export function AddAdminView() {
                           <BaseInputLabel shrink>Role</BaseInputLabel>
                           <BaseSelect {...field} label="Role" notched>
                             <BaseMenuItem value="admin">Admin</BaseMenuItem>
-                            <BaseMenuItem value="superadmin">Super Admin</BaseMenuItem>
-                            <BaseMenuItem value="moderator">Moderator</BaseMenuItem>
+                            <BaseMenuItem value="super admin">Super Admin</BaseMenuItem>
+                            {/* <BaseMenuItem value="moderator">Moderator</BaseMenuItem> */}
                           </BaseSelect>
                           {errors.role && (
                             <BaseTypography

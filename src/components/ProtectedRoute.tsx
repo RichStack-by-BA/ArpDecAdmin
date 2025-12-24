@@ -26,6 +26,8 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
 
   if (!token && !isPublicRoute) {
     return <Navigate to="/sign-in" replace />;
+  }else if (token && isPublicRoute) {
+    return <Navigate to="/" replace />;
   }
 
   return <>{children}</>;

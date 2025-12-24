@@ -1,4 +1,13 @@
 export default {
+      'solar:warning-bold': {
+        body: '<circle cx="12" cy="12" r="10" fill="currentColor" opacity="0.15"/><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><rect x="11" y="7" width="2" height="6" rx="1" fill="currentColor"/><rect x="11" y="15" width="2" height="2" rx="1" fill="currentColor"/>'
+      },
+    'solar:phone-bold': {
+      body: '<path fill="currentColor" d="M17.707 15.293l-2.387-2.387a1 1 0 0 0-1.414 0l-1.293 1.293a8.001 8.001 0 0 1-3.293-3.293l1.293-1.293a1 1 0 0 0 0-1.414L8.707 6.293a1 1 0 0 0-1.414 0l-1 1A2 2 0 0 0 6 9c0 5.523 4.477 10 10 10a2 2 0 0 0 1.707-2.293l-1-1a1 1 0 0 0-1.414 0z"/>'
+    },
+    'solar:calendar-bold': {
+      body: '<path fill="currentColor" d="M19 4h-1V2a1 1 0 1 0-2 0v2H8V2a1 1 0 1 0-2 0v2H5a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3zm1 15a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V10h16v9zm0-11H4V7a1 1 0 0 1 1-1h1v2a1 1 0 1 0 2 0V6h8v2a1 1 0 1 0 2 0V6h1a1 1 0 0 1 1 1v1z"/>'
+    },
   'solar:pen-bold': {
     body: '<path fill="currentColor" d="m11.4 18.161l7.396-7.396a10.3 10.3 0 0 1-3.326-2.234a10.3 10.3 0 0 1-2.235-3.327L5.839 12.6c-.577.577-.866.866-1.114 1.184a6.6 6.6 0 0 0-.749 1.211c-.173.364-.302.752-.56 1.526l-1.362 4.083a1.06 1.06 0 0 0 1.342 1.342l4.083-1.362c.775-.258 1.162-.387 1.526-.56q.647-.308 1.211-.749c.318-.248.607-.537 1.184-1.114m9.448-9.448a3.932 3.932 0 0 0-5.561-5.561l-.887.887l.038.111a8.75 8.75 0 0 0 2.092 3.32a8.75 8.75 0 0 0 3.431 2.13z"/>',
   },

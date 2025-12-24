@@ -3,6 +3,7 @@ export { DataTable } from './table';
 export { BaseCard } from './BaseCard';
 export { BaseChip } from './BaseChip';
 export { BaseGrid } from './BaseGrid';
+export { BaseBadge } from './BaseBadge';
 export { BaseAlert } from './BaseAlert';
 export { BasePaper } from './BasePaper';
 export { BaseButton } from './BaseButton';

@@ -11,10 +11,12 @@ import { PAGE_LIMIT, VIEW_ICONS } from 'src/constant';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { fetchUsers } from 'src/store/slices/usersSlice';
 import { Iconify } from 'src/components/iconify';
+import { Badge } from 'src/components/core/Badge';
+import { InfoRow } from 'src/components/core/InfoRow';
+import { SectionCard } from 'src/components/core/SectionCard';
 import {
   BaseBox,
   BaseCard,
-  BaseGrid,
   BaseAlert,
   DataTable,
   BaseButton,
@@ -325,7 +327,18 @@ export function AdminView() {
                         </BaseTypography>
                         <BaseBox sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
                           <BaseTypography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
-                            {row.email}
+                            <span
+                              style={{
+                                whiteSpace: 'nowrap',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                display: 'block',
+                                maxWidth: '100%',
+                              }}
+                              title={row.email}
+                            >
+                              {row.email}
+                            </span>
                           </BaseTypography>
                           <BaseTypography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
                             {row.phone}
@@ -369,7 +382,7 @@ export function AdminView() {
         )}
       </BaseCard>
 
-      {/* View Admin Modal */}
+      {/* View Admin Modal - Refactored */}
       <BaseDialog
         open={openModal}
         onClose={handleCloseModal}
@@ -386,63 +399,60 @@ export function AdminView() {
         </BaseDialog.Title>
         <BaseDialog.Content dividers>
           {selectedAdmin && (
-            <BaseGrid container spacing={3}>
-              <BaseGrid size={{ xs: 12, sm: 6 }}>
-                <BaseTypography variant="subtitle2" color="text.secondary" gutterBottom>
-                  Admin ID
-                </BaseTypography>
-                <BaseTypography variant="body1">{selectedAdmin.id}</BaseTypography>
-              </BaseGrid>
-              <BaseGrid size={{ xs: 12, sm: 6 }}>
-                <BaseTypography variant="subtitle2" color="text.secondary" gutterBottom>
-                  Phone
-                </BaseTypography>
-                <BaseTypography variant="body1">{selectedAdmin.phone || '-'}</BaseTypography>
-              </BaseGrid>
-              <BaseGrid size={{ xs: 12, sm: 6 }}>
-                <BaseTypography variant="subtitle2" color="text.secondary" gutterBottom>
-                  First Name
-                </BaseTypography>
-                <BaseTypography variant="body1">{selectedAdmin.firstName || '-'}</BaseTypography>
-              </BaseGrid>
-              <BaseGrid size={{ xs: 12, sm: 6 }}>
-                <BaseTypography variant="subtitle2" color="text.secondary" gutterBottom>
-                  Last Name
-                </BaseTypography>
-                <BaseTypography variant="body1">{selectedAdmin.lastName || '-'}</BaseTypography>
-              </BaseGrid>
-              <BaseGrid size={{ xs: 12, sm: 6 }}>
-                <BaseTypography variant="subtitle2" color="text.secondary" gutterBottom>
-                  Email
-                </BaseTypography>
-                <BaseTypography variant="body1">
-                  {selectedAdmin.email}
-                  {typeof selectedAdmin.isEmailVerified !== 'undefined' && (
-                    <span style={{ marginLeft: 8, color: selectedAdmin.isEmailVerified ? '#229A16' : '#B71D18', fontWeight: 600, fontSize: '0.9em' }}>
-                      ({selectedAdmin.isEmailVerified ? 'Verified' : 'Not Verified'})
-                    </span>
-                  )}
-                </BaseTypography>
-              </BaseGrid>
-              <BaseGrid size={{ xs: 12, sm: 6 }}>
-                <BaseTypography variant="subtitle2" color="text.secondary" gutterBottom>
-                  Status
-                </BaseTypography>
-                <BaseTypography variant="body1">{selectedAdmin.status === true || selectedAdmin.status === 'Active' ? 'Active' : 'Inactive'}</BaseTypography>
-              </BaseGrid>
-              <BaseGrid size={{ xs: 12, sm: 6 }}>
-                <BaseTypography variant="subtitle2" color="text.secondary" gutterBottom>
-                  Created At
-                </BaseTypography>
-                <BaseTypography variant="body1">{new Date(selectedAdmin.createdAt).toLocaleString()}</BaseTypography>
-              </BaseGrid>
-              <BaseGrid size={{ xs: 12, sm: 6 }}>
-                <BaseTypography variant="subtitle2" color="text.secondary" gutterBottom>
-                  Updated At
-                </BaseTypography>
-                <BaseTypography variant="body1">{new Date(selectedAdmin.updatedAt).toLocaleString()}</BaseTypography>
-              </BaseGrid>
-              <BaseGrid size={{ xs: 12 }} sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 2 }}>
+            <BaseBox sx={{ p: 2, background: '#f3f4f6', borderRadius: 3 }}>
+              {/* Top Section: Avatar, Name, Badges */}
+              <BaseBox sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+                {/* Avatar with initials */}
+                <BaseBox sx={{ width: 64, height: 64, borderRadius: '50%', background: '#6366f1', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: '2rem' }}>
+                  {selectedAdmin.firstName?.[0] || ''}{selectedAdmin.lastName?.[0] || ''}
+                </BaseBox>
+                <BaseBox>
+                  <BaseTypography variant="h6" sx={{ fontWeight: 700 }}>{selectedAdmin.firstName} {selectedAdmin.lastName}</BaseTypography>
+                  <BaseBox sx={{ display: 'flex', gap: 1, mt: 1 }}>
+                    <Badge color={selectedAdmin.status === true || selectedAdmin.status === 'Active' ? 'green' : 'yellow'} 
+                    text={selectedAdmin.status === true || selectedAdmin.status === 'Active' ? 'Active' : 'Inactive'} />
+                    {selectedAdmin.role === 'super_admin' ?
+                      <Badge color="blue" text="Super Admin" /> :
+                      <Badge color="blue" text={selectedAdmin.role} />}
+                       <Badge
+                        color={selectedAdmin.isEmailVerified ? 'green' : 'yellow'}
+                        text={selectedAdmin.isEmailVerified ? 'Email Verified' : 'Email Unverified'}
+                        emailVerification
+                        verified={!!selectedAdmin.isEmailVerified}
+                        icon={<Iconify icon={selectedAdmin.isEmailVerified ? "solar:check-circle-bold" : "solar:warning-bold"} width={18} />}
+                      />
+                  </BaseBox>
+                </BaseBox>
+              </BaseBox>
+
+              {/* Section: Identity Information */}
+              <SectionCard title="Identity Information">
+                <InfoRow label="First Name" value={selectedAdmin.firstName || '-'} />
+                <InfoRow label="Last Name" value={selectedAdmin.lastName || '-'} />
+              </SectionCard>
+
+              {/* Section: Contact Information */}
+              <SectionCard title="Contact Information">
+                <InfoRow
+                  label="Phone Number" value={selectedAdmin.phone || '-'}
+                  icon={<Iconify icon="solar:phone-bold" width={22} height={22} />}
+                />
+                <InfoRow
+                  label="Email Address"
+                  value={selectedAdmin.email}
+                  icon={<span role="img" aria-label="mail" style={{ fontSize: 18, verticalAlign: 'middle' }}>✉️</span>}
+                />
+              </SectionCard>
+
+              {/* Section: Other Details */}
+              <SectionCard title="Other Details">
+                {/* <InfoRow label="Account Status" value={<Badge color={selectedAdmin.status === true || selectedAdmin.status === 'Active' ? 'green' : 'yellow'} text={selectedAdmin.status === true || selectedAdmin.status === 'Active' ? 'Active' : 'Inactive'} />} /> */}
+                 <InfoRow label="Created At" value={new Date(selectedAdmin.createdAt).toLocaleString()} icon={<Iconify icon="solar:calendar-bold" width={18} />} />
+                 <InfoRow label="Last Updated" value={new Date(selectedAdmin.updatedAt).toLocaleString()} icon={<Iconify icon="solar:calendar-bold" width={18} />} />
+              </SectionCard>
+
+              {/* Actions */}
+              <BaseBox sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 2 }}>
                 <BaseButton variant="outlined" onClick={handleCloseModal}>
                   Close
                 </BaseButton>
@@ -452,11 +462,13 @@ export function AdminView() {
                     navigate(`/admin/edit/${selectedAdmin.id}`);
                     handleCloseModal();
                   }}
+                  color="primary"
+                  startIcon={<Iconify icon="solar:pen-bold" />}
                 >
-                  Edit
+                  Edit Admin
                 </BaseButton>
-              </BaseGrid>
-            </BaseGrid>
+              </BaseBox>
+            </BaseBox>
           )}
         </BaseDialog.Content>
       </BaseDialog>

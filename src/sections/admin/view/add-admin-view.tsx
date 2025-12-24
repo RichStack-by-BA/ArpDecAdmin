@@ -282,7 +282,7 @@ export function AddAdminView() {
                         <BaseTextField
                           {...field}
                           fullWidth
-                          label={isEditMode ? "Password (Optional - leave blank to keep current)" : "Password"}
+                          label="Password"
                           type="password"
                           error={!!errors.password}
                           helperText={errors.password?.message}

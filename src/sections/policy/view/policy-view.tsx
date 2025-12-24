@@ -267,7 +267,7 @@ export function PolicyView() {
                         </BaseIconButton>
                         <BaseIconButton
                           size="small"
-                          color="secondary"
+                          color="primary"
                           onClick={(e) => {
                             e.stopPropagation();
                             navigate(`/policy/edit/${row.id}`);

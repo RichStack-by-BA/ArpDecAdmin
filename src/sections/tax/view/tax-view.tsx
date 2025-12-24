@@ -302,7 +302,7 @@ export function TaxView() {
                         </BaseIconButton>
                         <BaseIconButton
                           size="small"
-                          color="secondary"
+                          color="primary"
                           onClick={(e) => {
                             e.stopPropagation();
                             navigate(`/tax/edit/${row.id}`);

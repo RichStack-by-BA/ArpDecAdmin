@@ -251,48 +251,27 @@ export function OfferView() {
             >
               {filteredRows.map((row) => (
                 <BaseCard key={row.id} sx={{ overflow: 'hidden', '&:hover': { boxShadow: 3 }, transition: 'box-shadow 0.3s' }}>
-                  <BaseBox
-                    sx={{
-                      position: 'relative',
-                      width: '100%',
-                      height: 200,
-                      bgcolor: 'background.neutral',
-                      overflow: 'hidden',
-                    }}
-                  >
+                  {/* No image section, just content below */}
+                  {row.originalOffer.discountPercentage && (
                     <BaseBox
-                      component="img"
-                      src={row.originalOffer.image || '/assets/images/offer/offer-placeholder.png'}
-                      alt={row.title}
                       sx={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover',
+                        position: 'absolute',
+                        top: 12,
+                        left: 12,
+                        px: 1.5,
+                        py: 0.75,
+                        borderRadius: 1,
+                        bgcolor: 'error.main',
+                        color: 'white',
+                        fontWeight: 700,
+                        fontSize: '1rem',
+                        boxShadow: 1,
+                        zIndex: 1,
                       }}
-                      onError={(e: any) => {
-                        e.target.style.display = 'none';
-                      }}
-                    />
-                    {row.originalOffer.discountPercentage && (
-                      <BaseBox
-                        sx={{
-                          position: 'absolute',
-                          top: 12,
-                          left: 12,
-                          px: 1.5,
-                          py: 0.75,
-                          borderRadius: 1,
-                          bgcolor: 'error.main',
-                          color: 'white',
-                          fontWeight: 700,
-                          fontSize: '1rem',
-                          boxShadow: 1,
-                        }}
-                      >
-                        {row.originalOffer.discountPercentage}% OFF
-                      </BaseBox>
-                    )}
-                  </BaseBox>
+                    >
+                      {row.originalOffer.discountPercentage}% OFF
+                    </BaseBox>
+                  )}
                   <BaseBox sx={{ p: 2 }}>
                     <BaseBox sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
                       <BaseBox

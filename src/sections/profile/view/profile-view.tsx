@@ -9,6 +9,7 @@ import Avatar from '@mui/material/Avatar';
 import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
 
+import { getRoleDisplayName } from 'src/utils/role-utils';
 import { DashboardContent } from 'src/layouts/dashboard';
 
 // ----------------------------------------------------------------------
@@ -110,7 +111,7 @@ export function ProfileView() {
                   Role
                 </Typography>
                 <Typography variant="body1" sx={{ textTransform: 'capitalize' }}>
-                  {user.role || 'N/A'}
+                  {getRoleDisplayName(user.role)}
                 </Typography>
               </Box>
             </Box>

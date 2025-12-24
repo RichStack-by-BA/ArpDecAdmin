@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { useDispatch, useSelector } from 'react-redux';
 
+import { formatDate } from 'src/utils/format-date';
 import { PAGE_LIMIT, VIEW_ICONS } from 'src/constant';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { fetchUsers } from 'src/store/slices/usersSlice';
@@ -312,7 +313,7 @@ export function AdminView() {
                             </BaseIconButton>
                             <BaseIconButton
                               size="small"
-                              color="secondary"
+                              color="primary"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 navigate(`/admin/edit/${row.id}`);
@@ -447,8 +448,8 @@ export function AdminView() {
               {/* Section: Other Details */}
               <SectionCard title="Other Details">
                 {/* <InfoRow label="Account Status" value={<Badge color={selectedAdmin.status === true || selectedAdmin.status === 'Active' ? 'green' : 'yellow'} text={selectedAdmin.status === true || selectedAdmin.status === 'Active' ? 'Active' : 'Inactive'} />} /> */}
-                 <InfoRow label="Created At" value={new Date(selectedAdmin.createdAt).toLocaleString()} icon={<Iconify icon="solar:calendar-bold" width={18} />} />
-                 <InfoRow label="Last Updated" value={new Date(selectedAdmin.updatedAt).toLocaleString()} icon={<Iconify icon="solar:calendar-bold" width={18} />} />
+                <InfoRow label="Member Since" value={formatDate(selectedAdmin.createdAt)} icon={<Iconify icon="solar:calendar-bold" width={18} />} />
+                <InfoRow label="Last Updated" value={formatDate(selectedAdmin.updatedAt)} icon={<Iconify icon="solar:calendar-bold" width={18} />} />
               </SectionCard>
 
               {/* Actions */}

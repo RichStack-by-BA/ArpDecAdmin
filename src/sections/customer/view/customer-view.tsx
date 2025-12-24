@@ -5,6 +5,7 @@ import type { Column } from 'src/components/baseComponents';
 import { useState, useEffect } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
+import { formatDate } from 'src/utils/format-date';
 
 import { PAGE_LIMIT, VIEW_ICONS } from 'src/constant';
 import { DashboardContent } from 'src/layouts/dashboard';
@@ -327,7 +328,15 @@ export function CustomerView() {
                 <BaseTypography variant="subtitle2" color="text.secondary" gutterBottom>
                   Email
                 </BaseTypography>
-                <BaseTypography variant="body1">{selectedCustomer.email}</BaseTypography>
+                <BaseTypography variant="body1" sx={{
+                  maxWidth: 260,
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  display: 'block',
+                }} title={selectedCustomer.email}>
+                  {selectedCustomer.email}
+                </BaseTypography>
               </BaseGrid>
 
               <BaseGrid size={{ xs: 12, sm: 6 }}>
@@ -362,12 +371,18 @@ export function CustomerView() {
                   Created At
                 </BaseTypography>
                 <BaseTypography variant="body1">
-                  {selectedCustomer.createdAt ? new Date(selectedCustomer.createdAt).toLocaleString() : 'N/A'}
+                  {selectedCustomer.createdAt ? formatDate(selectedCustomer.createdAt) : 'N/A'}
                 </BaseTypography>
               </BaseGrid>
             </BaseGrid>
           )}
         </BaseDialog.Content>
+        {/* Bottom Close Button */}
+        <BaseBox sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, p: 2 }}>
+          <BaseButton variant="outlined" onClick={handleCloseModal}>
+            Close
+          </BaseButton>
+        </BaseBox>
       </BaseDialog>
     </DashboardContent>
   );

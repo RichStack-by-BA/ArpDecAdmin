@@ -271,7 +271,12 @@ export function CustomerView() {
                           {row.name}
                         </BaseTypography>
                         <BaseBox sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-                          <BaseTypography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
+                          <BaseTypography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{ fontSize: '0.875rem', maxWidth: 200, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}
+                            title={row.email}
+                          >
                             {row.email}
                           </BaseTypography>
                           <BaseTypography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem' }}>

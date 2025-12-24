@@ -59,11 +59,6 @@ export function ProductsView() {
   };
 
   const handleViewProduct = (product: Product) => {
-    console.log('=== Product clicked ===', product);
-    console.log('Product taxId:', product.taxId);
-    console.log('Product policy:', product.policy);
-    console.log('Product variants:', product.variants);
-    console.log('Product specifications:', product.specifications);
     setSelectedProduct(product);
     setOpenModal(true);
   };

@@ -52,7 +52,6 @@ export function AddProductView() {
   const { userDetails } = useSelector((state: RootState) => state.user);
   const { taxes } = useSelector((state: RootState) => state.tax);
   // Only active taxes
-  console.log(taxes)
   const activeTaxes = taxes.filter((tax) => tax.isActive && tax.isActive === true);
   const { policies } = useSelector((state: RootState) => state.policy);
   // Only active policies

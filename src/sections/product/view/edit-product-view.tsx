@@ -487,9 +487,6 @@ export function EditProductView() {
       <form 
         onSubmit={(e) => {
           handleSubmit(onSubmit, (validationErrors) => {
-            // Always log validation errors for debugging
-             
-            console.log('Validation errors:', validationErrors);
             // Show specific variant image error if present
             let errorMsg = 'Please fix the validation errors before submitting.';
             if (validationErrors?.variants && Array.isArray(validationErrors.variants)) {

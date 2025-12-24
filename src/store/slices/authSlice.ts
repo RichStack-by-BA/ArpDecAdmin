@@ -21,8 +21,6 @@ export const loginUser = createAsyncThunk<
   { rejectValue: string } // reject payload type
 >('auth/loginUser', async (credentials, thunkAPI) => {
   try {
-    console.log(credentials, '======= credentials');
-
     const response = await api.post('/auth/register', credentials); // Correct endpoint
     return response.data.token; // Expecting { token: '...' }
   } catch (err: any) {

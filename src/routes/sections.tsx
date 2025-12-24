@@ -9,6 +9,7 @@ import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgr
 
 import { AuthLayout } from 'src/layouts/auth';
 import { DashboardLayout } from 'src/layouts/dashboard';
+import SuperAdminRoute from 'src/components/SuperAdminRoute';
 
 // ----------------------------------------------------------------------
 
@@ -71,9 +72,9 @@ export const routesSection: RouteObject[] = [
     children: [
       { index: true, element: <DashboardPage /> },
       { path: 'user', element: <UserPage /> },
-      { path: 'admin', element: <AdminPage /> },
-      { path: 'admin/add', element: <AddAdminPage /> },
-      { path: 'admin/edit/:id', element: <AddAdminPage /> },
+      { path: 'admin', element: <SuperAdminRoute><AdminPage /></SuperAdminRoute> },
+      { path: 'admin/add', element: <SuperAdminRoute><AddAdminPage /></SuperAdminRoute> },
+      { path: 'admin/edit/:id', element: <SuperAdminRoute><AddAdminPage /></SuperAdminRoute> },
       { path: 'customer', element: <CustomerPage /> },
       { path: 'products', element: <ProductsPage /> },
       { path: 'products/add', element: <AddProductPage /> },

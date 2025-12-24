@@ -1,3 +1,4 @@
+import Cookies from "js-cookie";
 import CryptoJS from "crypto-js";
 import { SECRET_KEY } from "../../constant";
 
@@ -31,25 +32,25 @@ const decryptData = (cipherText: string | null): unknown => {
 };
 
 
-// 🔒 Saving encrypted token with encrypted key
+// 🔒 Saving encrypted token with encrypted key (in cookies)
 const setToken = (token: string): void => {
   const encryptedValue = encryptData(token);
   if (encryptedValue) {
-    localStorage.setItem(RAW_TOKEN_KEY, encryptedValue);
+    Cookies.set(RAW_TOKEN_KEY, encryptedValue, { expires: 7, sameSite: 'strict' });
   }
 };
 
-// 🔓 Retrieve decrypted token
+// 🔓 Retrieve decrypted token (from cookies)
 const getToken = (): string | null => {
-  const storedValue = localStorage.getItem(RAW_TOKEN_KEY);
+  const storedValue = Cookies.get(RAW_TOKEN_KEY);
   if (!storedValue) return null;
   const decrypted = decryptData(storedValue);
   return typeof decrypted === "string" ? decrypted : null;
 };
 
-// 🗑️ Remove token from localStorage
+// 🗑️ Remove token from cookies
 const removeToken = (): void => {
-  localStorage.removeItem(RAW_TOKEN_KEY);
+  Cookies.remove(RAW_TOKEN_KEY);
 };
 
 export { getToken, setToken, removeToken, encryptData, decryptData };

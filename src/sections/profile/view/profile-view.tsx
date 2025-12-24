@@ -125,14 +125,6 @@ export function ProfileView() {
             </Typography>
 
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
-              <Box>
-                <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>
-                  User ID
-                </Typography>
-                <Typography variant="body2" sx={{ fontFamily: 'monospace', fontSize: 12 }}>
-                  {user._id || 'N/A'}
-                </Typography>
-              </Box>
 
               <Box>
                 <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>

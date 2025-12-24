@@ -28,6 +28,8 @@ export const offerSchema = yup.object({
 
   discountValue: yup
     .number()
+    .nullable()
+    .transform((value, originalValue) => (originalValue === '' ? null : value))
     .required('Discount value is required')
     .min(0, 'Discount value must be at least 0')
     .when('discountType', {
@@ -110,7 +112,7 @@ export type OfferFormData = {
   description: string;
   offerCode: string;
   discountType: 'percentage' | 'flat';
-  discountValue: number;
+  discountValue: number | null;
   minPurchaseAmount?: number | null;
   maxDiscountAmount?: number | null;
   validFrom: Date;

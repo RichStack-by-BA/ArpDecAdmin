@@ -66,7 +66,7 @@ export function AddOfferView() {
       description: '',
       offerCode: '',
       discountType: 'percentage',
-      discountValue: 0,
+      discountValue: null,
       minPurchaseAmount: null,
       maxDiscountAmount: null,
       validFrom: new Date(),
@@ -112,7 +112,7 @@ export function AddOfferView() {
         description: currentOffer.description,
         offerCode: currentOffer.offerCode || '',
         discountType: (currentOffer.discountType as 'percentage' | 'flat') || 'percentage',
-        discountValue: currentOffer.discountValue || 0,
+        discountValue: currentOffer.discountValue ?? null,
         minPurchaseAmount: currentOffer.minPurchaseAmount || null,
         maxDiscountAmount: currentOffer.maxDiscountAmount || null,
         validFrom: currentOffer.startDate ? new Date(currentOffer.startDate) : new Date(),
@@ -196,6 +196,26 @@ export function AddOfferView() {
     );
   }
 
+  // Ensure discountValue is null by default (not 0)
+  // If using useForm, set defaultValues.discountValue = null
+  // If using useState, setState(null) for discountValue
+  // Find the form initialization and update default value for discountValue
+
+  // ...existing code...
+
+  // Find the useForm or useState initialization
+  // Example for useForm:
+  // const { control, ... } = useForm({
+  //   defaultValues: {
+  //     ...,
+  //     discountValue: null,
+  //     ...
+  //   }
+  // });
+
+  // If already present, update discountValue: 0 to discountValue: null
+
+  // ...existing code...
   return (
     <DashboardContent>
       {/* Header */}

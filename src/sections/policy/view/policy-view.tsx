@@ -132,7 +132,7 @@ export function PolicyView() {
           </BaseIconButton>
           <BaseIconButton
             size="small"
-            color="secondary"
+            color="primary"
             onClick={() => navigate(`/policy/edit/${row.id}`)}
           >
             <Iconify icon="solar:pen-bold" />

@@ -6,7 +6,6 @@ import Typography from '@mui/material/Typography';
 
 import { DashboardContent } from 'src/layouts/dashboard';
 
-import { BaseCard } from 'src/components/baseComponents';
 
 // ----------------------------------------------------------------------
 
@@ -21,11 +20,9 @@ export function OverviewAnalyticsView() {
       </Typography>
       <Grid container justifyContent="center" alignItems="center" sx={{ minHeight: 300 }}>
         {/* <Grid xs={12} sm={8} md={6} lg={4}> */}
-          <BaseCard sx={{ p: 5, textAlign: 'center' }}>
-            <Typography variant="h5" color="text.secondary">
-              🚧 Work in progress 🚧
-            </Typography>
-          </BaseCard>
+          {/* <BaseCard sx={{ p: 5, textAlign: 'center' }}> */}
+            <img src="/assets/gifs/wip.gif" alt="Work in progress" style={{ width: '100%', maxWidth: 450 }} />
+          {/* </BaseCard> */}
         </Grid>
         {/* </Grid> */}
       

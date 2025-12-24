@@ -556,15 +556,12 @@ export function AddProductView() {
                   control={control}
                   render={({ field }) => (
                     <BaseFormControl fullWidth error={!!errors.policy}>
-                      <BaseInputLabel id="policy-label">Policy (Optional)</BaseInputLabel>
+                      <BaseInputLabel id="policy-label">Policy *</BaseInputLabel>
                       <BaseSelect
                         {...field}
                         labelId="policy-label"
-                        label="Policy (Optional)"
+                        label="Policy *"
                       >
-                        <BaseMenuItem value="">
-                          <em>None</em>
-                        </BaseMenuItem>
                         {activePolicies.length === 0 ? (
                           <BaseMenuItem disabled>No active policies available</BaseMenuItem>
                         ) : (

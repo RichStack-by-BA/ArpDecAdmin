@@ -119,7 +119,7 @@ export function UserTableRow({ row, selected, onSelectRow, onViewUser }: UserTab
             View
           </MenuItem>
 
-          <MenuItem onClick={handleClosePopover}>
+          <MenuItem onClick={handleClosePopover} sx={{ color: 'primary.main' }}>
             <Iconify icon="solar:pen-bold" />
             Edit
           </MenuItem>

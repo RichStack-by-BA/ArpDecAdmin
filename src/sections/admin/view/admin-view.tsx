@@ -99,7 +99,6 @@ export function AdminView() {
 
     return matchName || matchEmail || matchPhone || matchRole || matchStatus;
   });
-  console.log('selectedAdmin:', selectedAdmin);
 
   const columns: Column<AdminRow>[] = [
     {

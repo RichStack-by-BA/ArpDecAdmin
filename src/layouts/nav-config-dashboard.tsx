@@ -32,6 +32,8 @@ export const useNavData = (): NavItem[] => {
   // const taxCount = taxes?.length || 0;
   // const adminCount = users?.length || 0;
 
+  const { userDetails } = useSelector((state: RootState) => state.user);
+  const isSuperAdmin = userDetails?.user?.role === 'super_admin';
   return [
     {
       title: 'Dashboard',
@@ -42,72 +44,41 @@ export const useNavData = (): NavItem[] => {
       title: 'Products',
       path: '/products',
       icon: icon('ic-cart'),
-      // info: productCount > 0 ? (
-      //   <Label color="error" variant="inverted">
-      //     +{productCount}
-      //   </Label>
-      // ) : undefined,
     },
     {
       title: 'Orders',
       path: '/orders',
       icon: icon('ic-cart'),
-      // info: orderCount > 0 ? (
-      //   <Label color="info" variant="inverted">
-      //     {orderCount}
-      //   </Label>
-      // ) : undefined,
     },
     {
       title: 'Categories',
       path: '/category',
       icon: icon('ic-cart'),
-      // info: categoryCount > 0 ? (
-      //   <Label color="error" variant="inverted">
-      //     +{categoryCount}
-      //   </Label>
-      // ) : undefined,
     },
     {
       title: 'Offers',
       path: '/offer',
       icon: icon('ic-cart'),
-      // info: offerCount > 0 ? (
-      //   <Label color="success" variant="inverted">
-      //     {offerCount}
-      //   </Label>
-      // ) : undefined,
     },
     {
       title: 'Policies',
       path: '/policy',
       icon: icon('ic-cart'),
-      // info: policyCount > 0 ? (
-      //   <Label color="info" variant="inverted">
-      //     {policyCount}
-      //   </Label>
-      // ) : undefined,
     },
     {
       title: 'Tax Management',
       path: '/tax',
       icon: icon('ic-cart'),
-      // info: taxCount > 0 ? (
-      //   <Label color="warning" variant="inverted">
-      //     {taxCount}
-      //   </Label>
-      // ) : undefined,
     },
-    {
-      title: 'Admins',
-      path: '/admin',
-      icon: icon('ic-user'),
-      // info: adminCount > 0 ? (
-      //   <Label color="success" variant="inverted">
-      //     {adminCount}
-      //   </Label>
-      // ) : undefined,
-    },
+    ...(isSuperAdmin
+      ? [
+          {
+            title: 'Admins',
+            path: '/admin',
+            icon: icon('ic-user'),
+          },
+        ]
+      : []),
     {
       title: 'Customers',
       path: '/customer',

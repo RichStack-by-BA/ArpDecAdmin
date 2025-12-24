@@ -14,6 +14,7 @@ import { Iconify } from 'src/components/iconify';
 import {
   BaseBox,
   BaseCard,
+  BaseGrid,
   BaseAlert,
   DataTable,
   BaseButton,
@@ -166,7 +167,7 @@ export function TaxView() {
           </BaseIconButton>
           <BaseIconButton
             size="small"
-            color="secondary"
+            color="primary"
             onClick={() => navigate(`/tax/edit/${row.id}`)}
           >
             <Iconify icon="solar:pen-bold" />
@@ -350,9 +351,9 @@ export function TaxView() {
 
       {/* Tax Detail Modal */}
       <BaseDialog 
-        open={openModal} 
+        open={openModal}
         onClose={handleCloseModal}
-        maxWidth="md"
+        maxWidth="sm"
         fullWidth
       >
         <BaseDialog.Title>
@@ -365,78 +366,100 @@ export function TaxView() {
         </BaseDialog.Title>
         <BaseDialog.Content dividers>
           {selectedTax && (
-            <BaseBox sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-              {/* Details Grid */}
-              <BaseBox sx={{ display: 'grid', gap: 2 }}>
-                {/* Name */}
-                <BaseBox>
-                  <BaseTypography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>
-                    Tax Name
-                  </BaseTypography>
-                  <BaseTypography variant="body1" fontWeight={600}>
-                    {selectedTax.name}
-                  </BaseTypography>
+            <BaseGrid container spacing={3}>
+              {/* Top row: Tax Name & Status */}
+              <BaseGrid size={{ xs: 12, sm: 6 }}>
+                <BaseTypography variant="subtitle2" color="text.secondary" gutterBottom>
+                  Tax Name
+                </BaseTypography>
+                <BaseTypography variant="body1" fontWeight={600}>
+                  {selectedTax.name}
+                </BaseTypography>
+              </BaseGrid>
+              <BaseGrid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex', alignItems: 'center' }}>
+                <BaseTypography variant="subtitle2" color="text.secondary" gutterBottom>
+                  Status
+                </BaseTypography>
+                <BaseBox
+                  sx={{
+                    px: 1.5,
+                    py: 0.5,
+                    borderRadius: 0.75,
+                    display: 'inline-flex',
+                    bgcolor: selectedTax.isActive ? 'success.lighter' : 'error.lighter',
+                    color: selectedTax.isActive ? 'success.dark' : 'error.dark',
+                    fontWeight: 600,
+                    fontSize: '0.875rem',
+                    ml: 2,
+                  }}
+                >
+                  {selectedTax.isActive ? 'Active' : 'Inactive'}
                 </BaseBox>
-
-                {/* IGST */}
-                <BaseBox>
-                  <BaseTypography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>
-                    IGST Rate
-                  </BaseTypography>
-                  <BaseTypography variant="h6" color="primary.main">
-                    {selectedTax.igst}%
-                  </BaseTypography>
-                </BaseBox>
-
-                {/* CGST */}
-                <BaseBox>
-                  <BaseTypography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>
-                    CGST Rate
-                  </BaseTypography>
-                  <BaseTypography variant="h6" color="primary.main">
-                    {selectedTax.cgst}%
-                  </BaseTypography>
-                </BaseBox>
-
-                {/* SGST */}
-                <BaseBox>
-                  <BaseTypography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>
-                    SGST Rate
-                  </BaseTypography>
-                  <BaseTypography variant="h6" color="primary.main">
-                    {selectedTax.sgst}%
-                  </BaseTypography>
-                </BaseBox>
-
-                {/* Status */}
-                <BaseBox>
-                  <BaseTypography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>
-                    Status
-                  </BaseTypography>
-                  <BaseBox
-                    sx={{
-                      px: 1.5,
-                      py: 0.5,
-                      borderRadius: 0.75,
-                      display: 'inline-flex',
-                      bgcolor: selectedTax.isActive ? 'success.lighter' : 'error.lighter',
-                      color: selectedTax.isActive ? 'success.dark' : 'error.dark',
-                      fontWeight: 600,
-                      fontSize: '0.875rem',
-                    }}
-                  >
-                    {selectedTax.isActive ? 'Active' : 'Inactive'}
+              </BaseGrid>
+              {/* Tax Rate Breakdown Cards */}
+              <BaseGrid size={{ xs: 12 }}>
+                <BaseTypography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
+                  TAX RATE BREAKDOWN
+                </BaseTypography>
+                <BaseBox sx={{ display: 'flex', gap: 2 }}>
+                  {/* IGST Card */}
+                  <BaseBox sx={{ flex: 1, bgcolor: '#e3f0ff', borderRadius: 2, p: 2, boxShadow: 1, minWidth: 0 }}>
+                    <BaseBox sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <BaseTypography variant="subtitle2" color="primary.main">IGST</BaseTypography>
+                      <Iconify icon="solar:cart-3-bold" color="#90caf9" />
+                    </BaseBox>
+                    <BaseTypography variant="h4" color="primary.main" sx={{ fontWeight: 700, mt: 1 }}>
+                      {selectedTax.igst}%
+                    </BaseTypography>
+                    <BaseTypography variant="caption" color="primary.main" sx={{ mt: 0.5 }}>
+                      Integrated GST
+                    </BaseTypography>
+                  </BaseBox>
+                  {/* CGST Card - Brown */}
+                  <BaseBox sx={{ flex: 1, bgcolor: '#efebe9', borderRadius: 2, p: 2, boxShadow: 1, minWidth: 0 }}>
+                    <BaseBox sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <BaseTypography variant="subtitle2" sx={{ color: '#6d4c41' }}>CGST</BaseTypography>
+                      <Iconify icon="solar:cart-3-bold" color="#a1887f" />
+                    </BaseBox>
+                    <BaseTypography variant="h4" sx={{ color: '#6d4c41', fontWeight: 700, mt: 1 }}>
+                      {selectedTax.cgst}%
+                    </BaseTypography>
+                    <BaseTypography variant="caption" sx={{ color: '#6d4c41', mt: 0.5 }}>
+                      Central GST
+                    </BaseTypography>
+                  </BaseBox>
+                  {/* SGST Card */}
+                  <BaseBox sx={{ flex: 1, bgcolor: '#ede7f6', borderRadius: 2, p: 2, boxShadow: 1, minWidth: 0 }}>
+                    <BaseBox sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <BaseTypography variant="subtitle2" color="secondary.main">SGST</BaseTypography>
+                      <Iconify icon="solar:cart-3-bold" color="#b39ddb" />
+                    </BaseBox>
+                    <BaseTypography variant="h4" color="secondary.main" sx={{ fontWeight: 700, mt: 1 }}>
+                      {selectedTax.sgst}%
+                    </BaseTypography>
+                    <BaseTypography variant="caption" color="secondary.main" sx={{ mt: 0.5 }}>
+                      State GST
+                    </BaseTypography>
                   </BaseBox>
                 </BaseBox>
-              </BaseBox>
-            </BaseBox>
+              </BaseGrid>
+              <BaseGrid size={{ xs: 12 }} sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 2 }}>
+                <BaseButton variant="outlined" onClick={handleCloseModal}>
+                  Close
+                </BaseButton>
+                <BaseButton
+                  variant="contained"
+                  onClick={() => {
+                    navigate(`/tax/edit/${selectedTax.id}`);
+                    handleCloseModal();
+                  }}
+                >
+                  Edit
+                </BaseButton>
+              </BaseGrid>
+            </BaseGrid>
           )}
         </BaseDialog.Content>
-        <BaseDialog.Actions>
-          <BaseButton onClick={handleCloseModal} variant="outlined" color="inherit">
-            Close
-          </BaseButton>
-        </BaseDialog.Actions>
       </BaseDialog>
     </DashboardContent>
   );

@@ -20,6 +20,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import { formatDate } from 'src/utils/format-date';
+import { getStatusColor } from 'src/utils/status-utils';
 
 import { PAGE_LIMIT, VIEW_ICONS } from 'src/constant';
 import { DashboardContent } from 'src/layouts/dashboard';
@@ -105,7 +106,7 @@ export function OrdersView() {
   // Filter rows based on search query
   const filteredRows = tableRows.filter((row) => {
     if (!search) return true;
-    
+
     const searchLower = search.toLowerCase();
     return (
       row.productName.toLowerCase().includes(searchLower) ||
@@ -115,8 +116,9 @@ export function OrdersView() {
       row.amount.toString().includes(searchLower)
     );
   });
+
   // Calculate statistics
-  const totalOrders = orders.length;
+  const totalOrders = totalCount || orders.length;
   const totalAmount = orders.reduce((sum, order) => sum + (order.totalAmount ?? 0), 0);
   const pendingOrders = orders.filter((order) => order.orderStatus === 'pending').length;
   const completedOrders = orders.filter((order) => order.orderStatus === 'completed').length;
@@ -568,6 +570,7 @@ export function OrdersView() {
                     {selectedOrder.orderStatus ? (
                       <Box
                         sx={{
+                          width: 'fit-content',
                           px: 1.5,
                           py: 0.5,
                           borderRadius: 1,
@@ -657,25 +660,5 @@ export function OrdersView() {
       </Dialog>
     </DashboardContent>
   );
-}
-
-// Helper to get status color
-function getStatusColor(status: string) {
-  switch (status) {
-    case 'accepted':
-      return '#22c55e'; // green
-    case 'completed':
-      return '#2563eb'; // blue
-    case 'pending':
-      return '#fbbf24'; // yellow
-    case 'rejected':
-      return '#ef4444'; // red
-    case 'cancelled':
-      return '#ef4444'; // red
-    case 'shipped':
-      return '#0ea5e9'; // cyan
-    default:
-      return '#64748b'; // gray
-  }
 }
 

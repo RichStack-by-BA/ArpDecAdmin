@@ -108,7 +108,11 @@ const orderSlice = createSlice({
               updatedAt: item.updatedAt,
             }))
           : [];
-        state.totalCount = action.payload.data?.count || 0;
+        state.totalCount =
+          action.payload.total ||
+          action.payload.data?.totalCount ||
+          action.payload.data?.count ||
+          0;
         state.currentPage = action.payload.page || 1;
       })
       .addCase(fetchOrders.rejected, (state, action) => {

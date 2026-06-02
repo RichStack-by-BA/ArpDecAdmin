@@ -4,32 +4,30 @@ import { api } from 'src/api';
 export interface Order {
   id: string;
   shippingAddress: {
-    street: string;
+    name: string;
+    phone: string;
+    addressLine1: string;
     city: string;
     state: string;
     postalCode: string;
+    addressType: string;
     country: string;
   };
-  userId: {
-    _id: string;
-    email: string;
-  };
+  userId: string;
   items: Array<{
-    productId: {
-      _id: string;
-      name: string;
-      price: number;
-    };
+    name: string;
+    productId: string;
     quantity: number;
+    image: string;
     price: number;
     _id: string;
   }>;
-  paymentMethod: string;
-  paymentStatus: string;
+  paymentMethod?: string;
+  paymentStatus?: string;
   orderStatus: string;
-  totalAmount: number;
-  createdAt: string;
-  updatedAt: string;
+  totalAmount?: number;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 interface OrderState {
@@ -82,14 +80,30 @@ const orderSlice = createSlice({
         const items = action.payload.data?.orders || [];
         state.orders = Array.isArray(items)
           ? items.map((item: any) => ({
-              id: item._id,
+              id: item._id ?? item.id,
               shippingAddress: item.shippingAddress,
               userId: item.userId,
-              items: item.items,
+              items: Array.isArray(item.items)
+                ? item.items.map((product: any) => ({
+                    name: product.name,
+                    productId: product.productId,
+                    quantity: product.quantity,
+                    image: product.image,
+                    price: product.price,
+                    _id: product._id,
+                  }))
+                : [],
               paymentMethod: item.paymentMethod,
               paymentStatus: item.paymentStatus,
               orderStatus: item.orderStatus,
-              totalAmount: item.totalAmount,
+              totalAmount:
+                item.totalAmount ??
+                (Array.isArray(item.items)
+                  ? item.items.reduce(
+                      (sum: number, product: any) => sum + (product.price || 0) * (product.quantity || 0),
+                      0
+                    )
+                  : 0),
               createdAt: item.createdAt,
               updatedAt: item.updatedAt,
             }))

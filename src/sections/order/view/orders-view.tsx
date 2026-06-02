@@ -23,6 +23,7 @@ import { PAGE_LIMIT, VIEW_ICONS } from 'src/constant';
 
 import { DashboardContent } from 'src/layouts/dashboard';
 import { fetchOrders } from 'src/store/slices/orderSlice';
+import { formatDate } from 'src/utils/format-date';
 import { Iconify } from 'src/components/iconify';
 import {
   BaseBox,
@@ -40,7 +41,7 @@ import {
 type OrderRow = {
   id: string;
   productName: string;
-  customerEmail: string;
+  customerName: string;
   orderId: string;
   amount: number;
   status: string;
@@ -78,19 +79,23 @@ export function OrdersView() {
 
   // Transform orders into rows for the table (one row per order)
   const tableRows: OrderRow[] = orders.map((order) => {
-    // Get the first item's product name, or combine multiple products
-    const firstProduct = order.items[0]?.productId?.name || 'N/A';
+    const firstProduct = order.items[0]?.name || 'N/A';
     const additionalItems = order.items.length - 1;
-    const productName = additionalItems > 0 
+    const productName = additionalItems > 0
       ? `${firstProduct} +${additionalItems} more`
       : firstProduct;
-    
+
+    const amount = order.totalAmount ?? order.items.reduce(
+      (sum, item) => sum + (item.price || 0) * (item.quantity || 0),
+      0
+    );
+
     return {
       id: order.id,
       productName,
-      customerEmail: order.userId?.email || '',
+      customerName: order.shippingAddress?.name || order.userId || 'N/A',
       orderId: order.id,
-      amount: order.totalAmount,
+      amount,
       status: order.orderStatus,
       originalOrder: order,
       itemId: order.items[0]?._id || '',
@@ -104,16 +109,15 @@ export function OrdersView() {
     const searchLower = search.toLowerCase();
     return (
       row.productName.toLowerCase().includes(searchLower) ||
-      row.customerEmail.toLowerCase().includes(searchLower) ||
+      row.customerName.toLowerCase().includes(searchLower) ||
       row.orderId.toLowerCase().includes(searchLower) ||
       row.status.toLowerCase().includes(searchLower) ||
       row.amount.toString().includes(searchLower)
     );
   });
-
   // Calculate statistics
   const totalOrders = orders.length;
-  const totalAmount = orders.reduce((sum, order) => sum + order.totalAmount, 0);
+  const totalAmount = orders.reduce((sum, order) => sum + (order.totalAmount ?? 0), 0);
   const pendingOrders = orders.filter((order) => order.orderStatus === 'pending').length;
   const completedOrders = orders.filter((order) => order.orderStatus === 'completed').length;
 
@@ -125,7 +129,7 @@ export function OrdersView() {
       format: (value) => `#${value}`,
     },
     {
-      id: 'customerEmail',
+      id: 'customerName',
       label: 'Customer Name',
       align: 'left',
     },
@@ -406,9 +410,9 @@ export function OrdersView() {
                         textOverflow: 'ellipsis',
                         whiteSpace: 'nowrap',
                       }}
-                      title={row.customerEmail}
+                      title={row.customerName}
                     >
-                      {row.customerEmail}
+                      {row.customerName}
                     </BaseTypography>
                     <BaseBox sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
                       <BaseTypography variant="h6" color="primary">
@@ -476,10 +480,10 @@ export function OrdersView() {
                 <Grid container spacing={2}>
                   <Grid size={{ xs: 12, sm: 6 }}>
                     <Typography variant="caption" color="text.secondary">
-                      Email
+                      Customer Name
                     </Typography>
                     <Typography variant="body2">
-                      {selectedOrder.userId?.email || 'N/A'}
+                      {selectedOrder.shippingAddress?.name || 'N/A'}
                     </Typography>
                   </Grid>
                   <Grid size={{ xs: 12, sm: 6 }}>
@@ -487,7 +491,7 @@ export function OrdersView() {
                       Customer ID
                     </Typography>
                     <Typography variant="body2" sx={{ fontFamily: 'monospace', fontSize: 12 }}>
-                      {selectedOrder.userId?._id || 'N/A'}
+                      {selectedOrder.userId || 'N/A'}
                     </Typography>
                   </Grid>
                 </Grid>
@@ -512,9 +516,9 @@ export function OrdersView() {
                   <TableBody>
                     {selectedOrder.items.map((item) => (
                       <TableRow key={item._id}>
-                        <TableCell>{item.productId?.name || 'N/A'}</TableCell>
+                        <TableCell>{item.name || 'N/A'}</TableCell>
                         <TableCell align="right">{item.quantity}</TableCell>
-                        <TableCell align="right">₹{item.productId?.price || 0}</TableCell>
+                        <TableCell align="right">₹{item.price}</TableCell>
                         <TableCell align="right">₹{item.price * item.quantity}</TableCell>
                       </TableRow>
                     ))}
@@ -524,82 +528,79 @@ export function OrdersView() {
 
               <Divider />
 
-              {/* Shipping Address */}
-              <Box>
-                <Typography variant="h6" sx={{ mb: 2 }}>
-                  Shipping Address
-                </Typography>
-                <Typography variant="body2">
-                  {selectedOrder.shippingAddress.street}<br />
-                  {selectedOrder.shippingAddress.city}, {selectedOrder.shippingAddress.state} {selectedOrder.shippingAddress.postalCode}<br />
-                  {selectedOrder.shippingAddress.country}
-                </Typography>
-              </Box>
 
-              <Divider />
 
               {/* Payment & Order Info */}
               <Box>
-                <Typography variant="h6" sx={{ mb: 2 }}>
+                <Typography variant="h6" sx={{ mb: 1 }}>
                   Payment & Status
                 </Typography>
+                <Grid container spacing={2} sx={{ mb: 2 }}>
+                  <Grid size={{ xs: 12, sm: 6 }}>
+                    <Typography variant="caption" color="text.secondary">
+                      Payment Status
+                    </Typography>
+                    {selectedOrder.paymentStatus ? (
+                      <Box
+                        sx={{
+                          px: 1.5,
+                          py: 0.5,
+                          borderRadius: 1,
+                          bgcolor: selectedOrder.paymentStatus?.toLowerCase() === 'paid' ? '#22c55e' : '#fbbf24',
+                          color: 'white',
+                          fontWeight: 500,
+                          fontSize: 12,
+                          textTransform: 'uppercase',
+                          mt: 0.5,
+                        }}
+                      >
+                        {selectedOrder.paymentStatus}
+                      </Box>
+                    ) : (
+                      <Typography variant="body2">N/A</Typography>
+                    )}
+                  </Grid>
+
+                  <Grid size={{ xs: 12, sm: 6 }}>
+                    <Typography variant="caption" color="text.secondary">
+                      Order Status
+                    </Typography>
+                    {selectedOrder.orderStatus ? (
+                      <Box
+                        sx={{
+                          px: 1.5,
+                          py: 0.5,
+                          borderRadius: 1,
+                          bgcolor: getStatusColor(selectedOrder.orderStatus),
+                          color: 'white',
+                          fontWeight: 500,
+                          fontSize: 12,
+                          textTransform: 'uppercase',
+                          mt: 0.5,
+                        }}
+                      >
+                        {selectedOrder.orderStatus}
+                      </Box>
+                    ) : (
+                      <Typography variant="body2">N/A</Typography>
+                    )}
+                  </Grid>
+                </Grid>
                 <Grid container spacing={2}>
                   <Grid size={{ xs: 12, sm: 6 }}>
                     <Typography variant="caption" color="text.secondary">
                       Payment Method
                     </Typography>
                     <Typography variant="body2" sx={{ textTransform: 'uppercase' }}>
-                      {selectedOrder.paymentMethod}
+                      {selectedOrder.paymentMethod || 'N/A'}
                     </Typography>
-                  </Grid>
-                  <Grid size={{ xs: 12, sm: 6 }}>
-                    <Typography variant="caption" color="text.secondary">
-                      Payment Status
-                    </Typography>
-                    <Box
-                      sx={{
-                        display: 'inline-block',
-                        px: 1.5,
-                        py: 0.5,
-                        borderRadius: 1,
-                        bgcolor: selectedOrder.paymentStatus === 'paid' ? '#22c55e' : '#fbbf24',
-                        color: 'white',
-                        fontWeight: 500,
-                        fontSize: 12,
-                        textTransform: 'uppercase',
-                        mt: 0.5,
-                      }}
-                    >
-                      {selectedOrder.paymentStatus}
-                    </Box>
-                  </Grid>
-                  <Grid size={{ xs: 12, sm: 6 }}>
-                    <Typography variant="caption" color="text.secondary">
-                      Order Status
-                    </Typography>
-                    <Box
-                      sx={{
-                        display: 'inline-block',
-                        px: 1.5,
-                        py: 0.5,
-                        borderRadius: 1,
-                        bgcolor: getStatusColor(selectedOrder.orderStatus),
-                        color: 'white',
-                        fontWeight: 500,
-                        fontSize: 12,
-                        textTransform: 'uppercase',
-                        mt: 0.5,
-                      }}
-                    >
-                      {selectedOrder.orderStatus}
-                    </Box>
                   </Grid>
                   <Grid size={{ xs: 12, sm: 6 }}>
                     <Typography variant="caption" color="text.secondary">
                       Total Amount
                     </Typography>
                     <Typography variant="h6" color="primary">
-                      ₹{selectedOrder.totalAmount}
+                      ₹{selectedOrder.totalAmount ?? selectedOrder.items.reduce((sum, item) => sum + item.price * item.quantity, 0)}
                     </Typography>
                   </Grid>
                 </Grid>
@@ -615,7 +616,7 @@ export function OrdersView() {
                       Order Date
                     </Typography>
                     <Typography variant="body2">
-                      {new Date(selectedOrder.createdAt).toLocaleString()}
+                      {selectedOrder.createdAt ? formatDate(selectedOrder.createdAt, 'DD/MM/YYYY') : 'N/A'}
                     </Typography>
                   </Grid>
                   <Grid size={{ xs: 12, sm: 6 }}>
@@ -623,11 +624,27 @@ export function OrdersView() {
                       Last Updated
                     </Typography>
                     <Typography variant="body2">
-                      {new Date(selectedOrder.updatedAt).toLocaleString()}
+                      {selectedOrder.updatedAt ? formatDate(selectedOrder.updatedAt, 'DD/MM/YYYY') : 'N/A'}
                     </Typography>
                   </Grid>
                 </Grid>
               </Box>
+
+              <Divider />
+                            {/* Shipping Address */}
+              <Box>
+                <Typography variant="h6" sx={{ mb: 2 }}>
+                  Shipping Address
+                </Typography>
+                <Typography variant="body2">
+                  {selectedOrder.shippingAddress.name}<br />
+                  {selectedOrder.shippingAddress.addressLine1}<br />
+                  {selectedOrder.shippingAddress.city}, {selectedOrder.shippingAddress.state} {selectedOrder.shippingAddress.postalCode}<br />
+                  {selectedOrder.shippingAddress.country}<br />
+                  {selectedOrder.shippingAddress.phone}
+                </Typography>
+              </Box>
+
             </Box>
           )}
         </DialogContent>
@@ -661,3 +678,4 @@ function getStatusColor(status: string) {
       return '#64748b'; // gray
   }
 }
+
